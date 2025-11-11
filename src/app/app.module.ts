@@ -1,11 +1,12 @@
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
+import {provideHttpClient, withInterceptors} from '@angular/common/http';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {SharedModule} from "./shared/shared.module";
-import {provideHttpClient, withInterceptors} from '@angular/common/http';
+import {SharedModule} from './shared/shared.module';
 import {authInterceptor} from './core/auth.interceptor';
+import {toastInterceptor} from './core/toast.interceptor';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,7 @@ import {authInterceptor} from './core/auth.interceptor';
     SharedModule
   ],
   providers: [
-    provideHttpClient(withInterceptors([authInterceptor]))
+    provideHttpClient(withInterceptors([authInterceptor, toastInterceptor]))
   ],
   bootstrap: [AppComponent]
 })
