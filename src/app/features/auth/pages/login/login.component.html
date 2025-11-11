@@ -8,9 +8,11 @@
     <form (ngSubmit)="onSubmit()" [formGroup]="form" class="space-y-4">
       <div>
         <label class="block text-sm mb-1" for="email">Email</label>
-        <input class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary" formControlName="email" id="email"
-               placeholder="toi@example.com"
-               type="email"/>
+        <input
+          class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+          formControlName="email" id="email"
+          placeholder="toi@example.com"
+          type="email"/>
         <div *ngIf="f['email'].touched && f['email'].invalid" class="mt-1 text-xs text-red-400">
           <span *ngIf="f['email'].errors?.['required']">
             L'email est requis.
@@ -21,9 +23,11 @@
 
       <div>
         <label class="block text-sm mb-1" for="password">Mot de passe</label>
-        <input class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary" formControlName="password" id="password"
-               placeholder="••••••••"
-               type="password"/>
+        <input
+          class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+          formControlName="password" id="password"
+          placeholder="••••••••"
+          type="password"/>
         <div *ngIf="f['password'].touched && f['password'].invalid" class="mt-1 text-xs text-red-400">
           <span *ngIf="f['password'].errors?.['required']">
             Le mot de passe est requis.
@@ -38,7 +42,8 @@
         {{ apiError }}
       </div>
 
-      <button [disabled]="loading" class="w-full inline-flex items-center justify-center rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold px-4 py-2 mt-2 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-emerald-500 transition"
+      <button [disabled]="loading"
+              class="w-full inline-flex items-center justify-center rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold px-4 py-2 mt-2 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-emerald-500 transition"
               type="submit">
         <span *ngIf="!loading">Se connecter</span>
         <span *ngIf="loading">Connexion...</span>

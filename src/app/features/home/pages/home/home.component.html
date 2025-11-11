@@ -1,32 +1,59 @@
 <section class="min-h-[80vh] flex flex-col items-center justify-center text-center px-6">
-  <!-- Hero -->
   <div class="max-w-2xl">
     <h1 class="text-4xl sm:text-5xl font-bold text-gm-text mb-4">
       Bienvenue sur <span class="text-gm-primary">GoalMates</span>
     </h1>
-    <p class="text-gm-muted text-sm sm:text-base mb-8">
-      Organise facilement tes matchs de futsal 5&nbsp;contre&nbsp;5 entre amis.
-      Crée des équipes, planifie des matchs et garde les scores.
-    </p>
 
-    <!-- CTA -->
-    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <a
-        class="px-6 py-3 rounded-lg bg-gm-primary text-gm-bg font-semibold text-sm sm:text-base hover:bg-emerald-500 transition"
-        routerLink="/auth/register"
-      >
-        Commencer maintenant
-      </a>
-      <a
-        class="px-6 py-3 rounded-lg border border-gm-border text-gm-text font-semibold text-sm sm:text-base hover:bg-gm-surface2 transition"
-        routerLink="/auth/login"
-      >
-        Se connecter
-      </a>
-    </div>
+    <!-- Texte différent selon l'auth -->
+    <ng-container *ngIf="isAuthenticated$ | async; else guestContent">
+      <p class="text-gm-muted text-sm sm:text-base mb-6">
+        Ravi de te revoir,
+        <span class="text-gm-text font-semibold">
+          {{ (currentUser$ | async)?.username }}
+        </span>.
+        Organise ton prochain futsal 5&nbsp;contre&nbsp;5 avec ton équipe.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a
+          class="px-6 py-3 rounded-lg bg-gm-primary text-gm-bg font-semibold text-sm sm:text-base hover:bg-emerald-500 transition"
+          routerLink="/teams"
+        >
+          Voir mes équipes
+        </a>
+        <a
+          class="px-6 py-3 rounded-lg border border-gm-border text-gm-text font-semibold text-sm sm:text-base hover:bg-gm-surface2 transition"
+          routerLink="/matches"
+        >
+          Prochains matchs
+        </a>
+      </div>
+    </ng-container>
+
+    <!-- Contenu pour invité -->
+    <ng-template #guestContent>
+      <p class="text-gm-muted text-sm sm:text-base mb-8">
+        Organise facilement tes matchs de futsal 5&nbsp;contre&nbsp;5 entre amis.
+        Crée des équipes, planifie des matchs et garde les scores.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a
+          class="px-6 py-3 rounded-lg bg-gm-primary text-gm-bg font-semibold text-sm sm:text-base hover:bg-emerald-500 transition"
+          routerLink="/auth/register"
+        >
+          Commencer maintenant
+        </a>
+        <a
+          class="px-6 py-3 rounded-lg border border-gm-border text-gm-text font-semibold text-sm sm:text-base hover:bg-gm-surface2 transition"
+          routerLink="/auth/login"
+        >
+          Se connecter
+        </a>
+      </div>
+    </ng-template>
   </div>
 
-  <!-- Illustration -->
   <div class="mt-16 w-full max-w-4xl">
     <img
       alt="Terrain de futsal en salle"

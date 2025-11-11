@@ -25,17 +25,13 @@ export class NavbarComponent {
     this.mobileMenuOpen = !this.mobileMenuOpen;
   }
 
-  async onLoginClick(): Promise<void> {
-    await this.router.navigate(['/auth/login']);
-  }
-
-  async onHomeClick(): Promise<void> {
-    await this.router.navigate(['/']);
+  closeMobileMenu(): void {
+    this.mobileMenuOpen = false;
   }
 
   async onLogoutClick(): Promise<void> {
     this.authService.logout();
-    this.mobileMenuOpen = false;
+    this.closeMobileMenu();
     await this.router.navigate(['/']);
   }
 }

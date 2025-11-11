@@ -26,20 +26,41 @@
       >
         Accueil
       </a>
-      <a
-        class="text-sm text-gm-muted hover:text-gm-text transition"
-        routerLink="/auth/login"
-        routerLinkActive="text-gm-primary"
-      >
-        Connexion
-      </a>
-      <a
-        class="text-sm text-gm-muted hover:text-gm-text transition"
-        routerLink="/auth/register"
-        routerLinkActive="text-gm-primary"
-      >
-        Créer un compte
-      </a>
+
+      <!-- Liens quand NON authentifié -->
+      <ng-container *ngIf="!(isAuthenticated$ | async); else authLinks">
+        <a
+          class="text-sm text-gm-muted hover:text-gm-text transition"
+          routerLink="/auth/login"
+          routerLinkActive="text-gm-primary"
+        >
+          Connexion
+        </a>
+        <a
+          class="text-sm text-gm-muted hover:text-gm-text transition"
+          routerLink="/auth/register"
+          routerLinkActive="text-gm-primary"
+        >
+          Créer un compte
+        </a>
+      </ng-container>
+
+      <!-- Liens quand authentifié -->
+      <ng-template #authLinks>
+        <span class="text-sm text-gm-muted">
+          Bonjour,
+          <span class="text-gm-text font-semibold">
+            {{ (currentUser$ | async)?.username }}
+          </span>
+        </span>
+        <button
+          (click)="onLogoutClick()"
+          class="text-sm text-gm-muted hover:text-gm-text transition px-3 py-1 rounded-lg border border-gm-border hover:bg-gm-surface2"
+          type="button"
+        >
+          Déconnexion
+        </button>
+      </ng-template>
     </nav>
 
     <!-- Mobile toggle -->
@@ -81,7 +102,7 @@
   >
     <div class="px-4 py-3 flex flex-col gap-2">
       <a
-        (click)="toggleMobileMenu()"
+        (click)="closeMobileMenu()"
         [routerLinkActiveOptions]="{ exact: true }"
         class="text-sm text-gm-muted hover:text-gm-text transition"
         routerLink="/"
@@ -89,22 +110,42 @@
       >
         Accueil
       </a>
-      <a
-        (click)="toggleMobileMenu()"
-        class="text-sm text-gm-muted hover:text-gm-text transition"
-        routerLink="/auth/login"
-        routerLinkActive="text-gm-primary"
-      >
-        Connexion
-      </a>
-      <a
-        (click)="toggleMobileMenu()"
-        class="text-sm text-gm-muted hover:text-gm-text transition"
-        routerLink="/auth/register"
-        routerLinkActive="text-gm-primary"
-      >
-        Créer un compte
-      </a>
+
+      <!-- Mobile: non authentifié -->
+      <ng-container *ngIf="!(isAuthenticated$ | async); else mobileAuthLinks">
+        <a
+          (click)="closeMobileMenu()"
+          class="text-sm text-gm-muted hover:text-gm-text transition"
+          routerLink="/auth/login"
+          routerLinkActive="text-gm-primary"
+        >
+          Connexion
+        </a>
+        <a
+          (click)="closeMobileMenu()"
+          class="text-sm text-gm-muted hover:text-gm-text transition"
+          routerLink="/auth/register"
+          routerLinkActive="text-gm-primary"
+        >
+          Créer un compte
+        </a>
+      </ng-container>
+
+      <!-- Mobile: authentifié -->
+      <ng-template #mobileAuthLinks>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gm-muted">
+            {{ (currentUser$ | async)?.username }}
+          </span>
+          <button
+            (click)="onLogoutClick()"
+            class="text-xs text-gm-muted hover:text-gm-text transition px-3 py-1 rounded-lg border border-gm-border hover:bg-gm-surface"
+            type="button"
+          >
+            Déconnexion
+          </button>
+        </div>
+      </ng-template>
     </div>
   </nav>
 </header>
