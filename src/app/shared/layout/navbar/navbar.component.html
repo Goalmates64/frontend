@@ -1,0 +1,110 @@
+<header class="border-b border-gm-border bg-gm-surface/80 backdrop-blur">
+  <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+    <!-- Logo -->
+    <a
+      class="flex items-center gap-2 hover:opacity-90 transition"
+      routerLink="/"
+    >
+      <div
+        class="h-8 w-8 rounded-full bg-gm-primary flex items-center justify-center font-bold text-gm-bg"
+      >
+        GM
+      </div>
+      <div class="flex flex-col leading-tight">
+        <span class="font-semibold tracking-tight">GoalMates</span>
+        <span class="text-xs text-gm-muted">Organise ton futsal 5v5</span>
+      </div>
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden md:flex items-center gap-4">
+      <a
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="text-sm text-gm-muted hover:text-gm-text transition"
+        routerLink="/"
+        routerLinkActive="text-gm-primary"
+      >
+        Accueil
+      </a>
+      <a
+        class="text-sm text-gm-muted hover:text-gm-text transition"
+        routerLink="/auth/login"
+        routerLinkActive="text-gm-primary"
+      >
+        Connexion
+      </a>
+      <a
+        class="text-sm text-gm-muted hover:text-gm-text transition"
+        routerLink="/auth/register"
+        routerLinkActive="text-gm-primary"
+      >
+        Créer un compte
+      </a>
+    </nav>
+
+    <!-- Mobile toggle -->
+    <button
+      (click)="toggleMobileMenu()"
+      aria-label="Ouvrir le menu"
+      class="md:hidden inline-flex items-center justify-center p-2 rounded-lg border border-gm-border text-gm-muted hover:text-gm-text hover:bg-gm-surface2 transition"
+      type="button"
+    >
+      <svg
+        *ngIf="!mobileMenuOpen"
+        class="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <svg
+        *ngIf="mobileMenuOpen"
+        class="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile nav -->
+  <nav
+    *ngIf="mobileMenuOpen"
+    class="md:hidden border-t border-gm-border bg-gm-surface2"
+  >
+    <div class="px-4 py-3 flex flex-col gap-2">
+      <a
+        (click)="toggleMobileMenu()"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="text-sm text-gm-muted hover:text-gm-text transition"
+        routerLink="/"
+        routerLinkActive="text-gm-primary"
+      >
+        Accueil
+      </a>
+      <a
+        (click)="toggleMobileMenu()"
+        class="text-sm text-gm-muted hover:text-gm-text transition"
+        routerLink="/auth/login"
+        routerLinkActive="text-gm-primary"
+      >
+        Connexion
+      </a>
+      <a
+        (click)="toggleMobileMenu()"
+        class="text-sm text-gm-muted hover:text-gm-text transition"
+        routerLink="/auth/register"
+        routerLinkActive="text-gm-primary"
+      >
+        Créer un compte
+      </a>
+    </div>
+  </nav>
+</header>

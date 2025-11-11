@@ -1,0 +1,55 @@
+<div class="min-h-[70vh] flex items-center justify-center">
+  <div class="w-full max-w-md bg-gm-surface border border-gm-border rounded-2xl p-8 shadow-lg">
+    <h1 class="text-2xl font-semibold mb-2 text-center">Connexion</h1>
+    <p class="text-sm text-gm-muted mb-6 text-center">
+      Connecte-toi pour rejoindre tes équipes GoalMates.
+    </p>
+
+    <form (ngSubmit)="onSubmit()" [formGroup]="form" class="space-y-4">
+      <div>
+        <label class="block text-sm mb-1" for="email">Email</label>
+        <input class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary" formControlName="email" id="email"
+               placeholder="toi@example.com"
+               type="email"/>
+        <div *ngIf="f['email'].touched && f['email'].invalid" class="mt-1 text-xs text-red-400">
+          <span *ngIf="f['email'].errors?.['required']">
+            L'email est requis.
+          </span>
+          <span *ngIf="f['email'].errors?.['email']">Email invalide.</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm mb-1" for="password">Mot de passe</label>
+        <input class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary" formControlName="password" id="password"
+               placeholder="••••••••"
+               type="password"/>
+        <div *ngIf="f['password'].touched && f['password'].invalid" class="mt-1 text-xs text-red-400">
+          <span *ngIf="f['password'].errors?.['required']">
+            Le mot de passe est requis.
+          </span>
+          <span *ngIf="f['password'].errors?.['minlength']">
+            Minimum 6 caractères.
+          </span>
+        </div>
+      </div>
+
+      <div *ngIf="apiError" class="text-xs text-red-400 bg-red-950/40 border border-red-900 rounded-lg px-3 py-2">
+        {{ apiError }}
+      </div>
+
+      <button [disabled]="loading" class="w-full inline-flex items-center justify-center rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold px-4 py-2 mt-2 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-emerald-500 transition"
+              type="submit">
+        <span *ngIf="!loading">Se connecter</span>
+        <span *ngIf="loading">Connexion...</span>
+      </button>
+    </form>
+
+    <p class="mt-4 text-xs text-gm-muted text-center">
+      Pas encore de compte ?
+      <a class="text-gm-primary hover:underline" routerLink="/auth/register">
+        Crée un compte
+      </a>
+    </p>
+  </div>
+</div>
