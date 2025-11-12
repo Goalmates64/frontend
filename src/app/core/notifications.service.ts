@@ -10,14 +10,14 @@ import {AuthService} from './auth.service';
 
 @Injectable({providedIn: 'root'})
 export class NotificationsService {
-  readonly unreadNotifications$ = this.notifications$.pipe(
-    map((notifications) => notifications.filter((notification) => !notification.isRead)),
-  );
   private readonly baseUrl = `${environment.apiUrl}/notifications`;
   private readonly unreadCountSubject = new BehaviorSubject<number>(0);
   readonly unreadCount$ = this.unreadCountSubject.asObservable();
   private readonly notificationsSubject = new BehaviorSubject<AppNotification[]>([]);
   readonly notifications$ = this.notificationsSubject.asObservable();
+  readonly unreadNotifications$ = this.notifications$.pipe(
+    map((notifications) => notifications.filter((notification) => !notification.isRead)),
+  );
   private cachedNotifications: AppNotification[] = [];
   private socket: Socket | null = null;
   private readonly wsNamespaceUrl = this.buildWsNamespaceUrl();
@@ -130,7 +130,7 @@ export class NotificationsService {
       this.updateUnreadCountFromCache();
     });
 
-    this.socket.on('notification:count', (payload: { count: number }) => {
+    this.socket.on('notification:count', (payload: {count: number}) => {
       if (typeof payload?.count === 'number') {
         this.unreadCountSubject.next(payload.count);
       }
