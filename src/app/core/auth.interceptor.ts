@@ -1,11 +1,10 @@
-import {inject} from '@angular/core';
 import {HttpInterceptorFn} from '@angular/common/http';
-import {AuthService} from './auth.service';
 import {environment} from '../../environments/environment';
 
+const TOKEN_KEY = 'gm_token';
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
-  const token = authService.token;
+  const token = localStorage.getItem(TOKEN_KEY);
 
   const isApiCall = req.url.startsWith(environment.apiUrl);
 

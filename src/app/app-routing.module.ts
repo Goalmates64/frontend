@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {HomeModule} from './features/home/home.module';
 import {guestGuard} from './core/guest.guard';
+import {authGuard} from './core/auth.guard';
 
 const routes: Routes = [
   {
@@ -12,6 +13,11 @@ const routes: Routes = [
   {
     path: 'home',
     loadChildren: () => import('./features/home/home.module').then(m => m.HomeModule)
+  },
+  {
+    path: 'profil',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/profile/profile.module').then(m => m.ProfileModule)
   },
   {path: '**', redirectTo: 'home'},
 ];

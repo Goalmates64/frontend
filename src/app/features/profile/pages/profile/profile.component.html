@@ -1,0 +1,152 @@
+<section class="space-y-8">
+  <header class="space-y-2">
+    <p class="text-sm uppercase tracking-[0.2em] text-gm-primary font-semibold">
+      Profil joueur
+    </p>
+    <h1 class="text-3xl font-bold">Tes informations personnelles</h1>
+    <p class="text-gm-muted max-w-2xl">
+      Mets à jour ton identité afin que tes coéquipiers sachent à qui ils parlent.
+      Ces données restent privées et servent uniquement à améliorer votre expérience GoalMates.
+    </p>
+  </header>
+
+  <div class="grid gap-6 lg:grid-cols-[2fr,1fr]">
+    <form
+      (ngSubmit)="onSubmit()"
+      [formGroup]="form"
+      class="bg-gm-surface border border-gm-border rounded-2xl p-8 shadow-lg flex flex-col gap-6"
+    >
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <label class="text-sm text-gm-muted mb-1 block" for="firstName">Prénom</label>
+          <input
+            class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+            formControlName="firstName"
+            id="firstName"
+            placeholder="Ex. Nabil"
+            type="text"
+          />
+          <p *ngIf="f.firstName.errors?.['maxlength'] && f.firstName.touched" class="text-xs text-red-400 mt-1">
+            Maximum 80 caractères.
+          </p>
+        </div>
+
+        <div>
+          <label class="text-sm text-gm-muted mb-1 block" for="lastName">Nom</label>
+          <input
+            class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+            formControlName="lastName"
+            id="lastName"
+            placeholder="Ex. Karim"
+            type="text"
+          />
+          <p *ngIf="f.lastName.errors?.['maxlength'] && f.lastName.touched" class="text-xs text-red-400 mt-1">
+            Maximum 80 caractères.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <label class="text-sm text-gm-muted mb-1 block" for="dateOfBirth">Date de naissance</label>
+          <input
+            [attr.max]="today"
+            class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+            formControlName="dateOfBirth"
+            id="dateOfBirth"
+            placeholder="1990-05-17"
+            type="date"
+          />
+          <p *ngIf="f.dateOfBirth.errors?.['futureDate'] && f.dateOfBirth.touched" class="text-xs text-red-400 mt-1">
+            Merci de choisir une date passée.
+          </p>
+          <p class="text-xs text-gm-muted mt-1">
+            Nous utilisons cette info pour personnaliser les conseils forme & récupération. Pas de dates futures.
+          </p>
+        </div>
+
+        <div>
+          <label class="text-sm text-gm-muted mb-1 block" for="city">Ville</label>
+          <input
+            class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+            formControlName="city"
+            id="city"
+            placeholder="Casablanca"
+            type="text"
+          />
+          <p *ngIf="f.city.errors?.['maxlength'] && f.city.touched" class="text-xs text-red-400 mt-1">
+            Maximum 120 caractères.
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-sm text-gm-muted mb-1 block" for="country">Pays</label>
+        <input
+          class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+          formControlName="country"
+          id="country"
+          placeholder="Maroc"
+          type="text"
+        />
+        <p *ngIf="f.country.errors?.['maxlength'] && f.country.touched" class="text-xs text-red-400 mt-1">
+          Maximum 120 caractères.
+        </p>
+      </div>
+
+      <div *ngIf="apiError" class="text-xs text-red-400 bg-red-950/40 border border-red-900 rounded-lg px-3 py-2">
+        {{ apiError }}
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
+        <button
+          [disabled]="loading"
+          class="inline-flex items-center justify-center rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold px-4 py-2 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-emerald-500 transition"
+          type="submit"
+        >
+          <span *ngIf="!loading">Sauvegarder mon profil</span>
+          <span *ngIf="loading">Sauvegarde...</span>
+        </button>
+        <p class="text-xs text-gm-muted">
+          Les modifications sont enregistrées instantanément sur tous tes appareils.
+        </p>
+      </div>
+    </form>
+
+    <aside class="bg-gm-surface2 border border-gm-border rounded-2xl p-6 space-y-6">
+      <div>
+        <p class="text-sm text-gm-muted uppercase tracking-[0.3em]">Compte</p>
+        <h2 class="text-xl font-semibold">Résumé rapide</h2>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <p class="text-xs text-gm-muted">Email</p>
+          <p class="font-medium text-sm">{{ (user$ | async)?.email }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-gm-muted">Pseudo GoalMates</p>
+          <p class="font-medium text-sm">{{ (user$ | async)?.username }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-gm-muted">Localisation</p>
+          <p class="font-medium text-sm">
+            <ng-container *ngIf="(user$ | async) as user; else unknownLocation">
+              {{ user.city || 'Ville inconnue' }} · {{ user.country || 'Pays inconnu' }}
+            </ng-container>
+          </p>
+          <ng-template #unknownLocation>
+            <span class="font-medium text-sm">Ville inconnue · Pays inconnu</span>
+          </ng-template>
+        </div>
+      </div>
+
+      <div class="bg-gm-surface border border-dashed border-gm-border rounded-xl p-4">
+        <p class="text-sm font-semibold mb-1">Conseil GoalMates</p>
+        <p class="text-sm text-gm-muted">
+          Un profil complet augmente les chances d'être invité aux matchs et facilite l'organisation.
+        </p>
+      </div>
+    </aside>
+  </div>
+</section>
