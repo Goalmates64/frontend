@@ -43,7 +43,7 @@ export class TeamsListComponent implements OnInit {
       },
       error: () => {
         this.loading$.next(false);
-        this.toast.error('Impossible de charger tes Ã©quipes.');
+        this.toast.error('Impossible de charger tes équipes.');
       },
     });
   }
@@ -58,7 +58,7 @@ export class TeamsListComponent implements OnInit {
     const code = this.joinForm.getRawValue().code.trim().toUpperCase();
     this.teamsService.join(code).subscribe({
       next: () => {
-        this.toast.success('Bienvenue dans cette Ã©quipe !');
+        this.toast.success('Bienvenue dans cette équipe !');
         this.joinForm.reset();
         this.refresh();
       },
@@ -72,4 +72,3 @@ export class TeamsListComponent implements OnInit {
     this.router.navigate(['/teams/create']);
   }
 }
-

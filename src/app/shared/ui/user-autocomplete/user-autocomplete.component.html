@@ -1,0 +1,27 @@
+﻿<div class="space-y-2">
+  <label class="text-xs text-gm-muted">Rechercher un joueur</label>
+  <div class="relative">
+    <input
+      (input)="onInput($any($event.target).value)"
+      [formControl]="control"
+      class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+      placeholder="Tape un pseudo"
+      type="text"
+    />
+    <div *ngIf="loading" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gm-muted">
+      ...
+    </div>
+  </div>
+
+  <ul *ngIf="suggestions.length"
+      class="border border-gm-border rounded-xl divide-y divide-gm-border bg-gm-surface shadow-lg">
+    <li
+      (click)="selectUser(suggestion)"
+      *ngFor="let suggestion of suggestions"
+      class="px-3 py-2 text-sm cursor-pointer hover:bg-gm-surface2"
+    >
+      <p class="font-semibold">{{ suggestion.username }}</p>
+      <p class="text-xs text-gm-muted">{{ suggestion.email }}</p>
+    </li>
+  </ul>
+</div>

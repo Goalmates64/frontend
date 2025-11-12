@@ -28,6 +28,10 @@ export class MatchesService {
     return this.http.get<Match[]>(`${this.baseUrl}/upcoming`);
   }
 
+  listHistory(): Observable<Match[]> {
+    return this.http.get<Match[]>(`${this.baseUrl}/history`);
+  }
+
   create(payload: CreateMatchPayload): Observable<Match> {
     return this.http.post<Match>(this.baseUrl, payload);
   }
@@ -36,4 +40,3 @@ export class MatchesService {
     return this.http.post<Match>(`${this.baseUrl}/${matchId}/score`, payload);
   }
 }
-

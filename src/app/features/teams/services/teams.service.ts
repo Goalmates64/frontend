@@ -16,6 +16,10 @@ export class TeamsService {
     return this.http.get<Team[]>(`${this.baseUrl}/mine`);
   }
 
+  getById(teamId: number): Observable<Team> {
+    return this.http.get<Team>(`${this.baseUrl}/${teamId}`);
+  }
+
   create(name: string): Observable<Team> {
     return this.http.post<Team>(this.baseUrl, {name});
   }
@@ -23,5 +27,12 @@ export class TeamsService {
   join(code: string): Observable<Team> {
     return this.http.post<Team>(`${this.baseUrl}/join`, {code});
   }
-}
 
+  update(teamId: number, payload: { name?: string }): Observable<Team> {
+    return this.http.patch<Team>(`${this.baseUrl}/${teamId}`, payload);
+  }
+
+  addMember(teamId: number, username: string): Observable<Team> {
+    return this.http.post<Team>(`${this.baseUrl}/${teamId}/members`, {username});
+  }
+}

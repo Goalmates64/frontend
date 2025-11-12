@@ -34,6 +34,7 @@ export class MatchesListComponent implements OnInit {
     this.loading$.next(true);
     this.matchesService.listUpcoming().subscribe({
       next: (matches) => {
+        this.scoreForms.clear();
         this.matches$.next(matches);
         this.loading$.next(false);
       },
@@ -84,5 +85,3 @@ export class MatchesListComponent implements OnInit {
     });
   }
 }
-
-

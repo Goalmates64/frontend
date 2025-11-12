@@ -1,7 +1,7 @@
 ﻿<section class="space-y-8">
   <header class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
     <div>
-      <p class="text-xs uppercase tracking-[0.3em] text-gm-primary font-semibold">Ã‰quipes</p>
+      <p class="text-xs uppercase tracking-[0.3em] text-gm-primary font-semibold">Équipes</p>
       <h1 class="text-3xl font-bold">Mes équipes</h1>
       <p class="text-gm-muted text-sm">Crée ta team ou rejoins tes amis avec un code d'invitation.</p>
     </div>
@@ -17,30 +17,48 @@
   <div class="grid gap-6 lg:grid-cols-[2fr,1fr]">
     <div class="space-y-4">
       <ng-container *ngIf="(teams$ | async) as teams">
-        <div *ngIf="!teams.length && !(loading$ | async)"
-             class="border border-dashed border-gm-border rounded-2xl p-6 text-center text-sm text-gm-muted">
+        <div
+          *ngIf="!teams.length && !(loading$ | async)"
+          class="border border-dashed border-gm-border rounded-2xl p-6 text-center text-sm text-gm-muted"
+        >
           Aucune équipe pour l'instant. Lance-toi ou colle un code !
         </div>
 
         <div *ngIf="loading$ | async" class="text-sm text-gm-muted">Chargement...</div>
 
-        <div *ngFor="let team of teams" class="border border-gm-border rounded-2xl p-4 bg-gm-surface">
+        <article
+          *ngFor="let team of teams"
+          class="border border-gm-border rounded-2xl p-4 bg-gm-surface space-y-3"
+        >
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
               <p class="text-lg font-semibold">{{ team.name }}</p>
-              <p class="text-xs text-gm-muted">Code d'invitation : <span class="font-mono">{{ team.inviteCode }}</span>
+              <p class="text-xs text-gm-muted">
+                Code : <span class="font-mono">{{ team.inviteCode }}</span> · Créée
+                le {{ team.createdAt | date: 'mediumDate' }}
               </p>
             </div>
-            <span class="text-xs text-gm-muted">{{ team.members.length }} joueurs</span>
+            <div class="flex flex-col sm:items-end">
+              <span class="text-xs text-gm-muted">{{ team.members.length }} joueurs</span>
+              <a
+                [routerLink]="['/teams', team.id]"
+                class="mt-2 text-xs text-gm-primary underline"
+              >
+                Voir les détails
+              </a>
+            </div>
           </div>
 
-          <div class="mt-4 grid gap-2">
-            <div *ngFor="let member of team.members" class="flex items-center justify-between text-sm">
+          <div class="mt-2 grid gap-2">
+            <div *ngFor="let member of team.members | slice:0:3" class="flex items-center justify-between text-sm">
               <span class="font-medium">{{ member.user?.username || 'Joueur #' + member.userId }}</span>
               <span class="text-xs text-gm-muted">{{ member.isCaptain ? 'Capitaine' : 'Joueur' }}</span>
             </div>
+            <div *ngIf="team.members.length > 3" class="text-xs text-gm-muted">
+              + {{ team.members.length - 3 }} autres joueurs
+            </div>
           </div>
-        </div>
+        </article>
       </ng-container>
     </div>
 
@@ -55,8 +73,11 @@
             id="code"
             placeholder="EX: ABCD1234"
           />
-          <p *ngIf="joinForm.controls.code.invalid && joinForm.controls.code.touched" class="text-xs text-red-400 mt-1">
-            Le code doit contenir 8 caractÃ¨res minimum.
+          <p
+            *ngIf="joinForm.controls.code.invalid && joinForm.controls.code.touched"
+            class="text-xs text-red-400 mt-1"
+          >
+            Le code doit contenir 8 caractères minimum.
           </p>
         </div>
 
@@ -74,4 +95,3 @@
     </aside>
   </div>
 </section>
-

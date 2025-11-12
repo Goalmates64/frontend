@@ -17,13 +17,19 @@ export type UpdateProfilePayload = {
   country?: string | null;
 };
 
+export interface UserSummary {
+  id: number;
+  username: string;
+  email: string;
+}
+
 export interface TeamMember {
   id: number;
   userId: number;
   teamId: number;
   isCaptain: boolean;
   joinedAt: string;
-  user?: Pick<User, 'id' | 'username' | 'email'> | null;
+  user?: UserSummary | null;
 }
 
 export interface Team {
@@ -32,6 +38,7 @@ export interface Team {
   inviteCode: string;
   createdAt: string;
   members: TeamMember[];
+  memberCount?: number;
 }
 
 export interface Match {
