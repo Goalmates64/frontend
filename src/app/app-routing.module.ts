@@ -29,6 +29,11 @@ const routes: Routes = [
     canActivate: [authGuard],
     loadChildren: () => import('./features/matches/matches.module').then(m => m.MatchesModule)
   },
+  {
+    path: 'notifications',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/notifications/notifications.module').then(m => m.NotificationsModule)
+  },
   {path: '**', redirectTo: 'home'},
 ];
 

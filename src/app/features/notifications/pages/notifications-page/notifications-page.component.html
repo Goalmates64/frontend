@@ -1,0 +1,63 @@
+<section class="space-y-6">
+  <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold">Notifications</h1>
+      <p class="text-sm text-gm-muted">Toutes les alertes liées à tes équipes et tes matchs.</p>
+    </div>
+    <button
+      (click)="loadNotifications()"
+      class="inline-flex items-center gap-2 rounded-lg border border-gm-border px-4 py-2 text-sm text-gm-muted hover:bg-gm-surface2"
+      type="button"
+    >
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+           xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 4v5h.582m15.8 2A8.001 8.001 0 0 0 5.582 9H4m0 0a8 8 0 1 0 13.657 5.657" stroke-linecap="round"
+              stroke-linejoin="round"/>
+      </svg>
+      Actualiser
+    </button>
+  </div>
+
+  <div *ngIf="isLoading"
+       class="rounded-lg border border-dashed border-gm-border bg-gm-surface2 p-6 text-center text-sm text-gm-muted">
+    Chargement des notifications...
+  </div>
+
+  <div *ngIf="!isLoading && notifications.length === 0"
+       class="rounded-lg border border-gm-border bg-gm-surface p-6 text-center text-sm text-gm-muted">
+    Aucune notification pour le moment. Tu seras prévenu ici dès qu’il y a du nouveau.
+  </div>
+
+  <ul *ngIf="!isLoading && notifications.length > 0" class="space-y-4">
+    <li
+      *ngFor="let notification of notifications; trackBy: trackByNotification"
+      [class.opacity-70]="notification.isRead"
+      class="rounded-xl border border-gm-border bg-gm-surface2 p-4 transition"
+    >
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div class="space-y-2">
+          <div class="text-xs text-gm-muted">
+            <span>{{ notification.createdAt | date: 'medium' }}</span>
+            <span class="mx-1">•</span>
+            <span>{{ notification.sender?.username || 'GoalMates' }}</span>
+          </div>
+          <h3 class="text-lg font-semibold">{{ notification.title }}</h3>
+          <p class="text-sm text-gm-text">{{ notification.body }}</p>
+        </div>
+
+        <button
+          (click)="markAsRead(notification)"
+          *ngIf="!notification.isRead"
+          class="whitespace-nowrap rounded-full bg-gm-primary/10 px-3 py-1 text-xs font-semibold text-gm-primary hover:bg-gm-primary/20"
+          type="button"
+        >
+          Marquer comme lue
+        </button>
+        <span *ngIf="notification.isRead"
+              class="whitespace-nowrap rounded-full bg-gm-surface px-3 py-1 text-xs font-semibold text-gm-muted">
+          Déjà lue
+        </span>
+      </div>
+    </li>
+  </ul>
+</section>
