@@ -1,4 +1,5 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
+import {Subscription} from 'rxjs';
 
 import {NotificationsService} from '../../../../core/notifications.service';
 import {ToastService} from '../../../../core/toast.service';
@@ -11,23 +12,33 @@ import {AppNotification} from '../../../../core/models/notification.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
-export class NotificationsPageComponent {
+export class NotificationsPageComponent implements OnDestroy {
   notifications: AppNotification[] = [];
   isLoading = false;
+  private readonly subscriptions = new Subscription();
 
   constructor(
     private readonly notificationsService: NotificationsService,
     private readonly toast: ToastService,
     private readonly cdr: ChangeDetectorRef,
   ) {
+    this.subscriptions.add(
+      this.notificationsService.notifications$.subscribe((notifications) => {
+        this.notifications = notifications;
+        this.cdr.markForCheck();
+      }),
+    );
     this.loadNotifications();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   loadNotifications(): void {
     this.isLoading = true;
     this.notificationsService.loadAll().subscribe({
-      next: (notifications) => {
-        this.notifications = notifications;
+      next: () => {
         this.isLoading = false;
         this.cdr.markForCheck();
       },
@@ -45,12 +56,8 @@ export class NotificationsPageComponent {
     }
 
     this.notificationsService.markAsRead(notification.id, true).subscribe({
-      next: (updated) => {
-        this.notifications = this.notifications.map((entry) =>
-          entry.id === updated.id ? updated : entry,
-        );
+      next: () => {
         this.toast.success('Notification marquée comme lue.');
-        this.cdr.markForCheck();
       },
       error: () => {
         this.toast.error("Impossible d'actualiser cette notification.");

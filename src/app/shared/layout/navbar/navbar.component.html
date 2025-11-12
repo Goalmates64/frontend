@@ -74,34 +74,121 @@
         >
           Matchs
         </a>
-        <a
-          aria-label="Voir les notifications"
-          class="relative inline-flex h-10 w-10 items-center justify-center text-gm-muted transition hover:text-gm-text"
-          routerLink="/notifications"
-          routerLinkActive="text-gm-primary"
+        <div
+          #notificationsContainer
+          class="relative flex items-center gap-1"
         >
-          <svg
-            class="h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
+          <button
+            (click)="goToNotifications()"
+            aria-label="Voir les notifications"
+            class="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-gm-muted transition hover:bg-gm-surface hover:text-gm-text"
+            type="button"
           >
-            <path
-              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0 1 18 14.158V11a6 6 0 1 0-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 1 1-6 0v-1m6 0H9"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          <span
-            *ngIf="(unreadCount$ | async) as notifCount"
-            [class.hidden]="notifCount === 0"
-            class="absolute -right-1 -top-1 min-w-[1.25rem] rounded-full bg-red-500 px-1 text-center text-xs font-semibold text-white"
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0 1 18 14.158V11a6 6 0 1 0-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 1 1-6 0v-1m6 0H9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span
+              *ngIf="(unreadCount$ | async) as notifCount"
+              [class.hidden]="notifCount === 0"
+              class="absolute -right-1 -top-1 min-w-[1.25rem] rounded-full bg-red-500 px-1 text-center text-xs font-semibold text-white"
+            >
+              {{ notifCount > 99 ? '99+' : notifCount }}
+            </span>
+          </button>
+          <button
+            (click)="toggleDrawer($event)"
+            [attr.aria-expanded]="drawerOpen"
+            aria-label="Afficher les notifications récentes"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-gm-border text-gm-muted transition hover:bg-gm-surface hover:text-gm-text"
+            type="button"
           >
-            {{ notifCount > 99 ? '99+' : notifCount }}
-          </span>
-        </a>
+            <svg
+              [class.rotate-180]="drawerOpen"
+              class="h-4 w-4 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <div
+            *ngIf="drawerOpen"
+            class="absolute right-0 top-[calc(100%+0.75rem)] z-20 w-80 rounded-xl border border-gm-border bg-gm-surface2 p-4 shadow-xl"
+          >
+            <div class="mb-3 flex items-center justify-between">
+              <div>
+                <p class="text-sm font-semibold">Notifications non lues</p>
+                <p class="text-xs text-gm-muted">Aperçu rapide</p>
+              </div>
+              <button
+                (click)="goToNotifications()"
+                class="text-xs font-semibold text-gm-primary hover:underline"
+                type="button"
+              >
+                Voir tout
+              </button>
+            </div>
+
+            <ng-container *ngIf="(unreadNotifications$ | async) as unread">
+              <ng-container *ngIf="unread.length > 0; else noUnread">
+                <ul class="space-y-3">
+                  <li
+                    *ngFor="let notification of unread | slice:0:5; trackBy: trackByNotification"
+                    class="rounded-lg border border-gm-border/50 bg-gm-surface p-3 text-left"
+                  >
+                    <p class="text-xs text-gm-muted">
+                      {{ notification.createdAt | date: 'short' }}
+                    </p>
+                    <p class="mt-1 text-sm font-semibold">
+                      {{ notification.title }}
+                    </p>
+                    <p class="text-xs text-gm-muted overflow-hidden text-ellipsis">
+                      {{ notification.body }}
+                    </p>
+                    <div class="mt-3 flex items-center justify-between text-xs">
+                      <span class="text-gm-muted">
+                        {{ notification.sender?.username || 'GoalMates' }}
+                      </span>
+                      <button
+                        (click)="markNotificationAsRead(notification, $event)"
+                        class="rounded-full border border-gm-border px-3 py-1 font-semibold text-gm-primary hover:bg-gm-primary/10"
+                        type="button"
+                      >
+                        Marquer comme lue
+                      </button>
+                    </div>
+                  </li>
+                </ul>
+                <p
+                  *ngIf="unread.length > 5"
+                  class="mt-3 text-center text-xs text-gm-muted"
+                >
+                  + {{ unread.length - 5 }} autres notifications
+                </p>
+              </ng-container>
+              <ng-template #noUnread>
+                <div class="rounded-lg border border-dashed border-gm-border p-4 text-center text-sm text-gm-muted">
+                  Tu es à jour ! Aucune nouvelle notification.
+                </div>
+              </ng-template>
+            </ng-container>
+          </div>
+        </div>
         <button
           (click)="onLogoutClick()"
           class="text-sm text-gm-muted hover:text-gm-text transition px-3 py-1 rounded-lg border border-gm-border hover:bg-gm-surface2"
