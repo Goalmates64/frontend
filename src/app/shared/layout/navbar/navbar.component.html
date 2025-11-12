@@ -27,7 +27,7 @@
         Accueil
       </a>
 
-      <!-- Liens quand NON authentifiÃ© -->
+      <!-- Liens quand NON authentifié -->
       <ng-container *ngIf="!(isAuthenticated$ | async); else authLinks">
         <a
           class="text-sm text-gm-muted hover:text-gm-text transition"
@@ -41,11 +41,11 @@
           routerLink="/auth/register"
           routerLinkActive="text-gm-primary"
         >
-          CrÃ©er un compte
+          Créer un compte
         </a>
       </ng-container>
 
-      <!-- Liens quand authentifiÃ© -->
+      <!-- Liens quand authentifié -->
       <ng-template #authLinks>
         <span class="text-sm text-gm-muted">
           Bonjour,
@@ -194,7 +194,7 @@
           class="text-sm text-gm-muted hover:text-gm-text transition px-3 py-1 rounded-lg border border-gm-border hover:bg-gm-surface2"
           type="button"
         >
-          DÃ©connexion
+          Déconnexion
         </button>
       </ng-template>
     </nav>
@@ -247,7 +247,7 @@
         Accueil
       </a>
 
-      <!-- Mobile: non authentifiÃ© -->
+      <!-- Mobile: non authentifié -->
       <ng-container *ngIf="!(isAuthenticated$ | async); else mobileAuthLinks">
         <a
           (click)="closeMobileMenu()"
@@ -263,11 +263,11 @@
           routerLink="/auth/register"
           routerLinkActive="text-gm-primary"
         >
-          CrÃ©er un compte
+          Créer un compte
         </a>
       </ng-container>
 
-      <!-- Mobile: authentifiÃ© -->
+      <!-- Mobile: authentifié -->
       <ng-template #mobileAuthLinks>
         <div class="flex flex-col gap-3">
           <div class="flex items-center justify-between">
@@ -279,7 +279,7 @@
               class="text-xs text-gm-muted hover:text-gm-text transition px-3 py-1 rounded-lg border border-gm-border hover:bg-gm-surface"
               type="button"
             >
-              DÃ©connexion
+              Déconnexion
             </button>
           </div>
           <a
