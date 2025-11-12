@@ -82,13 +82,19 @@
 
       <div>
         <label class="text-sm text-gm-muted mb-1 block" for="country">Pays</label>
-        <input
+        <select
           class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
           formControlName="country"
           id="country"
-          placeholder="Maroc"
-          type="text"
-        />
+        >
+          <option value="">Choisis ton pays</option>
+          <option *ngIf="f.country.value && !hasCountryOption(f.country.value)" [value]="f.country.value">
+            {{ f.country.value }}
+          </option>
+          <option *ngFor="let country of countries" [value]="country.name">
+            {{ country.flag }} {{ country.name }}
+          </option>
+        </select>
         <p *ngIf="f.country.errors?.['maxlength'] && f.country.touched" class="text-xs text-red-400 mt-1">
           Maximum 120 caractères.
         </p>

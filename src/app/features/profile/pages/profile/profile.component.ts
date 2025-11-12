@@ -1,12 +1,21 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, inject} from '@angular/core';
 import {FormBuilder, ValidatorFn, Validators} from '@angular/forms';
-import {HttpErrorResponse} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {filter, take} from 'rxjs';
 
 import {AuthService} from '../../../../core/auth.service';
 import {ToastService} from '../../../../core/toast.service';
 import {UpdateProfilePayload, User} from '../../../../core/models/user.model';
+
+interface CountryDto {
+  name: string;
+  code: string;
+}
+
+interface CountryOption extends CountryDto {
+  flag: string;
+}
 
 @Component({
   selector: 'app-profile',
@@ -21,8 +30,10 @@ export class ProfileComponent {
   apiError: string | null = null;
   avatarError: string | null = null;
   avatarUploading = false;
+  countries: CountryOption[] = [];
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
+  private readonly http = inject(HttpClient);
   readonly form = this.fb.nonNullable.group({
     firstName: ['', [Validators.maxLength(80)]],
     lastName: ['', [Validators.maxLength(80)]],
@@ -36,6 +47,7 @@ export class ProfileComponent {
   private readonly toast = inject(ToastService);
 
   constructor() {
+    this.loadCountries();
     this.user$
       .pipe(
         filter((user): user is User => !!user),
@@ -49,6 +61,25 @@ export class ProfileComponent {
       .subscribe({
         error: () => {
         }
+      });
+  }
+
+  private loadCountries(): void {
+    this.http
+      .get<CountryDto[]>('data/countries.json')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (countries) => {
+          this.countries = countries
+            .map((country) => ({
+              ...country,
+              flag: this.countryCodeToFlag(country.code),
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+        },
+        error: () => {
+          this.countries = [];
+        },
       });
   }
 
@@ -136,6 +167,37 @@ export class ProfileComponent {
       country: this.normalizeText(country),
       isChatEnabled,
     };
+  }
+
+  private countryCodeToFlag(code: string): string {
+    const fallback = String.fromCodePoint(0x1f3f3, 0xfe0f);
+    if (!code) {
+      return fallback;
+    }
+
+    const formatted = code.trim().toUpperCase();
+    if (formatted.length !== 2 || /[^A-Z]/.test(formatted)) {
+      return fallback;
+    }
+
+    const first = formatted.codePointAt(0);
+    const second = formatted.codePointAt(1);
+    if (first === undefined || second === undefined) {
+      return fallback;
+    }
+
+    return String.fromCodePoint(
+      0x1f1e6 + (first - 65),
+      0x1f1e6 + (second - 65),
+    );
+  }
+
+  hasCountryOption(value: string | null | undefined): boolean {
+    if (!value) {
+      return false;
+    }
+
+    return this.countries.some((country) => country.name === value);
   }
 
   private normalizeText(value: string | null | undefined): string | null {
