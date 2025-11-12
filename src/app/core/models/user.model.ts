@@ -8,6 +8,7 @@ export interface User {
   city: string | null;
   country: string | null;
   avatarUrl: string | null;
+  isChatEnabled: boolean;
 }
 
 export type UpdateProfilePayload = {
@@ -16,6 +17,7 @@ export type UpdateProfilePayload = {
   dateOfBirth?: string | null;
   city?: string | null;
   country?: string | null;
+  isChatEnabled?: boolean;
 };
 
 export interface UserSummary {
@@ -55,3 +57,4 @@ export interface Match {
   homeTeam?: Team;
   awayTeam?: Team;
 }
+

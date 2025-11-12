@@ -1,0 +1,184 @@
+<section class="mx-auto max-w-6xl px-4 py-8 space-y-8">
+  <header class="text-center space-y-3">
+    <p class="text-xs uppercase tracking-[0.4em] text-gm-muted">Communauté GoalMates</p>
+    <h1 class="text-3xl font-bold text-gm-text">Partage, organise et reste connecté</h1>
+    <p class="text-sm text-gm-muted max-w-2xl mx-auto">
+      Chaque équipe dispose de son salon privé, chaque match rassemble les deux camps et l'agora reste ouverte é tous
+      les passionnés.
+    </p>
+  </header>
+
+  <div *ngIf="!currentUser?.isChatEnabled"
+       class="rounded-3xl border border-dashed border-gm-border bg-gm-surface2 p-6 text-center space-y-3">
+    <p class="text-lg font-semibold">Le chat est désactivé pour ton compte</p>
+    <p class="text-sm text-gm-muted">
+      Active l'option "Chat communautaire" dans ton profil pour rejoindre les discussions en temps réel.
+    </p>
+    <a
+      class="inline-flex items-center justify-center rounded-full bg-gm-primary px-5 py-2 text-sm font-semibold text-white hover:bg-gm-primary/90"
+      routerLink="/profil"
+    >
+      Accéder é mon profil
+    </a>
+  </div>
+
+  <div
+    *ngIf="currentUser?.isChatEnabled"
+    class="grid gap-6 lg:grid-cols-[320px,1fr]"
+  >
+    <aside class="rounded-3xl border border-gm-border bg-gm-surface flex flex-col max-h-[80vh]">
+      <div class="flex items-center justify-between border-b border-gm-border px-5 py-4">
+        <div>
+          <p class="text-base font-semibold">Salons</p>
+          <p class="text-xs text-gm-muted">Choisis un espace de discussion</p>
+        </div>
+        <button
+          (click)="reloadRooms()"
+          [disabled]="roomsLoading"
+          class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gm-border text-gm-muted hover:text-gm-text hover:border-gm-text transition"
+          type="button"
+        >
+          <svg *ngIf="!roomsLoading" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24">
+            <path d="M4 4v6h6M20 20v-6h-6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 10a8 8 0 0 1 13.856-4.856M20 14a8 8 0 0 1-13.856 4.856" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+          <svg *ngIf="roomsLoading" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" fill="currentColor"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="flex-1 overflow-y-auto">
+        <ng-container *ngIf="rooms.length; else emptyRooms">
+          <ul>
+            <li
+              (click)="selectRoom(room.id)"
+              *ngFor="let room of rooms"
+              [class.bg-gm-surface2]="room.id === selectedRoomId"
+              class="cursor-pointer border-b border-gm-border/60 px-5 py-4 transition hover:bg-gm-surface2"
+            >
+              <div class="flex items-center justify-between gap-2">
+                <p class="text-sm font-semibold text-gm-text">{{ room.name }}</p>
+                <span
+                  [ngClass]="{
+                    'bg-blue-100 text-blue-800': room.type === 'global',
+                    'bg-emerald-100 text-emerald-800': room.type === 'team',
+                    'bg-amber-100 text-amber-800': room.type === 'match'
+                  }"
+                  class="rounded-full px-2 py-0.5 text-xs font-semibold"
+                >
+                  {{ room.type === 'global' ? 'Global' : room.type === 'team' ? 'Equipe' : 'Match' }}
+                </span>
+              </div>
+              <p class="mt-1 text-xs text-gm-muted">{{ roomSubtitle(room) }}</p>
+              <p class="mt-1 text-sm text-gm-muted leading-snug">
+                {{ room.description || 'Rejoins la discussion en direct.' }}
+              </p>
+            </li>
+          </ul>
+        </ng-container>
+        <ng-template #emptyRooms>
+          <div class="px-5 py-6 text-center text-sm text-gm-muted">
+            Aucun salon disponible pour le moment.
+          </div>
+        </ng-template>
+      </div>
+      <div *ngIf="roomsError" class="border-t border-red-200 bg-red-50 px-5 py-3 text-left text-sm text-red-600">
+        {{ roomsError }}
+      </div>
+    </aside>
+
+    <section class="rounded-3xl border border-gm-border bg-gm-surface flex flex-col min-h-[70vh]">
+      <ng-container *ngIf="selectedRoom; else noSelection">
+        <header class="border-b border-gm-border px-6 py-4">
+          <p class="text-lg font-semibold text-gm-text">{{ selectedRoom.name }}</p>
+          <p class="text-sm text-gm-muted">{{ selectedRoom.description || roomSubtitle(selectedRoom!) }}</p>
+        </header>
+
+        <div #messagesContainer class="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+          <div *ngIf="messageLoading" class="flex justify-center"><span class="text-xs text-gm-muted">Chargement des messages...</span>
+          </div>
+          <button
+            (click)="loadOlderMessages()"
+            *ngIf="hasMoreHistory(selectedRoomId)"
+            [disabled]="historyLoading"
+            class="mx-auto mb-2 inline-flex items-center gap-2 rounded-full border border-gm-border px-4 py-1 text-xs text-gm-muted hover:text-gm-text"
+            type="button"
+          >
+            <svg *ngIf="historyLoading" class="h-3 w-3 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" fill="currentColor"></path>
+            </svg>
+            <span>{{ historyLoading ? 'Chargement...' : 'Voir les messages précédents' }}</span>
+          </button>
+
+          <ng-container *ngIf="selectedMessages.length; else noMessages">
+            <div
+              *ngFor="let message of selectedMessages"
+              [class.items-end]="message.sender.id === currentUser?.id"
+              class="flex flex-col"
+            >
+              <p class="text-[11px] uppercase tracking-wide text-gm-muted">
+                {{ message.sender.username }} à {{ message.createdAt | date: 'short' }}
+              </p>
+              <div
+                [ngClass]="message.sender.id === currentUser?.id
+                  ? 'bg-gm-primary text-white rounded-br-sm'
+                  : 'bg-gm-surface2 text-gm-text rounded-bl-sm'"
+                class="mt-1 max-w-[85%] rounded-2xl px-4 py-2 text-sm"
+              >
+                {{ message.content }}
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #noMessages>
+            <div class="text-center text-sm text-gm-muted py-6">
+              Lance la discussion : aucun message encore dans ce salon.
+            </div>
+          </ng-template>
+        </div>
+
+        <footer class="border-t border-gm-border px-6 py-4 space-y-2">
+          <div *ngIf="messageError" class="text-sm text-red-500">{{ messageError }}</div>
+          <form (ngSubmit)="onSendMessage()" [formGroup]="messageForm"
+                class="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <textarea
+              class="flex-1 rounded-2xl border border-gm-border bg-gm-surface2 px-4 py-3 text-sm text-gm-text focus:border-gm-primary focus:outline-none"
+              formControlName="content"
+              placeholder="Ecris ton message..."
+              rows="2"
+            ></textarea>
+            <button
+              [disabled]="!canSend || sending || messageForm.invalid"
+              class="inline-flex items-center justify-center rounded-2xl bg-gm-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-gm-primary/90 disabled:cursor-not-allowed disabled:bg-gm-primary/50"
+              type="submit"
+            >
+              {{ sending ? 'Envoi...' : 'Envoyer' }}
+            </button>
+          </form>
+        </footer>
+      </ng-container>
+
+      <ng-template #noSelection>
+        <div class="flex flex-1 flex-col items-center justify-center gap-4 text-center px-6 py-10">
+          <p class="text-lg font-semibold">Choisis un salon pour commencer</p>
+          <p class="text-sm text-gm-muted max-w-sm">
+            Rejoins la conversation globale ou plonge directement dans la stratégie de ton équipe.
+          </p>
+          <button
+            (click)="reloadRooms()"
+            class="inline-flex items-center justify-center rounded-full border border-gm-border px-4 py-2 text-sm font-semibold text-gm-text hover:bg-gm-surface2"
+            type="button"
+          >
+            Charger les salons
+          </button>
+        </div>
+      </ng-template>
+    </section>
+  </div>
+</section>
+
+
+

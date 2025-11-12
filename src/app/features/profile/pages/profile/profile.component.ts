@@ -29,6 +29,7 @@ export class ProfileComponent {
     dateOfBirth: ['', [this.pastDateValidator()]],
     city: ['', [Validators.maxLength(120)]],
     country: ['', [Validators.maxLength(120)]],
+    isChatEnabled: true,
   });
   private readonly authService = inject(AuthService);
   readonly user$ = this.authService.currentUser$;
@@ -49,6 +50,10 @@ export class ProfileComponent {
         error: () => {
         }
       });
+  }
+
+  get f() {
+    return this.form.controls;
   }
 
   onAvatarSelected(event: Event): void {
@@ -83,10 +88,6 @@ export class ProfileComponent {
       });
   }
 
-  get f() {
-    return this.form.controls;
-  }
-
   onSubmit(): void {
     this.apiError = null;
     if (this.form.invalid) {
@@ -119,11 +120,12 @@ export class ProfileComponent {
       dateOfBirth: user.dateOfBirth ?? '',
       city: user.city ?? '',
       country: user.country ?? '',
+      isChatEnabled: user.isChatEnabled,
     });
   }
 
   private buildPayload(): UpdateProfilePayload {
-    const {firstName, lastName, dateOfBirth, city, country} =
+    const {firstName, lastName, dateOfBirth, city, country, isChatEnabled} =
       this.form.getRawValue();
 
     return {
@@ -132,6 +134,7 @@ export class ProfileComponent {
       dateOfBirth: dateOfBirth ? dateOfBirth : null,
       city: this.normalizeText(city),
       country: this.normalizeText(country),
+      isChatEnabled,
     };
   }
 

@@ -34,6 +34,11 @@ const routes: Routes = [
     canActivate: [authGuard],
     loadChildren: () => import('./features/notifications/notifications.module').then(m => m.NotificationsModule)
   },
+  {
+    path: 'chat',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/chat/chat.module').then(m => m.ChatModule)
+  },
   {path: '**', redirectTo: 'home'},
 ];
 
@@ -43,3 +48,4 @@ const routes: Routes = [
 })
 export class AppRoutingModule {
 }
+

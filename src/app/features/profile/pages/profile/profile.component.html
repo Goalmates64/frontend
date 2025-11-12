@@ -124,23 +124,28 @@
                    alt="Photo de profil"
                    class="h-24 w-24 rounded-full object-cover border border-gm-border"/>
               <ng-template #avatarPlaceholder>
-                <div class="h-24 w-24 rounded-full border border-dashed border-gm-border bg-gm-surface2 flex items-center justify-center text-3xl font-semibold text-gm-muted">
+                <div
+                  class="h-24 w-24 rounded-full border border-dashed border-gm-border bg-gm-surface2 flex items-center justify-center text-3xl font-semibold text-gm-muted">
                   {{ user.username ? (user.username | slice:0:1 | uppercase) : '?' }}
                 </div>
               </ng-template>
             </ng-container>
             <ng-template #avatarLoading>
-              <div class="h-24 w-24 rounded-full border border-dashed border-gm-border bg-gm-surface2 flex items-center justify-center text-3xl font-semibold text-gm-muted">
+              <div
+                class="h-24 w-24 rounded-full border border-dashed border-gm-border bg-gm-surface2 flex items-center justify-center text-3xl font-semibold text-gm-muted">
                 ?
               </div>
             </ng-template>
-            <div *ngIf="avatarUploading" class="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center text-xs">
+            <div *ngIf="avatarUploading"
+                 class="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center text-xs">
               Upload...
             </div>
           </div>
           <div class="flex-1 space-y-2">
-            <label class="inline-flex items-center gap-2 rounded-lg border border-gm-border px-4 py-2 text-sm font-semibold text-gm-primary hover:bg-gm-primary/10 cursor-pointer">
-              <input accept="image/png,image/jpeg,image/webp" class="hidden" type="file" (change)="onAvatarSelected($event)"/>
+            <label
+              class="inline-flex items-center gap-2 rounded-lg border border-gm-border px-4 py-2 text-sm font-semibold text-gm-primary hover:bg-gm-primary/10 cursor-pointer">
+              <input (change)="onAvatarSelected($event)" accept="image/png,image/jpeg,image/webp" class="hidden"
+                     type="file"/>
               Changer de photo
             </label>
             <p class="text-xs text-gm-muted">PNG, JPG ou WebP · 2 Mo max.</p>

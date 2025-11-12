@@ -153,6 +153,7 @@ export class AuthService {
       city: user.city ?? null,
       country: user.country ?? null,
       avatarUrl: user.avatarUrl ?? null,
+      isChatEnabled: user.isChatEnabled ?? true,
     };
   }
 
@@ -203,7 +204,7 @@ export class AuthService {
         return decoded.exp * 1000;
       }
     } catch (error) {
-      console.warn('Impossible de décoder le token JWT', error);
+      console.warn('Impossible de dÃ©coder le token JWT', error);
     }
 
     return null;
@@ -261,6 +262,6 @@ export class AuthService {
     localStorage.removeItem(this.userKey);
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
-    this.toast.info('Ta session a expiré. Merci de te reconnecter.');
+    this.toast.info('Ta session a expirÃ©. Merci de te reconnecter.');
   }
 }
