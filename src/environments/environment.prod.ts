@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.goalmates.app//api',
+  apiUrl: 'https://goalmates-api.vercel.app/api',
   appName: 'GoalMates',
   theme: 'dark',
 };

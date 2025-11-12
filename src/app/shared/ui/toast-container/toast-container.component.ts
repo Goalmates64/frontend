@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Observable } from 'rxjs';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {Observable} from 'rxjs';
 
-import { Toast } from '../../../core/models/toast.model';
-import { ToastService } from '../../../core/toast.service';
+import {Toast} from '../../../core/models/toast.model';
+import {ToastService} from '../../../core/toast.service';
 
 @Component({
   selector: 'app-toast-container',
@@ -12,9 +12,11 @@ import { ToastService } from '../../../core/toast.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToastContainerComponent {
-  readonly toasts$: Observable<Toast[]> = this.toastService.toasts$;
+  toasts$: Observable<Toast[]>;
 
-  constructor(private readonly toastService: ToastService) {}
+  constructor(private readonly toastService: ToastService) {
+    this.toasts$ = this.toastService.toasts$;
+  }
 
   trackById(_: number, toast: Toast): string {
     return toast.id;
