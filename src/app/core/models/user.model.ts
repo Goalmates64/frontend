@@ -51,8 +51,8 @@ export interface Match {
   homeTeamId: number;
   awayTeamId: number;
   scheduledAt: string;
-  placeId: number;
-  place?: Place;
+  placeId: number | null;
+  place?: Place | null;
   status: 'scheduled' | 'played' | 'canceled';
   homeScore: number | null;
   awayScore: number | null;
