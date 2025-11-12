@@ -7,6 +7,7 @@ export interface User {
   dateOfBirth: string | null;
   city: string | null;
   country: string | null;
+  avatarUrl: string | null;
 }
 
 export type UpdateProfilePayload = {

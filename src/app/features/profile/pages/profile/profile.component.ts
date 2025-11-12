@@ -19,6 +19,8 @@ export class ProfileComponent {
   readonly today = new Date().toISOString().split('T')[0];
   loading = false;
   apiError: string | null = null;
+  avatarError: string | null = null;
+  avatarUploading = false;
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
   readonly form = this.fb.nonNullable.group({
@@ -46,6 +48,38 @@ export class ProfileComponent {
       .subscribe({
         error: () => {
         }
+      });
+  }
+
+  onAvatarSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    this.avatarError = null;
+    const maxBytes = 2 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      this.avatarError = 'Image trop volumineuse (max 2 Mo).';
+      input.value = '';
+      return;
+    }
+
+    this.avatarUploading = true;
+    this.authService
+      .uploadAvatar(file)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.avatarUploading = false;
+          this.toast.success('Photo de profil mise à jour.');
+          input.value = '';
+        },
+        error: (error: HttpErrorResponse) => {
+          this.avatarUploading = false;
+          this.avatarError = this.extractErrorMessage(error);
+        },
       });
   }
 

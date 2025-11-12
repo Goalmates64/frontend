@@ -89,6 +89,14 @@ export class AuthService {
       .pipe(tap((user) => this.persistUser(user)));
   }
 
+  uploadAvatar(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http
+      .post<User>(`${environment.apiUrl}/users/me/avatar`, formData)
+      .pipe(tap((user) => this.persistUser(user)));
+  }
+
   private handleAuthSuccess(res: LoginResponse): void {
     this.storeToken(res.access_token);
     this.persistUser(res.user);
@@ -144,6 +152,7 @@ export class AuthService {
       dateOfBirth: user.dateOfBirth ?? null,
       city: user.city ?? null,
       country: user.country ?? null,
+      avatarUrl: user.avatarUrl ?? null,
     };
   }
 
