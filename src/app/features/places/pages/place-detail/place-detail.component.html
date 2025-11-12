@@ -1,0 +1,66 @@
+﻿<section *ngIf="place as current; else loadingTpl" class="space-y-6">
+  <header class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p class="text-xs uppercase tracking-[0.3em] text-gm-primary font-semibold">Lieu</p>
+      <h1 class="text-3xl font-bold">{{ current.name }}</h1>
+      <p class="text-gm-muted text-sm">{{ current.city }} · {{ current.countryCode }}</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button (click)="goToMatches()"
+              class="rounded-lg border border-gm-border px-4 py-2 text-sm text-gm-muted hover:bg-gm-surface2" type="button">
+        Utiliser pour un match
+      </button>
+      <a [routerLink]="['/places', current.id, 'edit']"
+         class="rounded-lg border border-gm-border px-4 py-2 text-sm text-gm-muted hover:bg-gm-surface2">
+        Modifier
+      </a>
+      <button (click)="delete()"
+              class="rounded-lg border border-red-500/40 px-4 py-2 text-sm text-red-300 hover:bg-red-500/10" type="button">
+        Supprimer
+      </button>
+    </div>
+  </header>
+
+  <app-place-map [lat]="current.lat" [lng]="current.lng" [readonly]="true" height="360px"></app-place-map>
+
+  <div class="grid gap-4 sm:grid-cols-3">
+    <div class="rounded-xl border border-gm-border p-4">
+      <p class="text-xs text-gm-muted uppercase">Ville</p>
+      <p class="text-lg font-semibold">{{ current.city }}</p>
+    </div>
+    <div class="rounded-xl border border-gm-border p-4">
+      <p class="text-xs text-gm-muted uppercase">Coordonnées</p>
+      <p class="text-sm">Lat {{ current.lat | number:'1.5-5' }}</p>
+      <p class="text-sm">Lng {{ current.lng | number:'1.5-5' }}</p>
+    </div>
+    <div class="rounded-xl border border-gm-border p-4">
+      <p class="text-xs text-gm-muted uppercase">Créé le</p>
+      <p class="text-sm">{{ current.createdAt | date:'fullDate' }}</p>
+    </div>
+  </div>
+
+  <section *ngIf="nearby.length" class="space-y-3">
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-semibold">À proximité</h2>
+      <span class="text-xs text-gm-muted">{{ nearby.length }} suggestions</span>
+    </div>
+    <div class="grid gap-3">
+      <article *ngFor="let other of nearby"
+               class="rounded-xl border border-gm-border bg-gm-surface p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="font-semibold">{{ other.name }}</p>
+          <p class="text-sm text-gm-muted">{{ other.city }} · {{ other.countryCode }}</p>
+          <p class="text-xs text-gm-muted">À {{ other.distance | number:'1.0-0' }} m</p>
+        </div>
+        <a [routerLink]="['/places', other.id]"
+           class="rounded-lg border border-gm-border px-3 py-1 text-xs text-gm-muted hover:bg-gm-surface2">
+          Voir
+        </a>
+      </article>
+    </div>
+  </section>
+</section>
+
+<ng-template #loadingTpl>
+  <div class="text-sm text-gm-muted">Chargement du lieu...</div>
+</ng-template>

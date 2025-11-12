@@ -9,7 +9,7 @@ export interface CreateMatchPayload {
   homeTeamId: number;
   awayTeamId: number;
   scheduledAt: string;
-  location: string;
+  placeId: number;
 }
 
 export interface ReportScorePayload {

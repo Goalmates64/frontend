@@ -1,0 +1,22 @@
+﻿<section class="space-y-6">
+  <header class="space-y-2">
+    <p class="text-xs uppercase tracking-[0.3em] text-gm-primary font-semibold">Modifier</p>
+    <h1 class="text-3xl font-bold">{{ place?.name || '...' }}</h1>
+    <p class="text-gm-muted text-sm">Actualise les informations ou les coordonnées.</p>
+  </header>
+
+  <div *ngIf="apiError" class="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+    {{ apiError }}
+  </div>
+
+  <div *ngIf="loading" class="text-sm text-gm-muted">Chargement du lieu...</div>
+  <app-place-form
+    (cancel)="cancel()"
+    (formSubmit)="submit($event)"
+    *ngIf="!loading && place"
+    [initialValue]="place"
+    [loading]="saving"
+    [showCancel]="true"
+    submitLabel="Enregistrer"
+  ></app-place-form>
+</section>

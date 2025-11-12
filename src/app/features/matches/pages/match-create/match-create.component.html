@@ -2,7 +2,7 @@
   <header class="space-y-2">
     <p class="text-xs uppercase tracking-[0.3em] text-gm-primary font-semibold">Match</p>
     <h1 class="text-3xl font-bold">Programmer un match</h1>
-    <p class="text-gm-muted text-sm">Choisis deux équipes et une date pour bloquer le créneau.</p>
+    <p class="text-gm-muted text-sm">Choisis deux équipes, un créneau et un lieu référencé.</p>
   </header>
 
   <form (ngSubmit)="submit()" [formGroup]="form"
@@ -42,15 +42,57 @@
           type="datetime-local"
         />
       </div>
-      <div>
-        <label class="text-sm text-gm-muted" for="location">Lieu</label>
-        <input
-          class="mt-1 w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
-          formControlName="location"
-          id="location"
-          placeholder="Complexe, adresse..."
-          type="text"
-        />
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-sm text-gm-muted" for="placeSearch">Lieu</label>
+          <button (click)="openCreatePlace()" class="text-xs text-gm-muted hover:text-gm-text" type="button">
+            + Créer un lieu
+          </button>
+        </div>
+        <div class="relative">
+          <input
+            [formControl]="placeSearchControl"
+            [readonly]="!!selectedPlace"
+            class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+            id="placeSearch"
+            placeholder="Rechercher par nom"
+            type="text"
+          />
+          <button (click)="clearPlace()"
+                  *ngIf="selectedPlace"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gm-muted hover:text-gm-text" type="button">
+            Changer
+          </button>
+          <div *ngIf="!selectedPlace && placeSuggestions.length"
+               class="absolute z-10 mt-2 w-full rounded-lg border border-gm-border bg-gm-surface max-h-48 overflow-y-auto">
+            <button
+              (click)="selectPlace(suggestion)"
+              *ngFor="let suggestion of placeSuggestions"
+              class="w-full text-left px-3 py-2 text-sm hover:bg-gm-surface2"
+              type="button"
+            >
+              <span class="font-semibold">{{ suggestion.name }}</span>
+              <span class="text-gm-muted text-xs block">{{ suggestion.city }} · {{ suggestion.countryCode }}</span>
+            </button>
+          </div>
+          <div *ngIf="!selectedPlace && !placeSuggestions.length && isSearchingPlaces"
+               class="absolute z-10 mt-2 w-full rounded-lg border border-gm-border bg-gm-surface px-3 py-2 text-xs text-gm-muted">
+            Recherche de lieux...
+          </div>
+          <div
+            *ngIf="!selectedPlace && !isSearchingPlaces && (placeSearchControl.value?.length || 0) >= 2 && !placeSuggestions.length"
+            class="absolute z-10 mt-2 w-full rounded-lg border border-gm-border bg-gm-surface px-3 py-2 text-xs text-gm-muted">
+            Aucun lieu trouvé.
+          </div>
+        </div>
+        <input formControlName="placeId" type="hidden"/>
+        <p *ngIf="form.controls.placeId.invalid && form.controls.placeId.touched" class="text-xs text-red-400">
+          Sélectionne un lieu.
+        </p>
+        <div *ngIf="selectedPlace" class="rounded-lg border border-gm-border bg-gm-surface2 px-3 py-2 text-sm">
+          <p class="font-semibold">{{ selectedPlace.name }}</p>
+          <p class="text-xs text-gm-muted">{{ selectedPlace.city }} · {{ selectedPlace.countryCode }}</p>
+        </div>
       </div>
     </div>
 
@@ -68,5 +110,3 @@
     </button>
   </form>
 </section>
-
-

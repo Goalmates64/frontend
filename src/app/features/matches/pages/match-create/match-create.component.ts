@@ -1,11 +1,15 @@
-﻿import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
+﻿import {ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, Validators} from '@angular/forms';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
+import {of, Subject} from 'rxjs';
+import {debounceTime, distinctUntilChanged, switchMap, take, takeUntil} from 'rxjs/operators';
 
 import {MatchesService} from '../../services/matches.service';
 import {TeamsService} from '../../../teams/services/teams.service';
 import {ToastService} from '../../../../core/toast.service';
 import {Team} from '../../../../core/models/user.model';
+import {PlacesService} from '../../../../core/places.service';
+import {Place} from '../../../../core/models/place.model';
 
 @Component({
   selector: 'app-match-create',
@@ -14,16 +18,21 @@ import {Team} from '../../../../core/models/user.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
-export class MatchCreateComponent implements OnInit {
+export class MatchCreateComponent implements OnInit, OnDestroy {
   teams: Team[] = [];
   loading = false;
   apiError: string | null = null;
+  placeSuggestions: Place[] = [];
+  isSearchingPlaces = false;
+  selectedPlace: Place | null = null;
+  private readonly destroy$ = new Subject<void>();
   private readonly fb = inject(FormBuilder);
+  readonly placeSearchControl = this.fb.control('');
   readonly form = this.fb.nonNullable.group({
     homeTeamId: [null as number | null, Validators.required],
     awayTeamId: [null as number | null, Validators.required],
     scheduledAt: ['', Validators.required],
-    location: ['', [Validators.required, Validators.maxLength(180)]],
+    placeId: [null as number | null, Validators.required],
   });
 
   constructor(
@@ -31,6 +40,8 @@ export class MatchCreateComponent implements OnInit {
     private readonly teamsService: TeamsService,
     private readonly toast: ToastService,
     private readonly router: Router,
+    private readonly placesService: PlacesService,
+    private readonly route: ActivatedRoute,
   ) {
   }
 
@@ -39,13 +50,73 @@ export class MatchCreateComponent implements OnInit {
       next: (teams) => (this.teams = teams),
       error: () => this.toast.error('Impossible de charger tes équipes.'),
     });
+
+    this.placeSearchControl.valueChanges
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(250),
+        distinctUntilChanged(),
+        switchMap((value) => {
+          const term = value?.trim() ?? '';
+          if (!term || term.length < 2 || this.selectedPlace) {
+            this.placeSuggestions = [];
+            this.isSearchingPlaces = false;
+            return of<Place[]>([]);
+          }
+          this.isSearchingPlaces = true;
+          return this.placesService.autocomplete(term).pipe(take(1));
+        }),
+      )
+      .subscribe({
+        next: (results) => {
+          this.placeSuggestions = results;
+          this.isSearchingPlaces = false;
+        },
+        error: () => {
+          this.isSearchingPlaces = false;
+          this.placeSuggestions = [];
+        },
+      });
+
+    this.route.queryParamMap.pipe(take(1)).subscribe((params) => {
+      const placeId = params.get('placeId');
+      if (placeId) {
+        this.loadPlaceById(Number(placeId));
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  selectPlace(place: Place): void {
+    this.selectedPlace = place;
+    this.placeSuggestions = [];
+    this.form.controls.placeId.setValue(place.id);
+    this.placeSearchControl.setValue(place.name, {emitEvent: false});
+  }
+
+  clearPlace(): void {
+    this.selectedPlace = null;
+    this.form.controls.placeId.setValue(null);
+    this.placeSearchControl.setValue('', {emitEvent: false});
+    this.placeSearchControl.updateValueAndValidity();
+  }
+
+  openCreatePlace(): void {
+    void this.router.navigate(['/places/new'], {queryParams: {returnTo: '/matches/create'}});
   }
 
   submit(): void {
     this.apiError = null;
-    const {homeTeamId, awayTeamId, scheduledAt, location} = this.form.getRawValue();
-    if (this.form.invalid || !homeTeamId || !awayTeamId || !scheduledAt || !location) {
+    const {homeTeamId, awayTeamId, scheduledAt, placeId} = this.form.getRawValue();
+    if (this.form.invalid || !homeTeamId || !awayTeamId || !scheduledAt || !placeId) {
       this.form.markAllAsTouched();
+      if (!placeId) {
+        this.apiError = 'Sélectionne un lieu pour le match.';
+      }
       return;
     }
 
@@ -59,7 +130,7 @@ export class MatchCreateComponent implements OnInit {
       homeTeamId,
       awayTeamId,
       scheduledAt: new Date(scheduledAt).toISOString(),
-      location: location.trim(),
+      placeId,
     };
 
     this.matchesService.create(payload).subscribe({
@@ -74,6 +145,11 @@ export class MatchCreateComponent implements OnInit {
       },
     });
   }
+
+  private loadPlaceById(id: number): void {
+    this.placesService.getById(id).subscribe({
+      next: (place) => this.selectPlace(place),
+      error: () => this.toast.error('Lieu introuvable.'),
+    });
+  }
 }
-
-

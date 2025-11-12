@@ -41,7 +41,8 @@
             {{ match.awayTeam?.name || 'Équipe #' + match.awayTeamId }}
           </p>
           <p class="text-xs text-gm-muted">
-            {{ match.location }} · {{ match.scheduledAt | date: 'fullDate' }} à {{ match.scheduledAt | date: 'HH:mm' }}
+            {{ match.place?.name || 'Lieu à définir' }} · {{ match.place?.city || '---' }}
+            à {{ match.scheduledAt | date: 'fullDate' }} à {{ match.scheduledAt | date: 'HH:mm' }}
           </p>
         </div>
         <button
@@ -83,8 +84,9 @@
           />
         </div>
         <div class="flex items-end gap-2">
-          <button class="flex-1 px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold hover:bg-emerald-500 transition"
-                  type="submit">
+          <button
+            class="flex-1 px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold hover:bg-emerald-500 transition"
+            type="submit">
             Enregistrer
           </button>
           <button (click)="cancelScore()" class="px-3 py-2 text-sm text-gm-muted" type="button">Annuler</button>

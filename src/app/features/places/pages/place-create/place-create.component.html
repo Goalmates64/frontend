@@ -1,0 +1,42 @@
+﻿<section class="space-y-6">
+  <header class="space-y-2">
+    <p class="text-xs uppercase tracking-[0.3em] text-gm-primary font-semibold">Nouveau lieu</p>
+    <h1 class="text-3xl font-bold">Enregistrer un terrain</h1>
+    <p class="text-gm-muted text-sm">Définis un nom, une ville et les coordonnées exactes utilisées par les matchs.</p>
+  </header>
+
+  <div *ngIf="apiError" class="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+    {{ apiError }}
+  </div>
+
+  <app-place-form
+    (cancel)="onCancel()"
+    (formSubmit)="submit($event)"
+    [loading]="loading"
+    [showCancel]="!!returnTo"
+    submitLabel="Créer le lieu"
+  ></app-place-form>
+
+  <div *ngIf="conflicts.length" class="rounded-2xl border border-yellow-500/40 bg-yellow-500/5 p-5 space-y-3">
+    <p class="text-sm font-semibold text-yellow-200">
+      Des lieux existent déjà dans un rayon de 1 km. Utilise-les si c’est bien le même endroit.
+    </p>
+    <div class="space-y-3">
+      <article *ngFor="let conflict of conflicts"
+               class="rounded-xl border border-gm-border bg-gm-surface p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="font-semibold">{{ conflict.name }}</p>
+          <p class="text-sm text-gm-muted">{{ conflict.city }} · {{ conflict.countryCode }}</p>
+          <p class="text-xs text-gm-muted">À {{ conflict.distance | number:'1.0-0' }} m</p>
+        </div>
+        <button
+          (click)="useConflict(conflict)"
+          class="rounded-lg border border-gm-border px-4 py-2 text-sm text-gm-muted hover:bg-gm-surface2 transition"
+          type="button"
+        >
+          Utiliser ce lieu
+        </button>
+      </article>
+    </div>
+  </div>
+</section>

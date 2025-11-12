@@ -1,0 +1,98 @@
+﻿<form (ngSubmit)="submit()" [formGroup]="form" class="space-y-6">
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div>
+      <label class="text-sm text-gm-muted" for="place-name">Nom du lieu</label>
+      <input
+        class="mt-1 w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm"
+        formControlName="name"
+        id="place-name"
+        placeholder="Ex: UrbanSoccer Bercy"
+        type="text"
+      />
+      <p *ngIf="form.controls.name.invalid && form.controls.name.touched"
+         class="text-xs text-red-400 mt-1">
+        Nom requis (120 caractères max).
+      </p>
+    </div>
+    <div>
+      <label class="text-sm text-gm-muted" for="place-city">Ville</label>
+      <input
+        class="mt-1 w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm"
+        formControlName="city"
+        id="place-city"
+        placeholder="Paris"
+        type="text"
+      />
+      <p *ngIf="form.controls.city.invalid && form.controls.city.touched"
+         class="text-xs text-red-400 mt-1">
+        Ville requise.
+      </p>
+    </div>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div>
+      <label class="text-sm text-gm-muted" for="place-country">Pays</label>
+      <select
+        class="mt-1 w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm"
+        formControlName="countryCode"
+        id="place-country"
+      >
+        <option *ngFor="let country of countries" [ngValue]="country.code">{{ country.name }}</option>
+      </select>
+    </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <label class="text-sm text-gm-muted" for="place-lat">Latitude</label>
+        <input
+          class="mt-1 w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm"
+          formControlName="lat"
+          id="place-lat"
+          step="0.000001"
+          type="number"
+        />
+      </div>
+      <div>
+        <label class="text-sm text-gm-muted" for="place-lng">Longitude</label>
+        <input
+          class="mt-1 w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm"
+          formControlName="lng"
+          id="place-lng"
+          step="0.000001"
+          type="number"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="space-y-2">
+    <div class="flex items-center justify-between">
+      <label class="text-sm text-gm-muted">Localisation sur la carte</label>
+      <span class="text-xs text-gm-muted">Déplace le marqueur pour ajuster la position.</span>
+    </div>
+    <app-place-map
+      (coordinatesChange)="onCoordinatesChange($event)"
+      [lat]="currentLat"
+      [lng]="currentLng"
+    ></app-place-map>
+  </div>
+
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+    <button
+      [disabled]="loading"
+      class="flex-1 rounded-lg bg-gm-primary text-gm-bg px-4 py-2 text-sm font-semibold hover:bg-emerald-500 transition disabled:opacity-60"
+      type="submit"
+    >
+      {{ loading ? 'Enregistrement...' : submitLabel }}
+    </button>
+    <button
+      (click)="triggerCancel()"
+      *ngIf="showCancel"
+      class="rounded-lg border border-gm-border px-4 py-2 text-sm text-gm-muted hover:bg-gm-surface2 transition"
+      type="button"
+    >
+      Annuler
+    </button>
+  </div>
+</form>
+

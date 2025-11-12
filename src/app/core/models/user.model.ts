@@ -1,3 +1,5 @@
+﻿import {Place} from './place.model';
+
 export interface User {
   id: number;
   email: string;
@@ -49,7 +51,8 @@ export interface Match {
   homeTeamId: number;
   awayTeamId: number;
   scheduledAt: string;
-  location: string;
+  placeId: number;
+  place?: Place;
   status: 'scheduled' | 'played' | 'canceled';
   homeScore: number | null;
   awayScore: number | null;
@@ -57,4 +60,3 @@ export interface Match {
   homeTeam?: Team;
   awayTeam?: Team;
 }
-

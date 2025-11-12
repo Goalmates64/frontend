@@ -1,0 +1,15 @@
+﻿:host {
+  display: block;
+}
+
+select,
+input {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: rgb(52 211 153);
+  box-shadow: 0 0 0 1px rgb(52 211 153 / 0.3);
+}

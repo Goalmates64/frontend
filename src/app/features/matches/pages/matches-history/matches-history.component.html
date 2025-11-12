@@ -19,7 +19,8 @@
             <span class="text-gm-muted text-sm font-normal">vs</span>
             {{ match.awayTeam?.name || 'Équipe #' + match.awayTeamId }}
           </p>
-          <p class="text-xs text-gm-muted">{{ match.location }} · {{ match.scheduledAt | date: 'fullDate' }}</p>
+          <p class="text-xs text-gm-muted">{{ match.place?.name || 'Lieu à définir' }}
+            · {{ match.place?.city || '---' }} à {{ match.scheduledAt | date: 'fullDate' }}</p>
         </div>
         <span class="text-xs px-3 py-1 rounded-full border border-gm-border">
           {{ match.status === 'played' ? 'Terminé' : (match.status === 'canceled' ? 'Annulé' : 'Expiré') }}

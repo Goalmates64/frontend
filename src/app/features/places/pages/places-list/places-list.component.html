@@ -1,0 +1,86 @@
+﻿<section class="space-y-6">
+  <header class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p class="text-xs uppercase tracking-[0.3em] text-gm-primary font-semibold">Lieux</p>
+      <h1 class="text-3xl font-bold">Référentiel des terrains</h1>
+      <p class="text-gm-muted text-sm">Centralise les lieux utilisables lors de la création d’un match.</p>
+    </div>
+    <a
+      class="inline-flex items-center justify-center rounded-lg bg-gm-primary text-gm-bg px-4 py-2 text-sm font-semibold hover:bg-emerald-500 transition"
+      routerLink="/places/new"
+    >
+      Créer un lieu
+    </a>
+  </header>
+
+  <form (ngSubmit)="onSearch()" class="flex flex-col gap-3 sm:flex-row">
+    <input
+      [formControl]="searchControl"
+      class="flex-1 rounded-lg bg-gm-surface2 border border-gm-border px-4 py-2 text-sm"
+      placeholder="Rechercher un lieu par nom ou ville"
+      type="text"
+    />
+    <button class="rounded-lg border border-gm-border px-4 py-2 text-sm hover:bg-gm-surface2 transition" type="submit">
+      Rechercher
+    </button>
+  </form>
+
+  <div *ngIf="loading && !places.length" class="text-sm text-gm-muted">Chargement des lieux...</div>
+
+  <div *ngIf="!loading && !places.length"
+       class="border border-dashed border-gm-border rounded-2xl p-8 text-sm text-gm-muted text-center">
+    Aucun lieu enregistré pour l’instant.
+  </div>
+
+  <div class="space-y-4">
+    <article
+      *ngFor="let place of places"
+      class="rounded-2xl border border-gm-border bg-gm-surface p-5"
+    >
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 class="text-lg font-semibold">{{ place.name }}</h3>
+          <p class="text-sm text-gm-muted">
+            <span [class]="'fi fi-' + (place.countryCode | lowercase)" class="mr-2"></span>
+            {{ place.city }} · {{ place.countryCode }}
+          </p>
+          <p class="text-xs text-gm-muted">
+            Lat {{ place.lat | number:'1.4-4' }} · Lng {{ place.lng | number:'1.4-4' }}
+          </p>
+        </div>
+        <div class="flex gap-2">
+          <a
+            [routerLink]="['/places', place.id]"
+            class="rounded-lg border border-gm-border px-3 py-1 text-xs text-gm-muted hover:bg-gm-surface2"
+          >
+            Détails
+          </a>
+          <a
+            [routerLink]="['/places', place.id, 'edit']"
+            class="rounded-lg border border-gm-border px-3 py-1 text-xs text-gm-muted hover:bg-gm-surface2"
+          >
+            Modifier
+          </a>
+          <button
+            (click)="delete(place)"
+            class="rounded-lg border border-red-500/40 px-3 py-1 text-xs text-red-300 hover:bg-red-500/10"
+            type="button"
+          >
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div *ngIf="hasMore" class="text-center">
+    <button
+      (click)="loadMore()"
+      [disabled]="loading"
+      class="rounded-lg border border-gm-border px-4 py-2 text-sm text-gm-muted hover:bg-gm-surface2 transition disabled:opacity-60"
+      type="button"
+    >
+      {{ loading ? 'Chargement...' : 'Charger plus' }}
+    </button>
+  </div>
+</section>

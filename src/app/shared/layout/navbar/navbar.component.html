@@ -64,6 +64,13 @@
           </a>
           <a
             class="text-sm text-gm-muted hover:text-gm-text transition"
+            routerLink="/places"
+            routerLinkActive="text-gm-primary"
+          >
+            Lieux
+          </a>
+          <a
+            class="text-sm text-gm-muted hover:text-gm-text transition"
             routerLink="/chat"
             routerLinkActive="text-gm-primary"
           >
@@ -332,6 +339,14 @@
               routerLinkActive="text-gm-primary"
             >
               Matchs
+            </a>
+            <a
+              (click)="closeMobileMenu()"
+              class="text-sm text-gm-muted hover:text-gm-text transition"
+              routerLink="/places"
+              routerLinkActive="text-gm-primary"
+            >
+              Lieux
             </a>
             <a
               (click)="closeMobileMenu()"
