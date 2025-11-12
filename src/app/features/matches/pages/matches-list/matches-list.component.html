@@ -1,0 +1,89 @@
+﻿<section class="space-y-8">
+  <header class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p class="text-xs uppercase tracking-[0.3em] text-gm-primary font-semibold">Matchs</p>
+      <h1 class="text-3xl font-bold">Matchs à venir</h1>
+      <p class="text-gm-muted text-sm">Programmes, lieux et reporting des scores.</p>
+    </div>
+    <a
+      class="px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold hover:bg-emerald-500 transition text-center"
+      routerLink="/matches/create"
+    >
+      Programmer un match
+    </a>
+  </header>
+
+  <div *ngIf="loading$ | async" class="text-sm text-gm-muted">Chargement des matchs...</div>
+
+  <div *ngIf="(matches$ | async) as matches" class="space-y-4">
+    <div *ngIf="!matches.length && !(loading$ | async)"
+         class="border border-dashed border-gm-border rounded-2xl p-6 text-center text-sm text-gm-muted">
+      Aucun match planifié pour l'instant.
+    </div>
+
+    <article
+      *ngFor="let match of matches"
+      class="border border-gm-border rounded-2xl p-4 bg-gm-surface space-y-3"
+    >
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div>
+          <p class="text-lg font-semibold">
+            {{ match.homeTeam?.name || 'Équipe #' + match.homeTeamId }}
+            <span class="text-gm-muted text-sm font-normal">vs</span>
+            {{ match.awayTeam?.name || 'Équipe #' + match.awayTeamId }}
+          </p>
+          <p class="text-xs text-gm-muted">
+            {{ match.location }} · {{ match.scheduledAt | date: 'fullDate' }} à {{ match.scheduledAt | date: 'HH:mm' }}
+          </p>
+        </div>
+        <button
+          (click)="startScore(match.id)"
+          *ngIf="match.status === 'scheduled'"
+          class="text-sm px-3 py-1 rounded-lg border border-gm-border hover:bg-gm-surface2 transition"
+        >
+          Reporter un score
+        </button>
+        <div *ngIf="match.status === 'played'" class="text-sm font-semibold">
+          {{ match.homeScore }} - {{ match.awayScore }}
+        </div>
+      </div>
+
+      <form
+        (ngSubmit)="submitScore(match)"
+        *ngIf="(editingScore | async) === match.id"
+        [formGroup]="getScoreForm(match)"
+        class="grid gap-3 sm:grid-cols-3"
+      >
+        <div>
+          <label class="text-xs text-gm-muted" for="home-{{ match.id }}">Score domicile</label>
+          <input
+            class="mt-1 w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+            formControlName="homeScore"
+            id="home-{{ match.id }}"
+            min="0"
+            type="number"
+          />
+        </div>
+        <div>
+          <label class="text-xs text-gm-muted" for="away-{{ match.id }}">Score extérieur</label>
+          <input
+            class="mt-1 w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+            formControlName="awayScore"
+            id="away-{{ match.id }}"
+            min="0"
+            type="number"
+          />
+        </div>
+        <div class="flex items-end gap-2">
+          <button class="flex-1 px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold hover:bg-emerald-500 transition"
+                  type="submit">
+            Enregistrer
+          </button>
+          <button (click)="cancelScore()" class="px-3 py-2 text-sm text-gm-muted" type="button">Annuler</button>
+        </div>
+      </form>
+    </article>
+  </div>
+</section>
+
+

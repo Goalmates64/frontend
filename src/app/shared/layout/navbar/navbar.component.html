@@ -1,4 +1,4 @@
-<header class="border-b border-gm-border bg-gm-surface/80 backdrop-blur">
+﻿<header class="border-b border-gm-border bg-gm-surface/80 backdrop-blur">
   <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
     <!-- Logo -->
     <a
@@ -27,7 +27,7 @@
         Accueil
       </a>
 
-      <!-- Liens quand NON authentifié -->
+      <!-- Liens quand NON authentifiÃ© -->
       <ng-container *ngIf="!(isAuthenticated$ | async); else authLinks">
         <a
           class="text-sm text-gm-muted hover:text-gm-text transition"
@@ -41,11 +41,11 @@
           routerLink="/auth/register"
           routerLinkActive="text-gm-primary"
         >
-          Créer un compte
+          CrÃ©er un compte
         </a>
       </ng-container>
 
-      <!-- Liens quand authentifié -->
+      <!-- Liens quand authentifiÃ© -->
       <ng-template #authLinks>
         <span class="text-sm text-gm-muted">
           Bonjour,
@@ -60,12 +60,26 @@
         >
           Mon profil
         </a>
+        <a
+          class="text-sm text-gm-muted hover:text-gm-text transition"
+          routerLink="/teams"
+          routerLinkActive="text-gm-primary"
+        >
+          Mes équipes
+        </a>
+        <a
+          class="text-sm text-gm-muted hover:text-gm-text transition"
+          routerLink="/matches"
+          routerLinkActive="text-gm-primary"
+        >
+          Matchs
+        </a>
         <button
           (click)="onLogoutClick()"
           class="text-sm text-gm-muted hover:text-gm-text transition px-3 py-1 rounded-lg border border-gm-border hover:bg-gm-surface2"
           type="button"
         >
-          Déconnexion
+          DÃ©connexion
         </button>
       </ng-template>
     </nav>
@@ -118,7 +132,7 @@
         Accueil
       </a>
 
-      <!-- Mobile: non authentifié -->
+      <!-- Mobile: non authentifiÃ© -->
       <ng-container *ngIf="!(isAuthenticated$ | async); else mobileAuthLinks">
         <a
           (click)="closeMobileMenu()"
@@ -134,11 +148,11 @@
           routerLink="/auth/register"
           routerLinkActive="text-gm-primary"
         >
-          Créer un compte
+          CrÃ©er un compte
         </a>
       </ng-container>
 
-      <!-- Mobile: authentifié -->
+      <!-- Mobile: authentifiÃ© -->
       <ng-template #mobileAuthLinks>
         <div class="flex flex-col gap-3">
           <div class="flex items-center justify-between">
@@ -150,7 +164,7 @@
               class="text-xs text-gm-muted hover:text-gm-text transition px-3 py-1 rounded-lg border border-gm-border hover:bg-gm-surface"
               type="button"
             >
-              Déconnexion
+              DÃ©connexion
             </button>
           </div>
           <a
@@ -161,8 +175,26 @@
           >
             Mon profil
           </a>
+          <a
+            (click)="closeMobileMenu()"
+            class="text-sm text-gm-muted hover:text-gm-text transition"
+            routerLink="/teams"
+            routerLinkActive="text-gm-primary"
+          >
+            Mes équipes
+          </a>
+          <a
+            (click)="closeMobileMenu()"
+            class="text-sm text-gm-muted hover:text-gm-text transition"
+            routerLink="/matches"
+            routerLinkActive="text-gm-primary"
+          >
+            Matchs
+          </a>
         </div>
       </ng-template>
     </div>
   </nav>
 </header>
+
+

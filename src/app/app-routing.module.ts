@@ -19,6 +19,16 @@ const routes: Routes = [
     canActivate: [authGuard],
     loadChildren: () => import('./features/profile/profile.module').then(m => m.ProfileModule)
   },
+  {
+    path: 'teams',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/teams/teams.module').then(m => m.TeamsModule)
+  },
+  {
+    path: 'matches',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/matches/matches.module').then(m => m.MatchesModule)
+  },
   {path: '**', redirectTo: 'home'},
 ];
 
