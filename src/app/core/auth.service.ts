@@ -241,6 +241,7 @@ export class AuthService {
     }
 
     this.clearExpiryTimer();
+    // @ts-ignore
     this.expiryTimer = window.setTimeout(() => {
       this.handleTokenExpiration();
     }, delay);

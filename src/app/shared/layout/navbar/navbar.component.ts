@@ -6,6 +6,7 @@ import {NotificationsService} from '../../../core/notifications.service';
 import {ToastService} from '../../../core/toast.service';
 import {AppNotification} from '../../../core/models/notification.model';
 import {take} from 'rxjs/operators';
+import {User} from '../../../core/models/user.model';
 
 @Component({
   selector: 'app-navbar',
@@ -22,7 +23,9 @@ export class NavbarComponent {
 
   mobileMenuOpen = false;
   drawerOpen = false;
+  profileDrawerOpen = false;
   @ViewChild('notificationsContainer') notificationsContainer?: ElementRef<HTMLDivElement>;
+  @ViewChild('profileContainer') profileContainer?: ElementRef<HTMLDivElement>;
 
   constructor(
     private readonly authService: AuthService,
@@ -47,20 +50,23 @@ export class NavbarComponent {
   async onLogoutClick(): Promise<void> {
     this.authService.logout();
     this.closeMobileMenu();
+    this.closeNotificationsDrawer();
+    this.closeProfileDrawer();
     await this.router.navigate(['/']);
   }
 
   goToNotifications(): void {
     this.drawerOpen = false;
+    this.profileDrawerOpen = false;
     void this.router.navigate(['/notifications']);
   }
 
-  toggleDrawer(event: MouseEvent): void {
+  toggleNotificationsDrawer(event: MouseEvent): void {
     event.stopPropagation();
     this.drawerOpen = !this.drawerOpen;
   }
 
-  closeDrawer(): void {
+  closeNotificationsDrawer(): void {
     this.drawerOpen = false;
   }
 
@@ -81,15 +87,32 @@ export class NavbarComponent {
     return notification.id;
   }
 
+  avatarInitial(user: User | null | undefined): string {
+    const source = user?.username || user?.email || '?';
+    return source.charAt(0).toUpperCase();
+  }
+
+  toggleProfileDrawer(event: MouseEvent): void {
+    event.stopPropagation();
+    this.profileDrawerOpen = !this.profileDrawerOpen;
+  }
+
+  closeProfileDrawer(): void {
+    this.profileDrawerOpen = false;
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    if (!this.drawerOpen) {
-      return;
-    }
     const target = event.target as Node;
-    if (this.notificationsContainer?.nativeElement.contains(target)) {
-      return;
+    if (this.drawerOpen) {
+      if (!this.notificationsContainer?.nativeElement.contains(target)) {
+        this.drawerOpen = false;
+      }
     }
-    this.drawerOpen = false;
+    if (this.profileDrawerOpen) {
+      if (!this.profileContainer?.nativeElement.contains(target)) {
+        this.profileDrawerOpen = false;
+      }
+    }
   }
 }

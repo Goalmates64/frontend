@@ -17,7 +17,7 @@
     </a>
 
     <!-- Desktop nav -->
-    <nav class="hidden md:flex items-center gap-4">
+    <nav class="hidden md:flex items-center gap-4 ml-auto">
       <a
         [routerLinkActiveOptions]="{ exact: true }"
         class="text-sm text-gm-muted hover:text-gm-text transition"
@@ -47,40 +47,29 @@
 
       <!-- Liens quand authentifié -->
       <ng-template #authLinks>
-        <span class="text-sm text-gm-muted">
-          Bonjour,
-          <span class="text-gm-text font-semibold">
-            {{ (currentUser$ | async)?.username }}
-          </span>
-        </span>
-        <a
-          class="text-sm text-gm-muted hover:text-gm-text transition"
-          routerLink="/profil"
-          routerLinkActive="text-gm-primary"
-        >
-          Mon profil
-        </a>
-        <a
-          class="text-sm text-gm-muted hover:text-gm-text transition"
-          routerLink="/teams"
-          routerLinkActive="text-gm-primary"
-        >
-          Mes équipes
-        </a>
-        <a
-          class="text-sm text-gm-muted hover:text-gm-text transition"
-          routerLink="/matches"
-          routerLinkActive="text-gm-primary"
-        >
-          Matchs
-        </a>
+        <ng-container *ngIf="(currentUser$ | async) as user">
+          <a
+            class="text-sm text-gm-muted hover:text-gm-text transition"
+            routerLink="/teams"
+            routerLinkActive="text-gm-primary"
+          >
+            Mes équipes
+          </a>
+          <a
+            class="text-sm text-gm-muted hover:text-gm-text transition"
+            routerLink="/matches"
+            routerLinkActive="text-gm-primary"
+          >
+            Matchs
+          </a>
         <div
           #notificationsContainer
-          class="relative flex items-center gap-1"
+          class="relative flex items-center"
         >
           <button
-            (click)="goToNotifications()"
-            aria-label="Voir les notifications"
+            (click)="toggleNotificationsDrawer($event)"
+            [attr.aria-expanded]="drawerOpen"
+            aria-label="Afficher les notifications"
             class="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-gm-muted transition hover:bg-gm-surface hover:text-gm-text"
             type="button"
           >
@@ -105,25 +94,6 @@
             >
               {{ notifCount > 99 ? '99+' : notifCount }}
             </span>
-          </button>
-          <button
-            (click)="toggleDrawer($event)"
-            [attr.aria-expanded]="drawerOpen"
-            aria-label="Afficher les notifications récentes"
-            class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-gm-border text-gm-muted transition hover:bg-gm-surface hover:text-gm-text"
-            type="button"
-          >
-            <svg
-              [class.rotate-180]="drawerOpen"
-              class="h-4 w-4 transition-transform"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
           </button>
 
           <div
@@ -189,13 +159,52 @@
             </ng-container>
           </div>
         </div>
-        <button
-          (click)="onLogoutClick()"
-          class="text-sm text-gm-muted hover:text-gm-text transition px-3 py-1 rounded-lg border border-gm-border hover:bg-gm-surface2"
-          type="button"
-        >
-          Déconnexion
-        </button>
+          <div
+            #profileContainer
+            class="relative"
+          >
+            <button
+              (click)="toggleProfileDrawer($event)"
+              aria-label="Ouvrir le panneau utilisateur"
+              class="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-gm-border bg-gm-surface transition hover:border-gm-primary"
+              type="button"
+            >
+              <img *ngIf="user.avatarUrl; else desktopAvatarInitial" [src]="user.avatarUrl" alt="Photo de profil" class="h-full w-full object-cover"/>
+              <ng-template #desktopAvatarInitial>
+                <span class="text-sm font-semibold text-gm-muted">{{ avatarInitial(user) }}</span>
+              </ng-template>
+            </button>
+
+            <div
+              *ngIf="profileDrawerOpen"
+              class="absolute right-0 top-[calc(100%+0.75rem)] z-20 w-60 rounded-2xl border border-gm-border bg-gm-surface2 p-4 shadow-xl"
+            >
+              <p class="text-xs uppercase tracking-[0.2em] text-gm-muted mb-3">Mon espace</p>
+              <div class="space-y-2">
+                <a
+                  class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-gm-text hover:bg-gm-surface"
+                  routerLink="/profil"
+                  (click)="closeProfileDrawer()"
+                >
+                  Profil
+                </a>
+                <a
+                  class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-gm-text hover:bg-gm-surface"
+                  (click)="goToNotifications()"
+                >
+                  Notifications
+                </a>
+                <button
+                  (click)="onLogoutClick()"
+                  class="w-full rounded-lg border border-gm-border px-3 py-2 text-sm font-semibold text-gm-muted hover:text-gm-text hover:bg-gm-surface"
+                  type="button"
+                >
+                  Déconnexion
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
       </ng-template>
     </nav>
 
@@ -269,62 +278,69 @@
 
       <!-- Mobile: authentifié -->
       <ng-template #mobileAuthLinks>
-        <div class="flex flex-col gap-3">
-          <div class="flex items-center justify-between">
-            <span class="text-sm text-gm-muted">
-              {{ (currentUser$ | async)?.username }}
-            </span>
-            <button
-              (click)="onLogoutClick()"
-              class="text-xs text-gm-muted hover:text-gm-text transition px-3 py-1 rounded-lg border border-gm-border hover:bg-gm-surface"
-              type="button"
+        <ng-container *ngIf="(currentUser$ | async) as user">
+          <div class="flex flex-col gap-3">
+            <div class="flex items-center gap-3 rounded-2xl border border-gm-border bg-gm-surface px-4 py-3">
+              <div class="h-12 w-12 overflow-hidden rounded-full border border-gm-border bg-gm-surface2 flex items-center justify-center text-base font-semibold text-gm-muted">
+                <img *ngIf="user.avatarUrl; else mobileAvatarInitial" [src]="user.avatarUrl" alt="Photo de profil" class="h-full w-full object-cover"/>
+                <ng-template #mobileAvatarInitial>
+                  <span>{{ avatarInitial(user) }}</span>
+                </ng-template>
+              </div>
+              <div class="flex-1 text-left">
+                <p class="text-sm font-semibold text-gm-text">{{ user.username }}</p>
+                <p class="text-xs text-gm-muted truncate">{{ user.email }}</p>
+              </div>
+              <button
+                (click)="onLogoutClick()"
+                class="text-xs text-gm-muted hover:text-gm-text transition px-3 py-1 rounded-lg border border-gm-border hover:bg-gm-surface"
+                type="button"
+              >
+                Déconnexion
+              </button>
+            </div>
+            <a
+              (click)="closeMobileMenu()"
+              class="text-sm text-gm-muted hover:text-gm-text transition"
+              routerLink="/profil"
+              routerLinkActive="text-gm-primary"
             >
-              Déconnexion
-            </button>
+              Mon profil
+            </a>
+            <a
+              (click)="closeMobileMenu()"
+              class="text-sm text-gm-muted hover:text-gm-text transition"
+              routerLink="/teams"
+              routerLinkActive="text-gm-primary"
+            >
+              Mes équipes
+            </a>
+            <a
+              (click)="closeMobileMenu()"
+              class="text-sm text-gm-muted hover:text-gm-text transition"
+              routerLink="/matches"
+              routerLinkActive="text-gm-primary"
+            >
+              Matchs
+            </a>
+            <a
+              (click)="closeMobileMenu()"
+              class="flex items-center justify-between text-sm text-gm-muted hover:text-gm-text transition"
+              routerLink="/notifications"
+              routerLinkActive="text-gm-primary"
+            >
+              <span>Notifications</span>
+              <span
+                *ngIf="(unreadCount$ | async) as notifCount"
+                [class.hidden]="notifCount === 0"
+                class="ml-2 inline-flex min-w-[1.5rem] justify-center rounded-full bg-red-500 px-2 py-0.5 text-xs font-semibold text-white"
+              >
+                {{ notifCount > 99 ? '99+' : notifCount }}
+              </span>
+            </a>
           </div>
-          <a
-            (click)="closeMobileMenu()"
-            class="text-sm text-gm-muted hover:text-gm-text transition"
-            routerLink="/profil"
-            routerLinkActive="text-gm-primary"
-          >
-            Mon profil
-          </a>
-          <a
-            (click)="closeMobileMenu()"
-            class="text-sm text-gm-muted hover:text-gm-text transition"
-            routerLink="/teams"
-            routerLinkActive="text-gm-primary"
-          >
-            Mes équipes
-          </a>
-          <a
-            (click)="closeMobileMenu()"
-            class="text-sm text-gm-muted hover:text-gm-text transition"
-            routerLink="/matches"
-            routerLinkActive="text-gm-primary"
-          >
-            Matchs
-          </a>
-          <a
-            (click)="closeMobileMenu()"
-            class="flex items-center justify-between text-sm text-gm-muted hover:text-gm-text transition"
-            routerLink="/notifications"
-            routerLinkActive="text-gm-primary"
-          >
-            <span>Notifications</span>
-            <span
-              *ngIf="(unreadCount$ | async) as notifCount"
-              [class.hidden]="notifCount === 0"
-              class="ml-2 inline-flex min-w-[1.5rem] justify-center rounded-full bg-red-500 px-2 py-0.5 text-xs font-semibold text-white"
-            >
-              {{ notifCount > 99 ? '99+' : notifCount }}
-            </span>
-          </a>
-        </div>
+        </ng-container>
       </ng-template>
     </div>
   </nav>
 </header>
-
-
