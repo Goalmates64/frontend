@@ -8,6 +8,7 @@ module.exports = {
           bg: '#020617',
           surface: '#0f172a',
           surface2: '#111827',
+          surface3: '#171b26',
           primary: '#22c55e',
           secondary: '#6366f1',
           text: '#e5e7eb',

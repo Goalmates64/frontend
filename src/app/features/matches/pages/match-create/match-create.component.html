@@ -2,11 +2,13 @@
   <header class="space-y-2">
     <p class="text-xs uppercase tracking-[0.3em] text-gm-primary font-semibold">Match</p>
     <h1 class="text-3xl font-bold">Programmer un match</h1>
-    <p class="text-gm-muted text-sm">Choisis deux équipes, un créneau et un lieu référencé.</p>
+    <p class="text-gm-muted text-sm">
+      Choisis ton équipe, un adversaire public, un créneau et un lieu référencé.
+    </p>
   </header>
 
   <form (ngSubmit)="submit()" [formGroup]="form"
-        class="space-y-4 bg-gm-surface border border-gm-border rounded-2xl p-8">
+        class="space-y-6 bg-gm-surface border border-gm-border rounded-2xl p-8">
     <div class="grid gap-4 sm:grid-cols-2">
       <div>
         <label class="text-sm text-gm-muted" for="homeTeam">Équipe domicile</label>
@@ -18,17 +20,71 @@
           <option [ngValue]="null">Sélectionner</option>
           <option *ngFor="let team of teams" [ngValue]="team.id">{{ team.name }}</option>
         </select>
+        <p *ngIf="form.controls.homeTeamId.invalid && form.controls.homeTeamId.touched"
+           class="text-xs text-red-400 mt-1">
+          Sélectionne ton équipe.
+        </p>
       </div>
       <div>
-        <label class="text-sm text-gm-muted" for="awayTeam">Équipe extérieur</label>
-        <select
-          class="mt-1 w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
-          formControlName="awayTeamId"
-          id="awayTeam"
-        >
-          <option [ngValue]="null">Sélectionner</option>
-          <option *ngFor="let team of teams" [ngValue]="team.id">{{ team.name }}</option>
-        </select>
+        <app-team-autocomplete
+          (teamSelected)="onAwayTeamSelected($event)"
+          [excludeTeamIds]="form.controls.homeTeamId.value ? [form.controls.homeTeamId.value] : []"
+          label="Adversaire (équipes publiques)"
+        ></app-team-autocomplete>
+        <div class="flex items-center justify-between mt-2" *ngIf="selectedAwayTeam">
+          <p class="text-xs text-gm-muted">
+            {{ selectedAwayTeam.name }} sélectionnée
+          </p>
+          <button (click)="clearAwayTeam()"
+                  class="text-xs text-gm-muted hover:text-gm-text"
+                  type="button">
+            Changer d'adversaire
+          </button>
+        </div>
+        <p *ngIf="form.controls.awayTeamId.invalid && form.controls.awayTeamId.touched"
+           class="text-xs text-red-400 mt-1">
+          Choisis une équipe adverse publique.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      <div *ngIf="selectedHomeTeam" class="team-card">
+        <div class="logo">
+          <img *ngIf="selectedHomeTeam.logoUrl; else homeFallback"
+               [src]="selectedHomeTeam.logoUrl"
+               alt="Logo {{ selectedHomeTeam.name }}"
+          />
+          <ng-template #homeFallback>
+            <span>{{ selectedHomeTeam.name | slice:0:2 | uppercase }}</span>
+          </ng-template>
+        </div>
+        <div>
+          <p class="font-semibold">{{ selectedHomeTeam.name }}</p>
+          <p class="text-xs text-gm-muted">
+            {{ selectedHomeTeam.memberCount || selectedHomeTeam.members.length }} joueur{{ (selectedHomeTeam.memberCount || selectedHomeTeam.members.length) > 1 ? 's' : '' }}
+          </p>
+          <span class="badge" *ngIf="selectedHomeTeam.isPublic">Publique</span>
+          <span class="badge badge-muted" *ngIf="!selectedHomeTeam.isPublic">Privée</span>
+        </div>
+      </div>
+      <div *ngIf="selectedAwayTeam" class="team-card">
+        <div class="logo">
+          <img *ngIf="selectedAwayTeam.logoUrl; else awayFallback"
+               [src]="selectedAwayTeam.logoUrl"
+               alt="Logo {{ selectedAwayTeam.name }}"
+          />
+          <ng-template #awayFallback>
+            <span>{{ selectedAwayTeam.name | slice:0:2 | uppercase }}</span>
+          </ng-template>
+        </div>
+        <div>
+          <p class="font-semibold">{{ selectedAwayTeam.name }}</p>
+          <p class="text-xs text-gm-muted">
+            {{ selectedAwayTeam.memberCount }} joueur{{ selectedAwayTeam.memberCount > 1 ? 's' : '' }}
+          </p>
+          <span class="badge">Publique</span>
+        </div>
       </div>
     </div>
 

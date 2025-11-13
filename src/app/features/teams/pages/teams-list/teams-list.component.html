@@ -3,7 +3,7 @@
     <div>
       <p class="text-xs uppercase tracking-[0.3em] text-gm-primary font-semibold">Équipes</p>
       <h1 class="text-3xl font-bold">Mes équipes</h1>
-      <p class="text-gm-muted text-sm">Crée ta team ou rejoins tes amis avec un code d'invitation.</p>
+      <p class="text-gm-muted text-sm">Crée ta team, ajoute un logo et rends-la visible si tu veux recevoir des défis.</p>
     </div>
     <button
       (click)="goToCreate()"
@@ -31,13 +31,28 @@
           *ngFor="let team of teams"
           class="border border-gm-border rounded-2xl p-4 bg-gm-surface space-y-3"
         >
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <div>
-              <p class="text-lg font-semibold">{{ team.name }}</p>
-              <p class="text-xs text-gm-muted">
-                Code : <span class="font-mono">{{ team.inviteCode }}</span> · Créée
-                le {{ team.createdAt | date: 'mediumDate' }}
-              </p>
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="h-12 w-12 rounded-xl bg-gm-surface2 border border-gm-border flex items-center justify-center text-sm font-semibold uppercase text-gm-primary overflow-hidden">
+                <img *ngIf="team.logoUrl; else teamLogoFallback"
+                     [src]="team.logoUrl"
+                     alt="Logo {{ team.name }}"
+                     class="h-full w-full object-cover"
+                />
+                <ng-template #teamLogoFallback>
+                  <span>{{ team.name | slice:0:2 | uppercase }}</span>
+                </ng-template>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <p class="text-lg font-semibold">{{ team.name }}</p>
+                  <span class="badge" *ngIf="team.isPublic">Publique</span>
+                  <span class="badge badge-muted" *ngIf="!team.isPublic">Privée</span>
+                </div>
+                <p class="text-xs text-gm-muted">
+                  Code : <span class="font-mono">{{ team.inviteCode }}</span> · Créée le {{ team.createdAt | date: 'mediumDate' }}
+                </p>
+              </div>
             </div>
             <div class="flex flex-col sm:items-end">
               <span class="text-xs text-gm-muted">{{ team.members.length }} joueurs</span>

@@ -44,6 +44,16 @@ export interface Team {
   createdAt: string;
   members: TeamMember[];
   memberCount?: number;
+  isPublic: boolean;
+  logoUrl: string | null;
+}
+
+export interface PublicTeamSummary {
+  id: number;
+  name: string;
+  isPublic: boolean;
+  logoUrl: string | null;
+  memberCount: number;
 }
 
 export interface Match {

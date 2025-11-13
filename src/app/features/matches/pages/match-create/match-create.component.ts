@@ -1,4 +1,4 @@
-﻿import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+﻿import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of, Subject } from 'rxjs';
@@ -13,10 +13,11 @@ import {
 import { MatchesService } from '../../services/matches.service';
 import { TeamsService } from '../../../teams/services/teams.service';
 import { ToastService } from '../../../../core/toast.service';
-import { Team } from '../../../../core/models/user.model';
+import { PublicTeamSummary, Team } from '../../../../core/models/user.model';
 import { PlacesService } from '../../../../core/places.service';
 import { Place } from '../../../../core/models/place.model';
 import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils';
+import { TeamAutocompleteComponent } from '../../../../shared/ui/team-autocomplete/team-autocomplete.component';
 
 @Component({
   selector: 'app-match-create',
@@ -26,12 +27,16 @@ import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils
   standalone: false,
 })
 export class MatchCreateComponent implements OnInit, OnDestroy {
+  @ViewChild(TeamAutocompleteComponent)
+  teamAutocomplete?: TeamAutocompleteComponent;
+
   teams: Team[] = [];
   loading = false;
   apiError: string | null = null;
   placeSuggestions: Place[] = [];
   isSearchingPlaces = false;
   selectedPlace: Place | null = null;
+  selectedAwayTeam: PublicTeamSummary | null = null;
   private readonly destroy$ = new Subject<void>();
   private readonly fb = inject(FormBuilder);
   readonly placeSearchControl = this.fb.control('');
@@ -90,11 +95,24 @@ export class MatchCreateComponent implements OnInit, OnDestroy {
         this.loadPlaceById(Number(placeId));
       }
     });
+
+    this.form.controls.homeTeamId.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((homeId) => {
+        if (this.selectedAwayTeam && this.selectedAwayTeam.id === homeId) {
+          this.clearAwayTeam();
+        }
+      });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  get selectedHomeTeam(): Team | undefined {
+    const homeId = this.form.controls.homeTeamId.value;
+    return this.teams.find((team) => team.id === homeId);
   }
 
   selectPlace(place: Place): void {
@@ -117,6 +135,25 @@ export class MatchCreateComponent implements OnInit, OnDestroy {
     });
   }
 
+  onAwayTeamSelected(team: PublicTeamSummary): void {
+    const homeTeamId = this.form.controls.homeTeamId.value;
+    if (homeTeamId && team.id === homeTeamId) {
+      this.toast.error('Choisis une équipe différente.');
+      this.teamAutocomplete?.reset();
+      return;
+    }
+
+    this.selectedAwayTeam = team;
+    this.form.controls.awayTeamId.setValue(team.id);
+    this.apiError = null;
+  }
+
+  clearAwayTeam(): void {
+    this.selectedAwayTeam = null;
+    this.form.controls.awayTeamId.setValue(null);
+    this.teamAutocomplete?.reset();
+  }
+
   submit(): void {
     this.apiError = null;
     const { homeTeamId, awayTeamId, scheduledAt, placeId } =
@@ -131,6 +168,8 @@ export class MatchCreateComponent implements OnInit, OnDestroy {
       this.form.markAllAsTouched();
       if (!placeId) {
         this.apiError = 'Sélectionne un lieu pour le match.';
+      } else if (!awayTeamId) {
+        this.apiError = 'Choisis une équipe adverse.';
       }
       return;
     }

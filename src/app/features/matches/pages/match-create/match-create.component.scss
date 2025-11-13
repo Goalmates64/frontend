@@ -2,4 +2,22 @@
   display: block;
 }
 
+.team-card {
+  @apply flex items-center gap-4 border border-gm-border rounded-xl bg-gm-surface2 p-3;
 
+  .logo {
+    @apply h-12 w-12 rounded-full bg-gm-surface3 border border-gm-border flex items-center justify-center text-xs font-semibold uppercase text-gm-primary overflow-hidden;
+
+    img {
+      @apply h-full w-full object-cover;
+    }
+  }
+}
+
+.badge {
+  @apply inline-flex items-center rounded-full border border-emerald-500 text-emerald-300 text-[10px] uppercase tracking-widest px-2 py-0.5 mt-1;
+}
+
+.badge-muted {
+  @apply border-gm-border text-gm-muted;
+}

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+﻿import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -9,6 +9,7 @@ import { NavbarComponent } from './layout/navbar/navbar.component';
 import { ToastContainerComponent } from './ui/toast-container/toast-container.component';
 import { UserAutocompleteComponent } from './ui/user-autocomplete/user-autocomplete.component';
 import { SpinnerComponent } from './ui/spinner/spinner.component';
+import { TeamAutocompleteComponent } from './ui/team-autocomplete/team-autocomplete.component';
 
 @NgModule({
   declarations: [
@@ -18,12 +19,14 @@ import { SpinnerComponent } from './ui/spinner/spinner.component';
     ToastContainerComponent,
     UserAutocompleteComponent,
     SpinnerComponent,
+    TeamAutocompleteComponent,
   ],
   exports: [
     NavbarComponent,
     ToastContainerComponent,
     UserAutocompleteComponent,
     SpinnerComponent,
+    TeamAutocompleteComponent,
   ],
   imports: [CommonModule, RouterLink, RouterLinkActive, ReactiveFormsModule],
 })

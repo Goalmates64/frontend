@@ -1,3 +1,11 @@
 ﻿:host {
   display: block;
 }
+
+.badge {
+  @apply inline-flex items-center rounded-full border border-emerald-500 text-emerald-300 text-[10px] uppercase tracking-widest px-2 py-0.5;
+}
+
+.badge-muted {
+  @apply border-gm-border text-gm-muted;
+}

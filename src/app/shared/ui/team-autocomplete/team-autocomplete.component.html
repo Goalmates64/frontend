@@ -1,0 +1,45 @@
+﻿<div class="team-autocomplete space-y-1">
+  <label *ngIf="label" class="text-xs text-gm-muted" for="team-autocomplete-input">
+    {{ label }}
+  </label>
+  <div class="relative">
+    <input
+      [formControl]="control"
+      class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+      id="team-autocomplete-input"
+      [placeholder]="placeholder"
+      type="text"
+      autocomplete="off"
+    />
+    <div *ngIf="suggestions.length"
+         class="suggestions">
+      <button
+        *ngFor="let team of suggestions"
+        (click)="selectTeam(team)"
+        class="suggestion"
+        type="button"
+      >
+        <div class="logo" aria-hidden="true">
+          <img *ngIf="team.logoUrl; else fallback"
+               [src]="team.logoUrl"
+               alt="Logo {{ team.name }}"
+          />
+          <ng-template #fallback>
+            <span>{{ team.name | slice: 0:2 | uppercase }}</span>
+          </ng-template>
+        </div>
+        <div class="flex-1 text-left">
+          <p class="font-semibold text-sm">{{ team.name }}</p>
+          <p class="text-xs text-gm-muted">
+            {{ team.memberCount }} joueur{{ team.memberCount > 1 ? 's' : '' }}
+          </p>
+        </div>
+        <span class="badge" *ngIf="team.isPublic">Publique</span>
+      </button>
+    </div>
+    <div *ngIf="loading" class="state">Recherche d'équipes...</div>
+    <div *ngIf="!loading &&(control?.value?.length ?? 0) >= 2 && !(suggestions?.length ?? 0)" class="state">
+      Aucune équipe trouvée.
+    </div>
+  </div>
+</div>

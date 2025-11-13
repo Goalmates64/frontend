@@ -1,9 +1,34 @@
 ﻿<section *ngIf="team$ | async as team; else loadingTpl" class="space-y-8">
-  <header class="space-y-2">
-    <p class="text-xs uppercase tracking-[0.3em] text-gm-primary font-semibold">Équipe</p>
-    <h1 class="text-3xl font-bold">{{ team.name }}</h1>
-    <p class="text-gm-muted text-sm">Créée le {{ team.createdAt | date: 'longDate' }}
-      · {{ team.memberCount || team.members.length }} joueurs</p>
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <div class="h-16 w-16 rounded-2xl bg-gm-surface2 border border-gm-border flex items-center justify-center text-lg font-semibold uppercase text-gm-primary overflow-hidden">
+        <img *ngIf="team.logoUrl; else logoFallback"
+             [src]="team.logoUrl"
+             alt="Logo {{ team.name }}"
+             class="h-full w-full object-cover"
+        />
+        <ng-template #logoFallback>
+          <span>{{ teamInitials(team.name) }}</span>
+        </ng-template>
+      </div>
+      <div>
+        <p class="text-xs uppercase tracking-[0.3em] text-gm-primary font-semibold">Équipe</p>
+        <h1 class="text-3xl font-bold">{{ team.name }}</h1>
+        <p class="text-gm-muted text-sm">
+          Créée le {{ team.createdAt | date: 'longDate' }} · {{ team.memberCount || team.members.length }} joueurs
+        </p>
+        <div class="flex gap-2 mt-2">
+          <span class="badge" *ngIf="team.isPublic">Publique</span>
+          <span class="badge badge-muted" *ngIf="!team.isPublic">Privée</span>
+        </div>
+      </div>
+    </div>
+    <button (click)="copyInviteCode(team.inviteCode)"
+            class="inline-flex items-center gap-2 text-xs text-gm-primary border border-gm-border rounded-lg px-4 py-2 hover:bg-gm-surface2"
+            type="button">
+      <i aria-hidden="true" class="fa-solid fa-copy"></i>
+      <span>Copier le code</span>
+    </button>
   </header>
 
   <div class="grid gap-6 lg:grid-cols-[2fr,1fr]">
@@ -14,26 +39,61 @@
             <p class="text-xs text-gm-muted">Code d'invitation</p>
             <p class="text-lg font-semibold font-mono">{{ team.inviteCode }}</p>
           </div>
-          <button (click)="copyInviteCode(team.inviteCode)"
-                  class="inline-flex items-center gap-2 text-xs text-gm-muted border border-gm-border rounded-lg px-3 py-1 hover:bg-gm-surface2">
-            <i aria-hidden="true" class="fa-solid fa-copy"></i>
-            <span>Copier</span>
-          </button>
+          <div class="text-xs text-gm-muted">
+            Partage-le si tu veux des entrées rapides.
+          </div>
         </div>
-        <div *ngIf="(isCaptain$ | async)" class="space-y-2">
-          <label class="text-xs text-gm-muted">Renommer l'équipe</label>
-          <div class="flex flex-col gap-2 sm:flex-row">
-            <input
-              [formControl]="renameForm.controls.name"
-              class="flex-1 rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
-              placeholder="Nouveau nom"
-            />
-            <button (click)="saveName()"
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold hover:bg-emerald-500 transition"
-                    type="button">
-              <i aria-hidden="true" class="fa-solid fa-floppy-disk"></i>
-              <span>Enregistrer</span>
-            </button>
+        <div *ngIf="(isCaptain$ | async)" class="space-y-4">
+          <div class="space-y-2">
+            <label class="text-xs text-gm-muted">Renommer l'équipe</label>
+            <div class="flex flex-col gap-2 sm:flex-row">
+              <input
+                [formControl]="renameForm.controls.name"
+                class="flex-1 rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+                placeholder="Nouveau nom"
+              />
+              <button (click)="saveName()"
+                      class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold hover:bg-emerald-500 transition"
+                      type="button">
+                <i aria-hidden="true" class="fa-solid fa-floppy-disk"></i>
+                <span>Enregistrer</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="rounded-xl border border-gm-border p-4 bg-gm-surface2">
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <p class="text-sm font-semibold">Visibilité publique</p>
+                  <p class="text-xs text-gm-muted">Autoriser les autres clubs à te défier.</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input
+                    [checked]="team.isPublic"
+                    (change)="onVisibilityChange($event, team)"
+                    [disabled]="visibilityUpdating"
+                    class="sr-only peer"
+                    type="checkbox"
+                  />
+                  <span class="w-11 h-6 bg-gm-border rounded-full peer transition peer-checked:bg-emerald-500"></span>
+                  <span class="absolute left-1 top-1 w-4 h-4 bg-gm-bg rounded-full transition peer-checked:translate-x-5"></span>
+                </label>
+              </div>
+              <p *ngIf="visibilityError" class="text-xs text-red-400">{{ visibilityError }}</p>
+            </div>
+
+            <div class="rounded-xl border border-gm-border p-4 bg-gm-surface2 space-y-2">
+              <p class="text-sm font-semibold">Logo de l'équipe</p>
+              <p class="text-xs text-gm-muted">PNG, JPG ou WebP · max 2 Mo.</p>
+              <input (change)="onLogoSelected($event)"
+                     accept="image/png,image/jpeg,image/webp"
+                     class="text-xs"
+                     type="file"
+              />
+              <p *ngIf="logoError" class="text-xs text-red-400">{{ logoError }}</p>
+              <p *ngIf="logoUploading" class="text-xs text-gm-muted">Téléversement en cours...</p>
+            </div>
           </div>
         </div>
       </section>
@@ -80,8 +140,7 @@
 
       <section class="border border-dashed border-gm-border rounded-2xl p-6 text-sm text-gm-muted">
         <p class="font-semibold text-gm-text mb-2">Astuce GoalMates</p>
-        <p>Utilise le code d'invitation pour remplir l'équipe rapidement ou invite directement tes potes via leur
-          pseudo.</p>
+        <p>Rends ton équipe publique pour apparaître dans l'autocomplete lors de la création d'un match.</p>
       </section>
     </aside>
   </div>

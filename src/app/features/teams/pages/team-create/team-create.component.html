@@ -2,11 +2,13 @@
   <header class="space-y-2">
     <p class="text-xs uppercase tracking-[0.3em] text-gm-primary font-semibold">Équipe</p>
     <h1 class="text-3xl font-bold">Créer une nouvelle équipe</h1>
-    <p class="text-gm-muted text-sm">Donne un nom à ta team futsal pour partager le code avec tes potes.</p>
+    <p class="text-gm-muted text-sm">
+      Donne un nom à ta team futsal et décide si elle est visible publiquement.
+    </p>
   </header>
 
   <form (ngSubmit)="submit()" [formGroup]="form"
-        class="space-y-4 bg-gm-surface border border-gm-border rounded-2xl p-8">
+        class="space-y-6 bg-gm-surface border border-gm-border rounded-2xl p-8">
     <div>
       <label class="text-sm text-gm-muted" for="name">Nom de l'équipe</label>
       <input
@@ -19,6 +21,18 @@
       <p *ngIf="form.controls.name.touched && form.controls.name.invalid" class="text-xs text-red-400 mt-1">
         Le nom doit contenir au moins 3 caractères.
       </p>
+    </div>
+
+    <div class="flex items-start gap-3 rounded-xl border border-dashed border-gm-border p-4 bg-gm-surface2">
+      <label class="relative inline-flex items-center cursor-pointer mt-1">
+        <input class="sr-only peer" formControlName="isPublic" type="checkbox" />
+        <span class="w-11 h-6 bg-gm-border rounded-full peer transition peer-checked:bg-emerald-500"></span>
+        <span class="absolute left-1 top-1 w-4 h-4 bg-gm-bg rounded-full transition peer-checked:translate-x-5"></span>
+      </label>
+      <div>
+        <p class="text-sm font-semibold">Afficher l'équipe dans les recherches publiques</p>
+        <p class="text-xs text-gm-muted">Les autres clubs pourront te défier via l'autocomplete des matchs.</p>
+      </div>
     </div>
 
     <div *ngIf="apiError" class="text-xs text-red-400 bg-red-950/40 border border-red-900 rounded-lg px-3 py-2">
@@ -35,5 +49,3 @@
     </button>
   </form>
 </section>
-
-

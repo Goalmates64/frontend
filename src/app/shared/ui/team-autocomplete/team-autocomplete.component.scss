@@ -1,0 +1,25 @@
+﻿.team-autocomplete {
+  .suggestions {
+    @apply absolute z-10 mt-2 w-full rounded-lg border border-gm-border bg-gm-surface shadow-lg max-h-64 overflow-y-auto;
+  }
+
+  .suggestion {
+    @apply w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-gm-surface2 transition text-gm-text;
+  }
+
+  .logo {
+    @apply h-10 w-10 rounded-full bg-gm-surface3 border border-gm-border flex items-center justify-center text-xs font-semibold uppercase overflow-hidden text-gm-primary;
+
+    img {
+      @apply h-full w-full object-cover;
+    }
+  }
+
+  .badge {
+    @apply text-[10px] uppercase tracking-widest border border-emerald-500 text-emerald-300 rounded-full px-2 py-0.5;
+  }
+
+  .state {
+    @apply absolute z-10 mt-2 w-full rounded-lg border border-gm-border bg-gm-surface px-3 py-2 text-xs text-gm-muted;
+  }
+}

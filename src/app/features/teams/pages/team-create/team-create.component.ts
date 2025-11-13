@@ -22,6 +22,7 @@ export class TeamCreateComponent {
       '',
       [Validators.required, Validators.minLength(3), Validators.maxLength(120)],
     ],
+    isPublic: [false],
   });
 
   constructor(
@@ -38,8 +39,8 @@ export class TeamCreateComponent {
     }
 
     this.loading = true;
-    const { name } = this.form.getRawValue();
-    this.teamsService.create(name.trim()).subscribe({
+    const { name, isPublic } = this.form.getRawValue();
+    this.teamsService.create({ name: name.trim(), isPublic }).subscribe({
       next: (team) => {
         this.loading = false;
         this.toast.success(`Équipe ${team.name} créée !`);
