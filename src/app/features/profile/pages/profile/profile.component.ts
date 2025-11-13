@@ -1,12 +1,12 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, inject} from '@angular/core';
-import {FormBuilder, ValidatorFn, Validators} from '@angular/forms';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {filter, take} from 'rxjs';
+import { Component, DestroyRef, inject } from '@angular/core';
+import { FormBuilder, ValidatorFn, Validators } from '@angular/forms';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter, take } from 'rxjs';
 
-import {AuthService} from '../../../../core/auth.service';
-import {ToastService} from '../../../../core/toast.service';
-import {UpdateProfilePayload, User} from '../../../../core/models/user.model';
+import { AuthService } from '../../../../core/auth.service';
+import { ToastService } from '../../../../core/toast.service';
+import { UpdateProfilePayload, User } from '../../../../core/models/user.model';
 
 interface CountryDto {
   name: string;
@@ -22,7 +22,6 @@ interface CountryOption extends CountryDto {
   standalone: false,
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
-
 })
 export class ProfileComponent {
   readonly today = new Date().toISOString().split('T')[0];
@@ -33,7 +32,6 @@ export class ProfileComponent {
   countries: CountryOption[] = [];
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
-  private readonly http = inject(HttpClient);
   readonly form = this.fb.nonNullable.group({
     firstName: ['', [Validators.maxLength(80)]],
     lastName: ['', [Validators.maxLength(80)]],
@@ -42,6 +40,7 @@ export class ProfileComponent {
     country: ['', [Validators.maxLength(120)]],
     isChatEnabled: true,
   });
+  private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
   readonly user$ = this.authService.currentUser$;
   private readonly toast = inject(ToastService);
@@ -59,27 +58,7 @@ export class ProfileComponent {
       .fetchProfile()
       .pipe(take(1))
       .subscribe({
-        error: () => {
-        }
-      });
-  }
-
-  private loadCountries(): void {
-    this.http
-      .get<CountryDto[]>('data/countries.json')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (countries) => {
-          this.countries = countries
-            .map((country) => ({
-              ...country,
-              flag: this.countryCodeToFlag(country.code),
-            }))
-            .sort((a, b) => a.name.localeCompare(b.name));
-        },
-        error: () => {
-          this.countries = [];
-        },
+        error: () => {},
       });
   }
 
@@ -144,6 +123,33 @@ export class ProfileComponent {
       });
   }
 
+  hasCountryOption(value: string | null | undefined): boolean {
+    if (!value) {
+      return false;
+    }
+
+    return this.countries.some((country) => country.name === value);
+  }
+
+  private loadCountries(): void {
+    this.http
+      .get<CountryDto[]>('data/countries.json')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (countries) => {
+          this.countries = countries
+            .map((country) => ({
+              ...country,
+              flag: this.countryCodeToFlag(country.code),
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+        },
+        error: () => {
+          this.countries = [];
+        },
+      });
+  }
+
   private populateForm(user: User): void {
     this.form.patchValue({
       firstName: user.firstName ?? '',
@@ -156,7 +162,7 @@ export class ProfileComponent {
   }
 
   private buildPayload(): UpdateProfilePayload {
-    const {firstName, lastName, dateOfBirth, city, country, isChatEnabled} =
+    const { firstName, lastName, dateOfBirth, city, country, isChatEnabled } =
       this.form.getRawValue();
 
     return {
@@ -192,14 +198,6 @@ export class ProfileComponent {
     );
   }
 
-  hasCountryOption(value: string | null | undefined): boolean {
-    if (!value) {
-      return false;
-    }
-
-    return this.countries.some((country) => country.name === value);
-  }
-
   private normalizeText(value: string | null | undefined): string | null {
     if (value === null || value === undefined) {
       return null;
@@ -216,17 +214,32 @@ export class ProfileComponent {
         return null;
       }
 
-      return value <= this.today ? null : {futureDate: true};
+      return value <= this.today ? null : { futureDate: true };
     };
   }
 
   private extractErrorMessage(error: HttpErrorResponse): string {
-    if (error.error?.message) {
-      return Array.isArray(error.error.message)
-        ? error.error.message.join(' ')
-        : String(error.error.message);
+    const payload: unknown = error.error;
+    if (typeof payload === 'string' && payload.trim().length > 0) {
+      return payload.trim();
     }
 
-    return "Une erreur est survenue. Merci de réessayer.";
+    if (payload && typeof payload === 'object') {
+      const { message } = payload as { message?: unknown };
+      if (typeof message === 'string' && message.trim().length > 0) {
+        return message.trim();
+      }
+      if (Array.isArray(message)) {
+        const first = message.find(
+          (entry): entry is string =>
+            typeof entry === 'string' && entry.trim().length > 0,
+        );
+        if (first) {
+          return first.trim();
+        }
+      }
+    }
+
+    return 'Une erreur est survenue. Merci de réessayer.';
   }
 }

@@ -3,10 +3,10 @@
 >
   <div
     *ngFor="let toast of toasts$ | async; trackBy: trackById"
-    class="fade-in-up"
     [ngClass]="toastClasses(toast)"
+    class="fade-in-up"
   >
-    <div class="text-lg" aria-hidden="true">
+    <div aria-hidden="true" class="text-lg">
       <i [ngClass]="toastIcon(toast)"></i>
     </div>
     <div class="flex-1">
@@ -14,13 +14,13 @@
       <p class="leading-relaxed">{{ toast.message }}</p>
     </div>
     <button
+      (click)="onDismiss(toast.id)"
       aria-label="Fermer la notification"
       class="inline-flex h-8 w-8 items-center justify-center rounded-full text-base opacity-80 transition hover:opacity-100"
       style="color: inherit"
-      (click)="onDismiss(toast.id)"
       type="button"
     >
-      <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      <i aria-hidden="true" class="fa-solid fa-xmark"></i>
     </button>
   </div>
 </div>

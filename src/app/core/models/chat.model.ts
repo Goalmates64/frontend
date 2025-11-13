@@ -40,4 +40,3 @@ export interface ChatMessagesResponse {
   messages: ChatMessage[];
   nextCursor: number | null;
 }
-

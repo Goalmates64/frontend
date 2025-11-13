@@ -1,11 +1,12 @@
-﻿import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
-import {FormBuilder, Validators} from '@angular/forms';
-import {Router} from '@angular/router';
-import {BehaviorSubject} from 'rxjs';
+﻿import { Component, inject, OnInit } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 
-import {TeamsService} from '../../services/teams.service';
-import {Team} from '../../../../core/models/user.model';
-import {ToastService} from '../../../../core/toast.service';
+import { TeamsService } from '../../services/teams.service';
+import { Team } from '../../../../core/models/user.model';
+import { ToastService } from '../../../../core/toast.service';
+import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils';
 
 @Component({
   selector: 'app-teams-list',
@@ -20,15 +21,17 @@ export class TeamsListComponent implements OnInit {
   joinError: string | null = null;
   private readonly fb = inject(FormBuilder);
   readonly joinForm = this.fb.nonNullable.group({
-    code: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(16)]],
+    code: [
+      '',
+      [Validators.required, Validators.minLength(8), Validators.maxLength(16)],
+    ],
   });
 
   constructor(
     private readonly teamsService: TeamsService,
     private readonly toast: ToastService,
     private readonly router: Router,
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.refresh();
@@ -63,12 +66,12 @@ export class TeamsListComponent implements OnInit {
         this.refresh();
       },
       error: (error) => {
-        this.joinError = error?.error?.message ?? 'Code invalide.';
+        this.joinError = extractHttpErrorMessage(error, 'Code invalide.');
       },
     });
   }
 
   goToCreate(): void {
-    this.router.navigate(['/teams/create']);
+    void this.router.navigate(['/teams/create']);
   }
 }

@@ -4,19 +4,19 @@
   Component,
   DestroyRef,
   EventEmitter,
+  inject,
+  Input,
   OnChanges,
   OnInit,
   Output,
   SimpleChanges,
-  inject,
-  Input,
 } from '@angular/core';
-import {FormBuilder, Validators} from '@angular/forms';
-import {HttpClient} from '@angular/common/http';
-import {take} from 'rxjs';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { FormBuilder, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { take } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import {CreatePlacePayload} from '../../../../core/places.service';
+import { CreatePlacePayload } from '../../../../core/places.service';
 
 interface CountryOption {
   name: string;
@@ -41,9 +41,25 @@ export class PlaceFormComponent implements OnChanges, OnInit {
   countries: CountryOption[] = [];
 
   private readonly fb = inject(FormBuilder);
+  readonly form = this.fb.nonNullable.group({
+    name: ['', [Validators.required, Validators.maxLength(120)]],
+    city: ['', [Validators.required, Validators.maxLength(120)]],
+    countryCode: [
+      'FR',
+      [Validators.required, Validators.minLength(2), Validators.maxLength(2)],
+    ],
+    // Valeurs par défaut = Paris, remplacées par la géoloc si dispo
+    lat: [
+      48.8566,
+      [Validators.required, Validators.min(-90), Validators.max(90)],
+    ],
+    lng: [
+      2.3522,
+      [Validators.required, Validators.min(-180), Validators.max(180)],
+    ],
+  });
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
-
   private readonly geoOptions: PositionOptions = {
     enableHighAccuracy: true,
     timeout: 8000,
@@ -53,22 +69,9 @@ export class PlaceFormComponent implements OnChanges, OnInit {
   private coordsManuallyEdited = false;
   private userLocationApplied = false;
 
-  readonly form = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.maxLength(120)]],
-    city: ['', [Validators.required, Validators.maxLength(120)]],
-    countryCode: ['FR', [Validators.required, Validators.minLength(2), Validators.maxLength(2)]],
-    // Valeurs par défaut = Paris, remplacées par la géoloc si dispo
-    lat: [48.8566, [Validators.required, Validators.min(-90), Validators.max(90)]],
-    lng: [2.3522, [Validators.required, Validators.min(-180), Validators.max(180)]],
-  });
-
   constructor(private readonly http: HttpClient) {
     this.loadCountries();
     this.observeManualCoordinateChanges();
-  }
-
-  ngOnInit(): void {
-    this.initUserLocation();
   }
 
   get currentLat(): number {
@@ -79,13 +82,18 @@ export class PlaceFormComponent implements OnChanges, OnInit {
     return this.form.controls.lng.value;
   }
 
+  ngOnInit(): void {
+    this.initUserLocation();
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['initialValue'] && this.initialValue) {
       this.runWithoutManualTracking(() =>
         this.form.patchValue({
           name: this.initialValue?.name ?? '',
           city: this.initialValue?.city ?? '',
-          countryCode: this.initialValue?.countryCode ?? this.form.value.countryCode,
+          countryCode:
+            this.initialValue?.countryCode ?? this.form.value.countryCode,
           // Si initialValue ne fournit pas lat/lng, on garde la valeur actuelle (géoloc ou défaut)
           lat: this.initialValue?.lat ?? this.form.value.lat,
           lng: this.initialValue?.lng ?? this.form.value.lng,
@@ -96,7 +104,10 @@ export class PlaceFormComponent implements OnChanges, OnInit {
 
   onCoordinatesChange(coords: { lat: number; lng: number }): void {
     this.coordsManuallyEdited = true;
-    this.form.patchValue({lat: coords.lat, lng: coords.lng}, {emitEvent: false});
+    this.form.patchValue(
+      { lat: coords.lat, lng: coords.lng },
+      { emitEvent: false },
+    );
   }
 
   submit(): void {
@@ -105,7 +116,7 @@ export class PlaceFormComponent implements OnChanges, OnInit {
       return;
     }
 
-    const {name, city, countryCode, lat, lng} = this.form.getRawValue();
+    const { name, city, countryCode, lat, lng } = this.form.getRawValue();
     this.formSubmit.emit({
       name: name.trim(),
       city: city.trim(),
@@ -125,7 +136,9 @@ export class PlaceFormComponent implements OnChanges, OnInit {
       .pipe(take(1))
       .subscribe({
         next: (countries) => {
-          this.countries = countries.sort((a, b) => a.name.localeCompare(b.name));
+          this.countries = countries.sort((a, b) =>
+            a.name.localeCompare(b.name),
+          );
         },
         error: () => {
           this.countries = [];
@@ -134,23 +147,35 @@ export class PlaceFormComponent implements OnChanges, OnInit {
   }
 
   private initUserLocation(): void {
-    if (this.initialValue || this.coordsManuallyEdited || this.userLocationApplied) {
+    if (
+      this.initialValue ||
+      this.coordsManuallyEdited ||
+      this.userLocationApplied
+    ) {
       return;
     }
 
     // Protection SSR + contextes non sécurisés (obligatoire pour la géoloc navigateur)
-    if (typeof window === 'undefined' || !('geolocation' in navigator) || !window.isSecureContext) {
+    if (
+      typeof window === 'undefined' ||
+      !('geolocation' in navigator) ||
+      !window.isSecureContext
+    ) {
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        if (this.initialValue || this.coordsManuallyEdited || this.userLocationApplied) {
+        if (
+          this.initialValue ||
+          this.coordsManuallyEdited ||
+          this.userLocationApplied
+        ) {
           return;
         }
-        const {latitude, longitude} = pos.coords;
+        const { latitude, longitude } = pos.coords;
         this.runWithoutManualTracking(() => {
-          this.form.patchValue({lat: latitude, lng: longitude});
+          this.form.patchValue({ lat: latitude, lng: longitude });
         });
         this.userLocationApplied = true;
         this.cdr.markForCheck();

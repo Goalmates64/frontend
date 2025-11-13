@@ -19,7 +19,7 @@
     <div class="space-y-4">
       <ng-container *ngIf="(teams$ | async) as teams">
         <div
-          *ngIf="!teams.length && !(loading$ | async)"
+          *ngIf="!teams.length && (loading$ | async) === false"
           class="border border-dashed border-gm-border rounded-2xl p-6 text-center text-sm text-gm-muted"
         >
           Aucune équipe pour l'instant. Lance-toi ou colle un code !
@@ -94,7 +94,7 @@
           <i aria-hidden="true" class="fa-solid fa-right-to-bracket"></i>
           <span>Rejoindre</span>
         </button>
-     </form>
+      </form>
     </aside>
   </div>
 </section>

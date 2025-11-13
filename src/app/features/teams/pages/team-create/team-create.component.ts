@@ -1,9 +1,10 @@
-﻿import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {FormBuilder, Validators} from '@angular/forms';
-import {Router} from '@angular/router';
+﻿import { Component, inject } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
-import {TeamsService} from '../../services/teams.service';
-import {ToastService} from '../../../../core/toast.service';
+import { TeamsService } from '../../services/teams.service';
+import { ToastService } from '../../../../core/toast.service';
+import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils';
 
 @Component({
   selector: 'app-team-create',
@@ -17,15 +18,17 @@ export class TeamCreateComponent {
   apiError: string | null = null;
   private readonly fb = inject(FormBuilder);
   readonly form = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(120)]],
+    name: [
+      '',
+      [Validators.required, Validators.minLength(3), Validators.maxLength(120)],
+    ],
   });
 
   constructor(
     private readonly teamsService: TeamsService,
     private readonly toast: ToastService,
     private readonly router: Router,
-  ) {
-  }
+  ) {}
 
   submit(): void {
     this.apiError = null;
@@ -35,16 +38,19 @@ export class TeamCreateComponent {
     }
 
     this.loading = true;
-    const {name} = this.form.getRawValue();
+    const { name } = this.form.getRawValue();
     this.teamsService.create(name.trim()).subscribe({
       next: (team) => {
         this.loading = false;
         this.toast.success(`Équipe ${team.name} créée !`);
-        this.router.navigate(['/teams']);
+        void this.router.navigate(['/teams']);
       },
       error: (error) => {
         this.loading = false;
-        this.apiError = error?.error?.message ?? 'Impossible de créer cette équipe.';
+        this.apiError = extractHttpErrorMessage(
+          error,
+          'Impossible de créer cette équipe.',
+        );
       },
     });
   }

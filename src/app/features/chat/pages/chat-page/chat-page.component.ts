@@ -1,28 +1,26 @@
 import {
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   DestroyRef,
   ElementRef,
   inject,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
-import {FormBuilder, Validators} from '@angular/forms';
-import {HttpErrorResponse} from '@angular/common/http';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {finalize, take} from 'rxjs/operators';
+import { FormBuilder, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize, take } from 'rxjs/operators';
 
-import {ChatService} from '../../../../core/chat.service';
-import {ChatMessage, ChatRoom} from '../../../../core/models/chat.model';
-import {User} from '../../../../core/models/user.model';
-import {AuthService} from '../../../../core/auth.service';
+import { ChatService } from '../../../../core/chat.service';
+import { ChatMessage, ChatRoom } from '../../../../core/models/chat.model';
+import { User } from '../../../../core/models/user.model';
+import { AuthService } from '../../../../core/auth.service';
 
 @Component({
   selector: 'app-chat-page',
   standalone: false,
   templateUrl: './chat-page.component.html',
   styleUrls: ['./chat-page.component.scss'],
-
 })
 export class ChatPageComponent {
   rooms: ChatRoom[] = [];
@@ -36,7 +34,8 @@ export class ChatPageComponent {
   messageError: string | null = null;
 
   currentUser: User | null = null;
-  @ViewChild('messagesContainer') messagesContainer?: ElementRef<HTMLDivElement>;
+  @ViewChild('messagesContainer')
+  messagesContainer?: ElementRef<HTMLDivElement>;
   private readonly fb = inject(FormBuilder);
   readonly messageForm = this.fb.nonNullable.group({
     content: ['', [Validators.maxLength(1000)]],
@@ -71,7 +70,8 @@ export class ChatPageComponent {
         if (
           rooms.length > 0 &&
           this.currentUser?.isChatEnabled &&
-          (!this.selectedRoomId || !rooms.some((room) => room.id === this.selectedRoomId))
+          (!this.selectedRoomId ||
+            !rooms.some((room) => room.id === this.selectedRoomId))
         ) {
           this.selectRoom(rooms[0].id);
         } else if (!rooms.length) {
@@ -156,7 +156,11 @@ export class ChatPageComponent {
   }
 
   onSendMessage(): void {
-    if (!this.selectedRoomId || !this.currentUser?.isChatEnabled || this.sending) {
+    if (
+      !this.selectedRoomId ||
+      !this.currentUser?.isChatEnabled ||
+      this.sending
+    ) {
       return;
     }
 
@@ -178,7 +182,7 @@ export class ChatPageComponent {
       )
       .subscribe({
         next: (message) => {
-          this.messageForm.reset({content: ''});
+          this.messageForm.reset({ content: '' });
           this.appendMessage(message);
           this.scrollMessagesToBottom();
         },
@@ -205,7 +209,11 @@ export class ChatPageComponent {
     return (this.cursorMap.get(roomId) ?? null) !== null;
   }
 
-  private loadMessages(roomId: number, beforeId?: number, replace = false): void {
+  private loadMessages(
+    roomId: number,
+    beforeId?: number,
+    replace = false,
+  ): void {
     const isHistoryLoad = beforeId !== undefined;
     if (isHistoryLoad) {
       this.historyLoading = true;
@@ -240,13 +248,18 @@ export class ChatPageComponent {
       });
   }
 
-  private mergeMessages(roomId: number, messages: ChatMessage[], replace: boolean): void {
-    const existing = replace ? [] : this.messagesMap.get(roomId) ?? [];
+  private mergeMessages(
+    roomId: number,
+    messages: ChatMessage[],
+    replace: boolean,
+  ): void {
+    const existing = replace ? [] : (this.messagesMap.get(roomId) ?? []);
     const combined = replace ? messages : [...messages, ...existing];
     const deduped = Array.from(
       new Map(combined.map((message) => [message.id, message])).values(),
-    ).sort((a, b) =>
-      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    ).sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     );
     this.messagesMap.set(roomId, deduped);
   }
@@ -257,7 +270,8 @@ export class ChatPageComponent {
       return;
     }
     const updated = [...existing, message].sort(
-      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     );
     this.messagesMap.set(message.roomId, updated);
     if (message.roomId === this.selectedRoomId) {
@@ -280,12 +294,26 @@ export class ChatPageComponent {
   }
 
   private extractErrorMessage(error: HttpErrorResponse): string {
-    if (error.error?.message) {
-      return Array.isArray(error.error.message)
-        ? error.error.message.join(' ')
-        : String(error.error.message);
+    const payload: unknown = error.error;
+    if (typeof payload === 'string' && payload.trim().length > 0) {
+      return payload.trim();
+    }
+
+    if (payload && typeof payload === 'object') {
+      const { message } = payload as { message?: unknown };
+      if (typeof message === 'string' && message.trim().length > 0) {
+        return message.trim();
+      }
+      if (Array.isArray(message)) {
+        const first = message.find(
+          (entry): entry is string =>
+            typeof entry === 'string' && entry.trim().length > 0,
+        );
+        if (first) {
+          return first.trim();
+        }
+      }
     }
     return 'Impossible de charger le chat pour le moment.';
   }
 }
-

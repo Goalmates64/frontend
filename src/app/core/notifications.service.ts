@@ -1,22 +1,26 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Observable, take} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
-import {io, Socket} from 'socket.io-client';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, take } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { io, Socket } from 'socket.io-client';
 
-import {environment} from '../../environments/environment';
-import {AppNotification} from './models/notification.model';
-import {AuthService} from './auth.service';
+import { environment } from '../../environments/environment';
+import { AppNotification } from './models/notification.model';
+import { AuthService } from './auth.service';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class NotificationsService {
   private readonly baseUrl = `${environment.apiUrl}/notifications`;
   private readonly unreadCountSubject = new BehaviorSubject<number>(0);
   readonly unreadCount$ = this.unreadCountSubject.asObservable();
-  private readonly notificationsSubject = new BehaviorSubject<AppNotification[]>([]);
+  private readonly notificationsSubject = new BehaviorSubject<
+    AppNotification[]
+  >([]);
   readonly notifications$ = this.notificationsSubject.asObservable();
   readonly unreadNotifications$ = this.notifications$.pipe(
-    map((notifications) => notifications.filter((notification) => !notification.isRead)),
+    map((notifications) =>
+      notifications.filter((notification) => !notification.isRead),
+    ),
   );
   private cachedNotifications: AppNotification[] = [];
   private socket: Socket | null = null;
@@ -28,9 +32,11 @@ export class NotificationsService {
   ) {
     this.authService.isAuthenticated$.subscribe((isAuthenticated) => {
       if (isAuthenticated) {
-        this.fetchUnreadCount().pipe(take(1)).subscribe({
-          error: () => this.unreadCountSubject.next(0),
-        });
+        this.fetchUnreadCount()
+          .pipe(take(1))
+          .subscribe({
+            error: () => this.unreadCountSubject.next(0),
+          });
 
         const token = this.authService.token;
         if (token) {
@@ -53,9 +59,14 @@ export class NotificationsService {
     );
   }
 
-  markAsRead(notificationId: number, isRead: boolean): Observable<AppNotification> {
+  markAsRead(
+    notificationId: number,
+    isRead: boolean,
+  ): Observable<AppNotification> {
     return this.http
-      .patch<AppNotification>(`${this.baseUrl}/${notificationId}/read`, {isRead})
+      .patch<AppNotification>(`${this.baseUrl}/${notificationId}/read`, {
+        isRead,
+      })
       .pipe(
         tap((updated) => {
           this.cachedNotifications = this.cachedNotifications.map((existing) =>
@@ -88,7 +99,9 @@ export class NotificationsService {
       return;
     }
 
-    const unread = this.cachedNotifications.filter((notification) => !notification.isRead).length;
+    const unread = this.cachedNotifications.filter(
+      (notification) => !notification.isRead,
+    ).length;
     this.unreadCountSubject.next(unread);
   }
 
@@ -104,12 +117,15 @@ export class NotificationsService {
     this.disconnectSocket();
     this.socket = io(this.wsNamespaceUrl, {
       transports: ['websocket'],
-      auth: {token},
+      auth: { token },
       autoConnect: true,
     });
 
     this.socket.on('notification:new', (notification: AppNotification) => {
-      this.cachedNotifications = [notification, ...this.cachedNotifications].slice(0, 50);
+      this.cachedNotifications = [
+        notification,
+        ...this.cachedNotifications,
+      ].slice(0, 50);
       this.notificationsSubject.next([...this.cachedNotifications]);
       this.updateUnreadCountFromCache();
     });
@@ -124,13 +140,16 @@ export class NotificationsService {
         return existing;
       });
       if (!found) {
-        this.cachedNotifications = [notification, ...this.cachedNotifications].slice(0, 50);
+        this.cachedNotifications = [
+          notification,
+          ...this.cachedNotifications,
+        ].slice(0, 50);
       }
       this.notificationsSubject.next([...this.cachedNotifications]);
       this.updateUnreadCountFromCache();
     });
 
-    this.socket.on('notification:count', (payload: {count: number}) => {
+    this.socket.on('notification:count', (payload: { count: number }) => {
       if (typeof payload?.count === 'number') {
         this.unreadCountSubject.next(payload.count);
       }

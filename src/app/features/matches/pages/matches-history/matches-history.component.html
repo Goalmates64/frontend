@@ -31,7 +31,7 @@
       </div>
     </article>
 
-    <div *ngIf="!matches.length && !(loading$ | async)" class="text-sm text-gm-muted">
+    <div *ngIf="!matches.length && (loading$ | async) === false" class="text-sm text-gm-muted">
       Aucun match enregistré pour l’instant.
     </div>
   </div>

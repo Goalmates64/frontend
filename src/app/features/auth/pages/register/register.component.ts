@@ -1,34 +1,48 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Router} from '@angular/router';
-import {AuthService} from '../../../../core/auth.service';
-import {RegisterPayload} from '../../../../core/models/auth.model';
+import { Component, inject } from '@angular/core';
+import { FormBuilder, ValidatorFn, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../../core/auth.service';
+import { RegisterPayload } from '../../../../core/models/auth.model';
+import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils';
 
 @Component({
   selector: 'app-register',
   standalone: false,
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
-
 })
 export class RegisterComponent {
-  form: FormGroup;
+  private readonly fb = inject(FormBuilder);
+  private readonly passwordsMatchValidator: ValidatorFn = (group) => {
+    const passwordControl = group.get('password');
+    const confirmControl = group.get('confirmPassword');
+    const password =
+      typeof passwordControl?.value === 'string' ? passwordControl.value : null;
+    const confirm =
+      typeof confirmControl?.value === 'string' ? confirmControl.value : null;
+    if (!password || !confirm) {
+      return null;
+    }
+    return password === confirm ? null : { passwordsMismatch: true };
+  };
+  readonly form = this.fb.nonNullable.group(
+    {
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]],
+    },
+    {
+      validators: [this.passwordsMatchValidator],
+    },
+  );
   loading = false;
   apiError: string | null = null;
 
-  constructor(private readonly fb: FormBuilder, private readonly authService: AuthService, private readonly router: Router) {
-    this.form = this.fb.group(
-      {
-        username: ['', [Validators.required, Validators.minLength(3)]],
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]],
-        confirmPassword: ['', [Validators.required]],
-      },
-      {
-        validators: [this.passwordsMatchValidator],
-      }
-    );
-  }
+  constructor(
+    private readonly authService: AuthService,
+    private readonly router: Router,
+  ) {}
 
   get f() {
     return this.form.controls;
@@ -49,31 +63,26 @@ export class RegisterComponent {
       return;
     }
 
+    const { username, email, password } = this.form.getRawValue();
     const payload: RegisterPayload = {
-      username: this.f['username'].value,
-      email: this.f['email'].value,
-      password: this.f['password'].value,
+      username,
+      email,
+      password,
     };
 
     this.loading = true;
     this.authService.register(payload).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigate(['/']);
+        void this.router.navigate(['/']);
       },
-      error: (err) => {
+      error: (error) => {
         this.loading = false;
-        this.apiError =
-          err?.error?.message ||
-          'Une erreur est survenue lors de la création du compte.';
+        this.apiError = extractHttpErrorMessage(
+          error,
+          'Une erreur est survenue lors de la création du compte.',
+        );
       },
     });
-  }
-
-  private passwordsMatchValidator(group: FormGroup) {
-    const password = group.get('password')?.value;
-    const confirm = group.get('confirmPassword')?.value;
-    if (!password || !confirm) return null;
-    return password === confirm ? null : {passwordsMismatch: true};
   }
 }

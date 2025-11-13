@@ -1,13 +1,18 @@
-﻿import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
-import {FormBuilder, Validators} from '@angular/forms';
-import {ActivatedRoute} from '@angular/router';
-import {BehaviorSubject, combineLatest} from 'rxjs';
-import {map} from 'rxjs/operators';
+﻿import { Component, inject, OnInit } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import {TeamsService} from '../../services/teams.service';
-import {Team, TeamMember, UserSummary} from '../../../../core/models/user.model';
-import {ToastService} from '../../../../core/toast.service';
-import {AuthService} from '../../../../core/auth.service';
+import { TeamsService } from '../../services/teams.service';
+import {
+  Team,
+  TeamMember,
+  UserSummary,
+} from '../../../../core/models/user.model';
+import { ToastService } from '../../../../core/toast.service';
+import { AuthService } from '../../../../core/auth.service';
+import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils';
 
 @Component({
   selector: 'app-team-detail',
@@ -22,7 +27,10 @@ export class TeamDetailComponent implements OnInit {
   selectedUser: UserSummary | null = null;
   private readonly fb = inject(FormBuilder);
   readonly renameForm = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(120)]],
+    name: [
+      '',
+      [Validators.required, Validators.minLength(3), Validators.maxLength(120)],
+    ],
   });
   private readonly route = inject(ActivatedRoute);
   private readonly teamsService = inject(TeamsService);
@@ -36,7 +44,9 @@ export class TeamDetailComponent implements OnInit {
       if (!team || !user) {
         return false;
       }
-      const membership = team.members?.find((member) => member.userId === user.id);
+      const membership = team.members?.find(
+        (member) => member.userId === user.id,
+      );
       return !!membership?.isCaptain;
     }),
   );
@@ -54,7 +64,7 @@ export class TeamDetailComponent implements OnInit {
       next: (team) => {
         this.team$.next(team);
         this.loading$.next(false);
-        this.renameForm.patchValue({name: team.name});
+        this.renameForm.patchValue({ name: team.name });
       },
       error: () => {
         this.loading$.next(false);
@@ -70,13 +80,15 @@ export class TeamDetailComponent implements OnInit {
     }
 
     const name = this.renameForm.getRawValue().name.trim();
-    this.teamsService.update(this.teamId, {name}).subscribe({
+    this.teamsService.update(this.teamId, { name }).subscribe({
       next: (team) => {
         this.team$.next(team);
         this.toast.success('Nom mis à jour');
       },
       error: (error) => {
-        this.toast.error(error?.error?.message ?? 'Impossible de renommer l’équipe.');
+        this.toast.error(
+          extractHttpErrorMessage(error, 'Impossible de renommer l’équipe.'),
+        );
       },
     });
   }
@@ -90,20 +102,26 @@ export class TeamDetailComponent implements OnInit {
       return;
     }
 
-    this.teamsService.addMember(this.teamId, this.selectedUser.username).subscribe({
-      next: (team) => {
-        this.team$.next(team);
-        this.toast.success(`${this.selectedUser?.username} rejoint l’équipe !`);
-        this.selectedUser = null;
-      },
-      error: (error) => {
-        this.toast.error(error?.error?.message ?? 'Impossible d’ajouter ce joueur.');
-      },
-    });
+    this.teamsService
+      .addMember(this.teamId, this.selectedUser.username)
+      .subscribe({
+        next: (team) => {
+          this.team$.next(team);
+          this.toast.success(
+            `${this.selectedUser?.username} rejoint l’équipe !`,
+          );
+          this.selectedUser = null;
+        },
+        error: (error) => {
+          this.toast.error(
+            extractHttpErrorMessage(error, 'Impossible d’ajouter ce joueur.'),
+          );
+        },
+      });
   }
 
   copyInviteCode(code: string): void {
-    navigator.clipboard?.writeText(code);
+    void navigator.clipboard?.writeText(code);
     this.toast.info('Code copié dans le presse-papiers.');
   }
 

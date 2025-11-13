@@ -1,9 +1,9 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
-import {Subscription} from 'rxjs';
+import { ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 
-import {NotificationsService} from '../../../../core/notifications.service';
-import {ToastService} from '../../../../core/toast.service';
-import {AppNotification} from '../../../../core/models/notification.model';
+import { NotificationsService } from '../../../../core/notifications.service';
+import { ToastService } from '../../../../core/toast.service';
+import { AppNotification } from '../../../../core/models/notification.model';
 
 @Component({
   selector: 'app-notifications-page',

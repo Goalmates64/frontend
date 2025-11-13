@@ -1,15 +1,22 @@
-﻿import {ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, Validators} from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
-import {of, Subject} from 'rxjs';
-import {debounceTime, distinctUntilChanged, switchMap, take, takeUntil} from 'rxjs/operators';
+﻿import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { of, Subject } from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  take,
+  takeUntil,
+} from 'rxjs/operators';
 
-import {MatchesService} from '../../services/matches.service';
-import {TeamsService} from '../../../teams/services/teams.service';
-import {ToastService} from '../../../../core/toast.service';
-import {Team} from '../../../../core/models/user.model';
-import {PlacesService} from '../../../../core/places.service';
-import {Place} from '../../../../core/models/place.model';
+import { MatchesService } from '../../services/matches.service';
+import { TeamsService } from '../../../teams/services/teams.service';
+import { ToastService } from '../../../../core/toast.service';
+import { Team } from '../../../../core/models/user.model';
+import { PlacesService } from '../../../../core/places.service';
+import { Place } from '../../../../core/models/place.model';
+import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils';
 
 @Component({
   selector: 'app-match-create',
@@ -42,8 +49,7 @@ export class MatchCreateComponent implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly placesService: PlacesService,
     private readonly route: ActivatedRoute,
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.teamsService.getMine().subscribe({
@@ -95,24 +101,33 @@ export class MatchCreateComponent implements OnInit, OnDestroy {
     this.selectedPlace = place;
     this.placeSuggestions = [];
     this.form.controls.placeId.setValue(place.id);
-    this.placeSearchControl.setValue(place.name, {emitEvent: false});
+    this.placeSearchControl.setValue(place.name, { emitEvent: false });
   }
 
   clearPlace(): void {
     this.selectedPlace = null;
     this.form.controls.placeId.setValue(null);
-    this.placeSearchControl.setValue('', {emitEvent: false});
+    this.placeSearchControl.setValue('', { emitEvent: false });
     this.placeSearchControl.updateValueAndValidity();
   }
 
   openCreatePlace(): void {
-    void this.router.navigate(['/places/new'], {queryParams: {returnTo: '/matches/create'}});
+    void this.router.navigate(['/places/new'], {
+      queryParams: { returnTo: '/matches/create' },
+    });
   }
 
   submit(): void {
     this.apiError = null;
-    const {homeTeamId, awayTeamId, scheduledAt, placeId} = this.form.getRawValue();
-    if (this.form.invalid || !homeTeamId || !awayTeamId || !scheduledAt || !placeId) {
+    const { homeTeamId, awayTeamId, scheduledAt, placeId } =
+      this.form.getRawValue();
+    if (
+      this.form.invalid ||
+      !homeTeamId ||
+      !awayTeamId ||
+      !scheduledAt ||
+      !placeId
+    ) {
       this.form.markAllAsTouched();
       if (!placeId) {
         this.apiError = 'Sélectionne un lieu pour le match.';
@@ -137,11 +152,14 @@ export class MatchCreateComponent implements OnInit, OnDestroy {
       next: () => {
         this.loading = false;
         this.toast.success('Match programmé !');
-        this.router.navigate(['/matches']);
+        void this.router.navigate(['/matches']);
       },
       error: (error) => {
         this.loading = false;
-        this.apiError = error?.error?.message ?? 'Impossible de programmer ce match.';
+        this.apiError = extractHttpErrorMessage(
+          error,
+          'Impossible de programmer ce match.',
+        );
       },
     });
   }

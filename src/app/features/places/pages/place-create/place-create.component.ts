@@ -1,16 +1,23 @@
-﻿import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import { Component } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import {CreatePlacePayload, PlacesService} from '../../../../core/places.service';
-import {ToastService} from '../../../../core/toast.service';
-import {PlaceWithDistance} from '../../../../core/models/place.model';
+import {
+  CreatePlacePayload,
+  PlacesService,
+} from '../../../../core/places.service';
+import { ToastService } from '../../../../core/toast.service';
+import { PlaceWithDistance } from '../../../../core/models/place.model';
+import {
+  extractHttpErrorMessage,
+  getHttpErrorPayload,
+  isHttpErrorResponse,
+} from '../../../../core/utils/http-error.utils';
 
 @Component({
   selector: 'app-place-create',
   templateUrl: './place-create.component.html',
   styleUrls: ['./place-create.component.scss'],
   standalone: false,
-
 })
 export class PlaceCreateComponent {
   loading = false;
@@ -39,12 +46,26 @@ export class PlaceCreateComponent {
       },
       error: (error) => {
         this.loading = false;
-        if (error.status === 409 && error.error?.conflicts) {
-          this.conflicts = error.error.conflicts;
-          this.apiError = error.error?.message ?? "Lieu trop proche d'un autre.";
-          return;
+        if (isHttpErrorResponse(error) && error.status === 409) {
+          const payload = getHttpErrorPayload(error);
+          const conflicts = payload?.['conflicts'];
+          const payloadMessage = payload?.['message'];
+          if (Array.isArray(conflicts)) {
+            this.conflicts = conflicts.filter(isPlaceWithDistance);
+          }
+          this.apiError =
+            typeof payloadMessage === 'string'
+              ? payloadMessage
+              : "Lieu trop proche d'un autre.";
+          if (this.conflicts.length > 0) {
+            return;
+          }
         }
-        this.apiError = error.error?.message ?? 'Impossible de créer le lieu.';
+
+        this.apiError = extractHttpErrorMessage(
+          error,
+          'Impossible de créer le lieu.',
+        );
       },
     });
   }
@@ -53,7 +74,7 @@ export class PlaceCreateComponent {
     if (this.returnTo) {
       void this.router.navigateByUrl(`${this.returnTo}?placeId=${place.id}`);
     } else {
-      void this.router.navigate(['../', place.id], {relativeTo: this.route});
+      void this.router.navigate(['../', place.id], { relativeTo: this.route });
     }
   }
 
@@ -74,3 +95,18 @@ export class PlaceCreateComponent {
   }
 }
 
+function isPlaceWithDistance(value: unknown): value is PlaceWithDistance {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const candidate = value as Partial<PlaceWithDistance>;
+  return (
+    typeof candidate.id === 'number' &&
+    typeof candidate.name === 'string' &&
+    typeof candidate.city === 'string' &&
+    typeof candidate.countryCode === 'string' &&
+    typeof candidate.lat === 'number' &&
+    typeof candidate.lng === 'number'
+  );
+}

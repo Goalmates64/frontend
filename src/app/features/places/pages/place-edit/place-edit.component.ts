@@ -1,16 +1,19 @@
-﻿import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+﻿import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import {PlacesService, UpdatePlacePayload} from '../../../../core/places.service';
-import {Place} from '../../../../core/models/place.model';
-import {ToastService} from '../../../../core/toast.service';
+import {
+  PlacesService,
+  UpdatePlacePayload,
+} from '../../../../core/places.service';
+import { Place } from '../../../../core/models/place.model';
+import { ToastService } from '../../../../core/toast.service';
+import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils';
 
 @Component({
   selector: 'app-place-edit',
   templateUrl: './place-edit.component.html',
   styleUrls: ['./place-edit.component.scss'],
   standalone: false,
-
 })
 export class PlaceEditComponent implements OnInit {
   place?: Place;
@@ -23,8 +26,7 @@ export class PlaceEditComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly toast: ToastService,
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.loadPlace();
@@ -44,7 +46,10 @@ export class PlaceEditComponent implements OnInit {
       },
       error: (error) => {
         this.saving = false;
-        this.apiError = error.error?.message ?? 'Impossible de mettre à jour le lieu.';
+        this.apiError = extractHttpErrorMessage(
+          error,
+          'Impossible de mettre à jour le lieu.',
+        );
       },
     });
   }

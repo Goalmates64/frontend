@@ -1,15 +1,14 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {Observable} from 'rxjs';
+import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
 
-import {Toast} from '../../../core/models/toast.model';
-import {ToastService} from '../../../core/toast.service';
+import { Toast } from '../../../core/models/toast.model';
+import { ToastService } from '../../../core/toast.service';
 
 @Component({
   selector: 'app-toast-container',
   standalone: false,
   templateUrl: './toast-container.component.html',
   styleUrl: './toast-container.component.scss',
-
 })
 export class ToastContainerComponent {
   toasts$: Observable<Toast[]>;
@@ -27,7 +26,8 @@ export class ToastContainerComponent {
   }
 
   toastClasses(toast: Toast): string {
-    const base = 'pointer-events-auto flex w-full items-start gap-3 rounded-2xl border px-4 py-3 shadow-lg backdrop-blur text-sm';
+    const base =
+      'pointer-events-auto flex w-full items-start gap-3 rounded-2xl border px-4 py-3 shadow-lg backdrop-blur text-sm';
     switch (toast.variant) {
       case 'success':
         return `${base} border-emerald-300/40 bg-emerald-600/95 text-white`;

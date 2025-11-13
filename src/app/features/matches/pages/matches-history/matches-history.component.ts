@@ -1,9 +1,9 @@
-﻿import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+﻿import { Component, OnInit } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
-import {MatchesService} from '../../services/matches.service';
-import {Match} from '../../../../core/models/user.model';
-import {ToastService} from '../../../../core/toast.service';
+import { MatchesService } from '../../services/matches.service';
+import { Match } from '../../../../core/models/user.model';
+import { ToastService } from '../../../../core/toast.service';
 
 @Component({
   selector: 'app-matches-history',
@@ -19,8 +19,7 @@ export class MatchesHistoryComponent implements OnInit {
   constructor(
     private readonly matchesService: MatchesService,
     private readonly toast: ToastService,
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.matchesService.listHistory().subscribe({

@@ -4,7 +4,8 @@ import {
   HttpInterceptorFn,
   HttpResponse,
 } from '@angular/common/http';
-import { tap } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
 import { ToastService } from './toast.service';
 
@@ -21,15 +22,20 @@ export const toastInterceptor: HttpInterceptorFn = (req, next) => {
           }
         }
       },
-      error: (error: HttpErrorResponse) => {
-        const message = extractErrorMessage(error);
-        if (message) {
-          const variant = error.status >= 500 ? 'error' : error.status >= 400 ? 'warning' : 'info';
-          toastService.show(message, variant);
-        }
+    }),
+    catchError((error: HttpErrorResponse) => {
+      const message = extractErrorMessage(error);
+      if (message) {
+        const variant =
+          error.status >= 500
+            ? 'error'
+            : error.status >= 400
+              ? 'warning'
+              : 'info';
+        toastService.show(message, variant);
+      }
 
-        throw error;
-      },
+      return throwError(() => error);
     }),
   );
 };
@@ -44,15 +50,18 @@ function extractSuccessMessage(body: unknown): string | undefined {
 }
 
 function extractErrorMessage(error: HttpErrorResponse): string | undefined {
-  if (typeof error.error === 'string' && error.error.trim().length > 0) {
-    return error.error;
+  const payload: unknown = error.error;
+  if (typeof payload === 'string' && payload.trim().length > 0) {
+    return payload;
   }
 
-  const payload = error.error;
   if (payload && typeof payload === 'object') {
     const message = (payload as { message?: unknown }).message;
     if (Array.isArray(message) && message.length > 0) {
-      return String(message[0]);
+      const first = message.find((entry) => typeof entry === 'string');
+      if (typeof first === 'string') {
+        return first;
+      }
     }
     if (typeof message === 'string') {
       return message;

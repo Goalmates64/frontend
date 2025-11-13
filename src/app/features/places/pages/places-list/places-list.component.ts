@@ -1,16 +1,15 @@
-﻿import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
+﻿import { Component, inject, OnInit } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 
-import {PlacesService} from '../../../../core/places.service';
-import {ToastService} from '../../../../core/toast.service';
-import {Place} from '../../../../core/models/place.model';
+import { PlacesService } from '../../../../core/places.service';
+import { ToastService } from '../../../../core/toast.service';
+import { Place } from '../../../../core/models/place.model';
 
 @Component({
   selector: 'app-places-list',
   templateUrl: './places-list.component.html',
   styleUrls: ['./places-list.component.scss'],
   standalone: false,
-
 })
 export class PlacesListComponent implements OnInit {
   places: Place[] = [];
@@ -24,8 +23,7 @@ export class PlacesListComponent implements OnInit {
   constructor(
     private readonly placesService: PlacesService,
     private readonly toast: ToastService,
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.loadPlaces(true);
@@ -65,19 +63,19 @@ export class PlacesListComponent implements OnInit {
   private loadPlaces(reset = false): void {
     this.loading = true;
     const query = this.searchControl.value?.trim() ?? undefined;
-    this.placesService
-      .list({page: this.page, limit: 10, query})
-      .subscribe({
-        next: (response) => {
-          this.total = response.meta.total;
-          this.hasMore = response.meta.page < (response.meta.pageCount || 0);
-          this.places = reset ? response.items : [...this.places, ...response.items];
-          this.loading = false;
-        },
-        error: () => {
-          this.loading = false;
-          this.toast.error('Impossible de charger les lieux.');
-        },
-      });
+    this.placesService.list({ page: this.page, limit: 10, query }).subscribe({
+      next: (response) => {
+        this.total = response.meta.total;
+        this.hasMore = response.meta.page < (response.meta.pageCount || 0);
+        this.places = reset
+          ? response.items
+          : [...this.places, ...response.items];
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        this.toast.error('Impossible de charger les lieux.');
+      },
+    });
   }
 }

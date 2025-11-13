@@ -60,7 +60,8 @@
           />
           <button (click)="clearPlace()"
                   *ngIf="selectedPlace"
-                  class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gm-muted hover:text-gm-text" type="button">
+                  class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gm-muted hover:text-gm-text"
+                  type="button">
             Changer
           </button>
           <div *ngIf="!selectedPlace && placeSuggestions.length"

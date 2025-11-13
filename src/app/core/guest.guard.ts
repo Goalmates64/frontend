@@ -1,11 +1,10 @@
-import {CanMatchFn, Router} from '@angular/router';
-import {inject} from '@angular/core';
-import {AuthService} from './auth.service';
-import {take} from 'rxjs';
-import {map} from 'rxjs/operators';
+import { CanMatchFn, Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { AuthService } from './auth.service';
+import { take } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-export const guestGuard: CanMatchFn = (route, segments) => {
-
+export const guestGuard: CanMatchFn = (_route, _segments) => {
   const authService: AuthService = inject(AuthService);
   const router: Router = inject(Router);
 
@@ -16,6 +15,6 @@ export const guestGuard: CanMatchFn = (route, segments) => {
         return router.createUrlTree(['/']);
       }
       return true;
-    })
+    }),
   );
-}
+};

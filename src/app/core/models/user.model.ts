@@ -1,4 +1,4 @@
-﻿import {Place} from './place.model';
+﻿import { Place } from './place.model';
 
 export interface User {
   id: number;

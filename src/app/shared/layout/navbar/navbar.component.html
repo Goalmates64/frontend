@@ -29,7 +29,7 @@
       </a>
 
       <!-- Liens quand NON authentifié -->
-      <ng-container *ngIf="!(isAuthenticated$ | async); else authLinks">
+      <ng-container *ngIf="(isAuthenticated$ | async) === false; else authLinks">
         <a
           class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
           routerLink="/auth/login"
@@ -267,7 +267,7 @@
       </a>
 
       <!-- Mobile: non authentifié -->
-      <ng-container *ngIf="!(isAuthenticated$ | async); else mobileAuthLinks">
+      <ng-container *ngIf="(isAuthenticated$ | async) === false; else mobileAuthLinks">
         <a
           (click)="closeMobileMenu()"
           class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"

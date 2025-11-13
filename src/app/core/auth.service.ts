@@ -1,12 +1,16 @@
-import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {distinctUntilChanged, tap} from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { distinctUntilChanged, tap } from 'rxjs/operators';
 
-import {environment} from '../../environments/environment';
-import {UpdateProfilePayload, User} from './models/user.model';
-import {LoginPayload, LoginResponse, RegisterPayload,} from './models/auth.model';
-import {ToastService} from './toast.service';
+import { environment } from '../../environments/environment';
+import { UpdateProfilePayload, User } from './models/user.model';
+import {
+  LoginPayload,
+  LoginResponse,
+  RegisterPayload,
+} from './models/auth.model';
+import { ToastService } from './toast.service';
 
 @Injectable({
   providedIn: 'root',
@@ -18,13 +22,14 @@ export class AuthService {
   private expiryTimer: ReturnType<typeof setTimeout> | null = null;
 
   private readonly isAuthenticatedSubject = new BehaviorSubject<boolean>(
-    !!localStorage.getItem(this.tokenKey)
+    !!localStorage.getItem(this.tokenKey),
   );
-  readonly isAuthenticated$: Observable<boolean> =
-    this.isAuthenticatedSubject.asObservable().pipe(distinctUntilChanged());
+  readonly isAuthenticated$: Observable<boolean> = this.isAuthenticatedSubject
+    .asObservable()
+    .pipe(distinctUntilChanged());
 
   private readonly currentUserSubject = new BehaviorSubject<User | null>(
-    this.readUserFromStorage()
+    this.readUserFromStorage(),
   );
   readonly currentUser$ = this.currentUserSubject.asObservable();
 
@@ -120,7 +125,7 @@ export class AuthService {
     }
 
     try {
-      const parsed = JSON.parse(raw);
+      const parsed: unknown = JSON.parse(raw);
       const normalized = this.toUserShape(parsed);
       if (!normalized) {
         localStorage.removeItem(this.userKey);
@@ -128,18 +133,14 @@ export class AuthService {
       }
 
       return normalized;
-    } catch (error) {
+    } catch {
       localStorage.removeItem(this.userKey);
       return null;
     }
   }
 
-  private toUserShape(user: any): User | null {
-    if (!user || typeof user !== 'object') {
-      return null;
-    }
-
-    if (user.id === undefined || user.email === undefined || user.username === undefined) {
+  private toUserShape(user: unknown): User | null {
+    if (!this.isStoredUserPayload(user)) {
       return null;
     }
 
@@ -147,13 +148,14 @@ export class AuthService {
       id: user.id,
       email: user.email,
       username: user.username,
-      firstName: user.firstName ?? null,
-      lastName: user.lastName ?? null,
-      dateOfBirth: user.dateOfBirth ?? null,
-      city: user.city ?? null,
-      country: user.country ?? null,
-      avatarUrl: user.avatarUrl ?? null,
-      isChatEnabled: user.isChatEnabled ?? true,
+      firstName: this.optionalString(user.firstName),
+      lastName: this.optionalString(user.lastName),
+      dateOfBirth: this.optionalString(user.dateOfBirth),
+      city: this.optionalString(user.city),
+      country: this.optionalString(user.country),
+      avatarUrl: this.optionalString(user.avatarUrl),
+      isChatEnabled:
+        typeof user.isChatEnabled === 'boolean' ? user.isChatEnabled : true,
     };
   }
 
@@ -199,12 +201,17 @@ export class AuthService {
         return null;
       }
 
-      const decoded = JSON.parse(atob(payload));
-      if (decoded?.exp) {
-        return decoded.exp * 1000;
+      const decoded: unknown = JSON.parse(atob(payload));
+      if (
+        decoded &&
+        typeof decoded === 'object' &&
+        'exp' in decoded &&
+        typeof (decoded as { exp?: unknown }).exp === 'number'
+      ) {
+        return (decoded as { exp: number }).exp * 1000;
       }
     } catch (error) {
-      console.warn('Impossible de dÃ©coder le token JWT', error);
+      console.warn('Impossible de décoder le token JWT', error);
     }
 
     return null;
@@ -242,7 +249,6 @@ export class AuthService {
     }
 
     this.clearExpiryTimer();
-    // @ts-ignore
     this.expiryTimer = window.setTimeout(() => {
       this.handleTokenExpiration();
     }, delay);
@@ -262,6 +268,38 @@ export class AuthService {
     localStorage.removeItem(this.userKey);
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
-    this.toast.info('Ta session a expirÃ©. Merci de te reconnecter.');
+    this.toast.info('Ta session a expiré. Merci de te reconnecter.');
+  }
+
+  private isStoredUserPayload(value: unknown): value is {
+    id: number;
+    email: string;
+    username: string;
+    firstName?: unknown;
+    lastName?: unknown;
+    dateOfBirth?: unknown;
+    city?: unknown;
+    country?: unknown;
+    avatarUrl?: unknown;
+    isChatEnabled?: unknown;
+  } {
+    if (!value || typeof value !== 'object') {
+      return false;
+    }
+
+    const candidate = value as Record<string, unknown>;
+    return (
+      typeof candidate['id'] === 'number' &&
+      typeof candidate['email'] === 'string' &&
+      typeof candidate['username'] === 'string'
+    );
+  }
+
+  private optionalString(value: unknown): string | null {
+    if (typeof value === 'string') {
+      return value;
+    }
+
+    return null;
   }
 }

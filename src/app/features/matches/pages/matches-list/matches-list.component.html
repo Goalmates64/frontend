@@ -26,7 +26,7 @@
   <app-spinner *ngIf="loading$ | async" label="Chargement des matchs..." layout="block"></app-spinner>
 
   <div *ngIf="(matches$ | async) as matches" class="space-y-4">
-    <div *ngIf="!matches.length && !(loading$ | async)"
+    <div *ngIf="!matches.length && (loading$ | async) === false"
          class="border border-dashed border-gm-border rounded-2xl p-6 text-center text-sm text-gm-muted">
       Aucun match planifié pour l'instant.
     </div>

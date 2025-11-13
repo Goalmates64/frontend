@@ -1,10 +1,20 @@
-﻿import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {BehaviorSubject} from 'rxjs';
+﻿import { Component, inject, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import { BehaviorSubject } from 'rxjs';
 
-import {MatchesService} from '../../services/matches.service';
-import {Match} from '../../../../core/models/user.model';
-import {ToastService} from '../../../../core/toast.service';
+import { MatchesService } from '../../services/matches.service';
+import { Match } from '../../../../core/models/user.model';
+import { ToastService } from '../../../../core/toast.service';
+
+type ScoreForm = FormGroup<{
+  homeScore: FormControl<number>;
+  awayScore: FormControl<number>;
+}>;
 
 @Component({
   selector: 'app-matches-list',
@@ -18,13 +28,12 @@ export class MatchesListComponent implements OnInit {
   readonly loading$ = new BehaviorSubject<boolean>(false);
   readonly editingScore = new BehaviorSubject<number | null>(null);
   private readonly fb = inject(FormBuilder);
-  private readonly scoreForms = new Map<number, FormGroup>();
+  private readonly scoreForms = new Map<number, ScoreForm>();
 
   constructor(
     private readonly matchesService: MatchesService,
     private readonly toast: ToastService,
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.loadMatches();
@@ -53,13 +62,19 @@ export class MatchesListComponent implements OnInit {
     this.editingScore.next(null);
   }
 
-  getScoreForm(match: Match): FormGroup {
+  getScoreForm(match: Match): ScoreForm {
     if (!this.scoreForms.has(match.id)) {
       this.scoreForms.set(
         match.id,
         this.fb.nonNullable.group({
-          homeScore: [match.homeScore ?? 0, [Validators.required, Validators.min(0)]],
-          awayScore: [match.awayScore ?? 0, [Validators.required, Validators.min(0)]],
+          homeScore: [
+            match.homeScore ?? 0,
+            [Validators.required, Validators.min(0)],
+          ],
+          awayScore: [
+            match.awayScore ?? 0,
+            [Validators.required, Validators.min(0)],
+          ],
         }),
       );
     }

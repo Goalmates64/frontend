@@ -1,5 +1,5 @@
-import {HttpInterceptorFn} from '@angular/common/http';
-import {environment} from '../../environments/environment';
+import { HttpInterceptorFn } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 const TOKEN_KEY = 'gm_token';
 

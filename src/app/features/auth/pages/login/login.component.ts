@@ -1,31 +1,29 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from '../../../../core/auth.service';
-import {Router} from '@angular/router';
-import {LoginPayload} from '../../../../core/models/auth.model';
+import { Component, inject } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { AuthService } from '../../../../core/auth.service';
+import { Router } from '@angular/router';
+import { LoginPayload } from '../../../../core/models/auth.model';
+import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils';
 
 @Component({
   selector: 'app-login',
   standalone: false,
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
-
 })
 export class LoginComponent {
-  form: FormGroup;
+  private readonly fb = inject(FormBuilder);
+  readonly form = this.fb.nonNullable.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+  });
   loading = false;
   apiError: string | null = null;
 
   constructor(
-    private readonly fb: FormBuilder,
     private readonly authService: AuthService,
-    private readonly router: Router
-  ) {
-    this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-    });
-  }
+    private readonly router: Router,
+  ) {}
 
   get f() {
     return this.form.controls;
@@ -39,21 +37,24 @@ export class LoginComponent {
       return;
     }
 
+    const { email, password } = this.form.getRawValue();
     const payload: LoginPayload = {
-      email: this.f['email'].value,
-      password: this.f['password'].value,
+      email,
+      password,
     };
 
     this.loading = true;
     this.authService.login(payload).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigate(['/']); // redirection vers la home
+        void this.router.navigate(['/']); // redirection vers la home
       },
-      error: (err) => {
+      error: (error) => {
         this.loading = false;
-        this.apiError =
-          err?.error?.message || 'Identifiants incorrects ou erreur serveur.';
+        this.apiError = extractHttpErrorMessage(
+          error,
+          'Identifiants incorrects ou erreur serveur.',
+        );
       },
     });
   }

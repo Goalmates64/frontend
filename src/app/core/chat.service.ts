@@ -1,15 +1,25 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, combineLatest, Observable, Subject, take} from 'rxjs';
-import {tap} from 'rxjs/operators';
-import {io, Socket} from 'socket.io-client';
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  Subject,
+  take,
+} from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { io, Socket } from 'socket.io-client';
 
-import {environment} from '../../environments/environment';
-import {ChatMessage, ChatMessagesResponse, ChatRoom} from './models/chat.model';
-import {AuthService} from './auth.service';
-import {ToastService} from './toast.service';
+import { environment } from '../../environments/environment';
+import {
+  ChatMessage,
+  ChatMessagesResponse,
+  ChatRoom,
+} from './models/chat.model';
+import { AuthService } from './auth.service';
+import { ToastService } from './toast.service';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class ChatService {
   private readonly baseUrl = `${environment.apiUrl}/chat`;
   private readonly roomsSubject = new BehaviorSubject<ChatRoom[]>([]);
@@ -25,45 +35,59 @@ export class ChatService {
     private readonly authService: AuthService,
     private readonly toast: ToastService,
   ) {
-    combineLatest([this.authService.isAuthenticated$, this.authService.currentUser$]).subscribe(
-      ([isAuthenticated, user]) => {
-        if (isAuthenticated && user?.isChatEnabled) {
-          if (this.connectedUserId !== user.id) {
-            const token = this.authService.token;
-            if (token) {
-              this.connectSocket(token);
-              this.connectedUserId = user.id;
-              this.loadRooms()
-                .pipe(take(1))
-                .subscribe({
-                  error: () => this.roomsSubject.next([]),
-                });
-            }
+    combineLatest([
+      this.authService.isAuthenticated$,
+      this.authService.currentUser$,
+    ]).subscribe(([isAuthenticated, user]) => {
+      if (isAuthenticated && user?.isChatEnabled) {
+        if (this.connectedUserId !== user.id) {
+          const token = this.authService.token;
+          if (token) {
+            this.connectSocket(token);
+            this.connectedUserId = user.id;
+            this.loadRooms()
+              .pipe(take(1))
+              .subscribe({
+                error: () => this.roomsSubject.next([]),
+              });
           }
-        } else {
-          this.connectedUserId = null;
-          this.disconnectSocket();
-          this.roomsSubject.next([]);
         }
+      } else {
+        this.connectedUserId = null;
+        this.disconnectSocket();
+        this.roomsSubject.next([]);
+      }
+    });
+  }
+
+  loadRooms(): Observable<ChatRoom[]> {
+    return this.http
+      .get<ChatRoom[]>(`${this.baseUrl}/rooms`)
+      .pipe(tap((rooms) => this.roomsSubject.next(rooms)));
+  }
+
+  fetchMessages(
+    roomId: number,
+    beforeId?: number,
+  ): Observable<ChatMessagesResponse> {
+    const params =
+      beforeId !== undefined
+        ? new HttpParams().set('beforeId', String(beforeId))
+        : undefined;
+
+    return this.http.get<ChatMessagesResponse>(
+      `${this.baseUrl}/rooms/${roomId}/messages`,
+      {
+        params,
       },
     );
   }
 
-  loadRooms(): Observable<ChatRoom[]> {
-    return this.http.get<ChatRoom[]>(`${this.baseUrl}/rooms`).pipe(
-      tap((rooms) => this.roomsSubject.next(rooms)),
-    );
-  }
-
-  fetchMessages(roomId: number, beforeId?: number): Observable<ChatMessagesResponse> {
-    const params = beforeId !== undefined ? {beforeId} : undefined;
-    return this.http.get<ChatMessagesResponse>(`${this.baseUrl}/rooms/${roomId}/messages`, {
-      params: params as any,
-    });
-  }
-
   sendMessage(roomId: number, content: string): Observable<ChatMessage> {
-    return this.http.post<ChatMessage>(`${this.baseUrl}/rooms/${roomId}/messages`, {content});
+    return this.http.post<ChatMessage>(
+      `${this.baseUrl}/rooms/${roomId}/messages`,
+      { content },
+    );
   }
 
   private connectSocket(token: string): void {
@@ -73,7 +97,7 @@ export class ChatService {
 
     this.socket = io(this.wsNamespaceUrl, {
       transports: ['websocket'],
-      auth: {token},
+      auth: { token },
       autoConnect: true,
     });
 
@@ -82,7 +106,7 @@ export class ChatService {
     });
 
     this.socket.on('chat:disabled', () => {
-      this.toast.info('Tu as dÃ©sactivÃ© le chat pour ce compte.');
+      this.toast.info('Tu as désactivé le chat pour ce compte.');
     });
 
     this.socket.on('disconnect', () => {
@@ -107,5 +131,3 @@ export class ChatService {
     return `${trimmed}/chat`;
   }
 }
-
-

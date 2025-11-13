@@ -1,30 +1,40 @@
-﻿import {ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output,} from '@angular/core';
-import {FormControl} from '@angular/forms';
-import {of, Subject} from 'rxjs';
-import {debounceTime, distinctUntilChanged, finalize, switchMap, takeUntil} from 'rxjs/operators';
+﻿import {
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { of, Subject } from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  finalize,
+  switchMap,
+  takeUntil,
+} from 'rxjs/operators';
 
-import {UserSearchService} from '../../../core/user-search.service';
-import {UserSummary} from '../../../core/models/user.model';
+import { UserSearchService } from '../../../core/user-search.service';
+import { UserSummary } from '../../../core/models/user.model';
 
 @Component({
   selector: 'app-user-autocomplete',
   templateUrl: './user-autocomplete.component.html',
   styleUrls: ['./user-autocomplete.component.scss'],
-
   standalone: false,
 })
 export class UserAutocompleteComponent implements OnInit, OnDestroy {
   @Output() userSelected = new EventEmitter<UserSummary>();
 
-  readonly control = new FormControl('', {nonNullable: true});
+  readonly control = new FormControl('', { nonNullable: true });
   suggestions: UserSummary[] = [];
   loading = false;
 
   private readonly destroy$ = new Subject<void>();
   private readonly search$ = new Subject<string>();
 
-  constructor(private readonly userSearch: UserSearchService) {
-  }
+  constructor(private readonly userSearch: UserSearchService) {}
 
   ngOnInit(): void {
     this.search$
@@ -38,7 +48,9 @@ export class UserAutocompleteComponent implements OnInit, OnDestroy {
             return of<UserSummary[]>([]);
           }
           this.loading = true;
-          return this.userSearch.search(query).pipe(finalize(() => (this.loading = false)));
+          return this.userSearch
+            .search(query)
+            .pipe(finalize(() => (this.loading = false)));
         }),
         takeUntil(this.destroy$),
       )

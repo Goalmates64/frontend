@@ -5,9 +5,9 @@
   role="status"
 >
   <span
+    [ngClass]="circleSizeClass"
     aria-hidden="true"
     class="spinner-circle"
-    [ngClass]="circleSizeClass"
   ></span>
   <span *ngIf="label" class="text-sm font-medium">{{ label }}</span>
 </div>

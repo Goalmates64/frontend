@@ -1,6 +1,6 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {MainLayoutComponent} from './main-layout.component';
+import { MainLayoutComponent } from './main-layout.component';
 
 describe('MainLayoutComponent', () => {
   let component: MainLayoutComponent;
@@ -8,9 +8,8 @@ describe('MainLayoutComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MainLayoutComponent]
-    })
-      .compileComponents();
+      declarations: [MainLayoutComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(MainLayoutComponent);
     component = fixture.componentInstance;

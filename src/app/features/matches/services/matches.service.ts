@@ -1,9 +1,9 @@
-﻿import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
+﻿import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-import {environment} from '../../../../environments/environment';
-import {Match} from '../../../core/models/user.model';
+import { environment } from '../../../../environments/environment';
+import { Match } from '../../../core/models/user.model';
 
 export interface CreateMatchPayload {
   homeTeamId: number;
@@ -17,12 +17,11 @@ export interface ReportScorePayload {
   awayScore: number;
 }
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class MatchesService {
   private readonly baseUrl = `${environment.apiUrl}/matches`;
 
-  constructor(private readonly http: HttpClient) {
-  }
+  constructor(private readonly http: HttpClient) {}
 
   listUpcoming(): Observable<Match[]> {
     return this.http.get<Match[]>(`${this.baseUrl}/upcoming`);

@@ -1,16 +1,15 @@
-﻿import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+﻿import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import {PlacesService} from '../../../../core/places.service';
-import {Place, PlaceWithDistance} from '../../../../core/models/place.model';
-import {ToastService} from '../../../../core/toast.service';
+import { PlacesService } from '../../../../core/places.service';
+import { Place, PlaceWithDistance } from '../../../../core/models/place.model';
+import { ToastService } from '../../../../core/toast.service';
 
 @Component({
   selector: 'app-place-detail',
   templateUrl: './place-detail.component.html',
   styleUrls: ['./place-detail.component.scss'],
   standalone: false,
-
 })
 export class PlaceDetailComponent implements OnInit {
   place?: Place;
@@ -22,8 +21,7 @@ export class PlaceDetailComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly toast: ToastService,
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.loadPlace();
@@ -49,7 +47,9 @@ export class PlaceDetailComponent implements OnInit {
     if (!this.place) {
       return;
     }
-    void this.router.navigate(['/matches/create'], {queryParams: {placeId: this.place.id}});
+    void this.router.navigate(['/matches/create'], {
+      queryParams: { placeId: this.place.id },
+    });
   }
 
   private loadPlace(): void {

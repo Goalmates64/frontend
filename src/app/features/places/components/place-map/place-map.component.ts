@@ -1,6 +1,5 @@
 ﻿import {
   AfterViewInit,
-  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
@@ -14,9 +13,18 @@
 import * as L from 'leaflet';
 
 const DEFAULT_COORDS: [number, number] = [48.8566, 2.3522];
-const MARKER_ICON_RETINA = new URL('leaflet/dist/images/marker-icon-2x.png', import.meta.url).toString();
-const MARKER_ICON = new URL('leaflet/dist/images/marker-icon.png', import.meta.url).toString();
-const MARKER_SHADOW = new URL('leaflet/dist/images/marker-shadow.png', import.meta.url).toString();
+const MARKER_ICON_RETINA = new URL(
+  'leaflet/dist/images/marker-icon-2x.png',
+  import.meta.url,
+).toString();
+const MARKER_ICON = new URL(
+  'leaflet/dist/images/marker-icon.png',
+  import.meta.url,
+).toString();
+const MARKER_SHADOW = new URL(
+  'leaflet/dist/images/marker-shadow.png',
+  import.meta.url,
+).toString();
 let iconInitialized = false;
 
 function ensureLeafletIconDefaults(): void {
@@ -36,15 +44,18 @@ function ensureLeafletIconDefaults(): void {
   templateUrl: './place-map.component.html',
   styleUrls: ['./place-map.component.scss'],
   standalone: false,
-
 })
 export class PlaceMapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() lat: number | null = null;
   @Input() lng: number | null = null;
   @Input() readonly = false;
   @Input() height = '320px';
-  @Output() coordinatesChange = new EventEmitter<{ lat: number; lng: number }>();
-  @ViewChild('mapContainer', {static: true}) private readonly mapContainer?: ElementRef<HTMLDivElement>;
+  @Output() coordinatesChange = new EventEmitter<{
+    lat: number;
+    lng: number;
+  }>();
+  @ViewChild('mapContainer', { static: true })
+  private readonly mapContainer?: ElementRef<HTMLDivElement>;
 
   private map?: L.Map;
   private marker?: L.Marker;
@@ -102,6 +113,6 @@ export class PlaceMapComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   private emitCoords(lat: number, lng: number): void {
-    this.coordinatesChange.emit({lat, lng});
+    this.coordinatesChange.emit({ lat, lng });
   }
 }

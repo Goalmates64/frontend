@@ -1,9 +1,13 @@
-﻿import {Injectable} from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {Observable, of} from 'rxjs';
+﻿import { Injectable } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
 
-import {environment} from '../../environments/environment';
-import {Place, PlacesListResponse, PlaceWithDistance} from './models/place.model';
+import { environment } from '../../environments/environment';
+import {
+  Place,
+  PlacesListResponse,
+  PlaceWithDistance,
+} from './models/place.model';
 
 export interface CreatePlacePayload {
   name: string;
@@ -21,12 +25,11 @@ export interface PlacesListParams {
   query?: string;
 }
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class PlacesService {
   private readonly baseUrl = `${environment.apiUrl}/places`;
 
-  constructor(private readonly http: HttpClient) {
-  }
+  constructor(private readonly http: HttpClient) {}
 
   autocomplete(query: string, limit = 10): Observable<Place[]> {
     const trimmed = query.trim();
@@ -36,7 +39,7 @@ export class PlacesService {
 
     let params = new HttpParams().set('query', trimmed);
     params = params.set('limit', String(limit));
-    return this.http.get<Place[]>(this.baseUrl, {params});
+    return this.http.get<Place[]>(this.baseUrl, { params });
   }
 
   list(params: PlacesListParams): Observable<PlacesListResponse> {
@@ -50,17 +53,25 @@ export class PlacesService {
     if (params.query?.trim()) {
       httpParams = httpParams.set('query', params.query.trim());
     }
-    return this.http.get<PlacesListResponse>(`${this.baseUrl}/list`, {params: httpParams});
+    return this.http.get<PlacesListResponse>(`${this.baseUrl}/list`, {
+      params: httpParams,
+    });
   }
 
-  nearby(lat: number, lng: number, radius?: number): Observable<PlaceWithDistance[]> {
+  nearby(
+    lat: number,
+    lng: number,
+    radius?: number,
+  ): Observable<PlaceWithDistance[]> {
     let params = new HttpParams()
       .set('lat', String(lat))
       .set('lng', String(lng));
     if (radius) {
       params = params.set('radius', String(radius));
     }
-    return this.http.get<PlaceWithDistance[]>(`${this.baseUrl}/nearby`, {params});
+    return this.http.get<PlaceWithDistance[]>(`${this.baseUrl}/nearby`, {
+      params,
+    });
   }
 
   getById(id: number): Observable<Place> {

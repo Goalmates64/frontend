@@ -1,11 +1,10 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-spinner',
   standalone: false,
   templateUrl: './spinner.component.html',
   styleUrl: './spinner.component.scss',
-
 })
 export class SpinnerComponent {
   @Input() label = 'Chargement...';
@@ -18,9 +17,10 @@ export class SpinnerComponent {
   }
 
   get containerClasses(): string {
-    const base = this.layout === 'block'
-      ? 'flex flex-col items-center justify-center gap-3 text-center'
-      : 'inline-flex items-center gap-2';
+    const base =
+      this.layout === 'block'
+        ? 'flex flex-col items-center justify-center gap-3 text-center'
+        : 'inline-flex items-center gap-2';
     return `${base} ${this.colorClass}`.trim();
   }
 
