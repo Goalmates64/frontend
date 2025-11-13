@@ -9,7 +9,7 @@ import {LoginPayload} from '../../../../core/models/auth.model';
   standalone: false,
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
 })
 export class LoginComponent {
   form: FormGroup;

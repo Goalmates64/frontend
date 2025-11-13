@@ -15,8 +15,9 @@
             <p class="text-lg font-semibold font-mono">{{ team.inviteCode }}</p>
           </div>
           <button (click)="copyInviteCode(team.inviteCode)"
-                  class="text-xs text-gm-muted border border-gm-border rounded-lg px-3 py-1 hover:bg-gm-surface2">
-            Copier
+                  class="inline-flex items-center gap-2 text-xs text-gm-muted border border-gm-border rounded-lg px-3 py-1 hover:bg-gm-surface2">
+            <i aria-hidden="true" class="fa-solid fa-copy"></i>
+            <span>Copier</span>
           </button>
         </div>
         <div *ngIf="(isCaptain$ | async)" class="space-y-2">
@@ -28,9 +29,10 @@
               placeholder="Nouveau nom"
             />
             <button (click)="saveName()"
-                    class="px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold hover:bg-emerald-500 transition"
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold hover:bg-emerald-500 transition"
                     type="button">
-              Enregistrer
+              <i aria-hidden="true" class="fa-solid fa-floppy-disk"></i>
+              <span>Enregistrer</span>
             </button>
           </div>
         </div>
@@ -68,10 +70,11 @@
         <button
           (click)="addSelectedUser()"
           [disabled]="!selectedUser"
-          class="mt-3 w-full px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold disabled:opacity-50"
+          class="mt-3 inline-flex w-full items-center justify-center gap-2 px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold disabled:opacity-50"
           type="button"
         >
-          Ajouter {{ selectedUser?.username || '' }}
+          <i aria-hidden="true" class="fa-solid fa-user-plus"></i>
+          <span>Ajouter {{ selectedUser?.username || '' }}</span>
         </button>
       </section>
 
@@ -85,5 +88,5 @@
 </section>
 
 <ng-template #loadingTpl>
-  <div class="text-sm text-gm-muted">Chargement de l’équipe...</div>
+  <app-spinner label="Chargement de l'équipe..." layout="block"></app-spinner>
 </ng-template>

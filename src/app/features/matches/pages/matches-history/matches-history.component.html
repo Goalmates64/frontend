@@ -5,7 +5,7 @@
     <p class="text-gm-muted text-sm">Scores finalisés et matchs annulés.</p>
   </header>
 
-  <div *ngIf="loading$ | async" class="text-sm text-gm-muted">Chargement...</div>
+  <app-spinner *ngIf="loading$ | async" label="Chargement..." layout="block"></app-spinner>
 
   <div *ngIf="(matches$ | async) as matches" class="space-y-4">
     <article

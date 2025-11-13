@@ -10,7 +10,7 @@ import {Place} from '../../../../core/models/place.model';
   templateUrl: './places-list.component.html',
   styleUrls: ['./places-list.component.scss'],
   standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
 })
 export class PlacesListComponent implements OnInit {
   places: Place[] = [];

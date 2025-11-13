@@ -9,7 +9,7 @@ import {ToastService} from '../../../core/toast.service';
   standalone: false,
   templateUrl: './toast-container.component.html',
   styleUrl: './toast-container.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
 })
 export class ToastContainerComponent {
   toasts$: Observable<Toast[]>;
@@ -27,16 +27,29 @@ export class ToastContainerComponent {
   }
 
   toastClasses(toast: Toast): string {
-    const base = 'flex items-start gap-3 rounded-xl border px-4 py-3 shadow-lg backdrop-blur text-sm';
+    const base = 'pointer-events-auto flex w-full items-start gap-3 rounded-2xl border px-4 py-3 shadow-lg backdrop-blur text-sm';
     switch (toast.variant) {
       case 'success':
-        return `${base} border-emerald-300/40 bg-emerald-600/90 text-white`;
+        return `${base} border-emerald-300/40 bg-emerald-600/95 text-white`;
       case 'warning':
-        return `${base} border-amber-300/40 bg-amber-500/90 text-slate-950`;
+        return `${base} border-amber-300/40 bg-amber-300 text-slate-900`;
       case 'error':
-        return `${base} border-rose-300/40 bg-rose-600/90 text-white`;
+        return `${base} border-rose-300/40 bg-rose-600/95 text-white`;
       default:
-        return `${base} border-slate-200/40 bg-slate-800/80 text-white`;
+        return `${base} border-slate-200/40 bg-slate-800/90 text-white`;
+    }
+  }
+
+  toastIcon(toast: Toast): string {
+    switch (toast.variant) {
+      case 'success':
+        return 'fa-solid fa-circle-check text-emerald-100';
+      case 'warning':
+        return 'fa-solid fa-triangle-exclamation text-amber-600';
+      case 'error':
+        return 'fa-solid fa-circle-xmark text-rose-100';
+      default:
+        return 'fa-solid fa-circle-info text-slate-100';
     }
   }
 }

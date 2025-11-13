@@ -8,6 +8,7 @@ import {ButtonComponent} from './ui/button/button.component';
 import {NavbarComponent} from './layout/navbar/navbar.component';
 import {ToastContainerComponent} from './ui/toast-container/toast-container.component';
 import {UserAutocompleteComponent} from './ui/user-autocomplete/user-autocomplete.component';
+import {SpinnerComponent} from './ui/spinner/spinner.component';
 
 @NgModule({
   declarations: [
@@ -16,11 +17,13 @@ import {UserAutocompleteComponent} from './ui/user-autocomplete/user-autocomplet
     NavbarComponent,
     ToastContainerComponent,
     UserAutocompleteComponent,
+    SpinnerComponent,
   ],
   exports: [
     NavbarComponent,
     ToastContainerComponent,
     UserAutocompleteComponent,
+    SpinnerComponent,
   ],
   imports: [
     CommonModule,

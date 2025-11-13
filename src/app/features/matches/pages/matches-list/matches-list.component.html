@@ -7,21 +7,23 @@
     </div>
     <div class="flex gap-2">
       <a
-        class="px-4 py-2 rounded-lg border border-gm-border text-sm text-gm-muted hover:bg-gm-surface2 transition text-center"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gm-border text-sm text-gm-muted hover:bg-gm-surface2 transition text-center"
         routerLink="/matches/history"
       >
-        Historique
+        <i aria-hidden="true" class="fa-solid fa-clock-rotate-left"></i>
+        <span>Historique</span>
       </a>
       <a
-        class="px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold hover:bg-emerald-500 transition text-center"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold hover:bg-emerald-500 transition text-center"
         routerLink="/matches/create"
       >
-        Programmer un match
+        <i aria-hidden="true" class="fa-solid fa-calendar-plus"></i>
+        <span>Programmer un match</span>
       </a>
     </div>
   </header>
 
-  <div *ngIf="loading$ | async" class="text-sm text-gm-muted">Chargement des matchs...</div>
+  <app-spinner *ngIf="loading$ | async" label="Chargement des matchs..." layout="block"></app-spinner>
 
   <div *ngIf="(matches$ | async) as matches" class="space-y-4">
     <div *ngIf="!matches.length && !(loading$ | async)"
@@ -48,9 +50,10 @@
         <button
           (click)="startScore(match.id)"
           *ngIf="match.status === 'scheduled'"
-          class="text-sm px-3 py-1 rounded-lg border border-gm-border hover:bg-gm-surface2 transition"
+          class="inline-flex items-center gap-2 text-sm px-3 py-1 rounded-lg border border-gm-border hover:bg-gm-surface2 transition"
         >
-          Reporter un score
+          <i aria-hidden="true" class="fa-solid fa-pen-to-square"></i>
+          <span>Reporter un score</span>
         </button>
         <div *ngIf="match.status === 'played'" class="text-sm font-semibold">
           {{ match.homeScore }} - {{ match.awayScore }}

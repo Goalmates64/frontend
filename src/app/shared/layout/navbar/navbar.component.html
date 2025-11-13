@@ -20,28 +20,31 @@
     <nav class="hidden md:flex items-center gap-4 ml-auto">
       <a
         [routerLinkActiveOptions]="{ exact: true }"
-        class="text-sm text-gm-muted hover:text-gm-text transition"
+        class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
         routerLink="/"
         routerLinkActive="text-gm-primary"
       >
-        Accueil
+        <i aria-hidden="true" class="fa-solid fa-house text-xs"></i>
+        <span>Accueil</span>
       </a>
 
       <!-- Liens quand NON authentifié -->
       <ng-container *ngIf="!(isAuthenticated$ | async); else authLinks">
         <a
-          class="text-sm text-gm-muted hover:text-gm-text transition"
+          class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
           routerLink="/auth/login"
           routerLinkActive="text-gm-primary"
         >
-          Connexion
+          <i aria-hidden="true" class="fa-solid fa-right-to-bracket text-xs"></i>
+          <span>Connexion</span>
         </a>
         <a
-          class="text-sm text-gm-muted hover:text-gm-text transition"
+          class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
           routerLink="/auth/register"
           routerLinkActive="text-gm-primary"
         >
-          Créer un compte
+          <i aria-hidden="true" class="fa-solid fa-user-plus text-xs"></i>
+          <span>Créer un compte</span>
         </a>
       </ng-container>
 
@@ -49,32 +52,36 @@
       <ng-template #authLinks>
         <ng-container *ngIf="(currentUser$ | async) as user">
           <a
-            class="text-sm text-gm-muted hover:text-gm-text transition"
+            class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
             routerLink="/teams"
             routerLinkActive="text-gm-primary"
           >
-            Mes équipes
+            <i aria-hidden="true" class="fa-solid fa-people-group text-xs"></i>
+            <span>Mes équipes</span>
           </a>
           <a
-            class="text-sm text-gm-muted hover:text-gm-text transition"
+            class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
             routerLink="/matches"
             routerLinkActive="text-gm-primary"
           >
-            Matchs
+            <i aria-hidden="true" class="fa-regular fa-futbol text-xs"></i>
+            <span>Matchs</span>
           </a>
           <a
-            class="text-sm text-gm-muted hover:text-gm-text transition"
+            class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
             routerLink="/places"
             routerLinkActive="text-gm-primary"
           >
-            Lieux
+            <i aria-hidden="true" class="fa-solid fa-location-dot text-xs"></i>
+            <span>Lieux</span>
           </a>
           <a
-            class="text-sm text-gm-muted hover:text-gm-text transition"
+            class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
             routerLink="/chat"
             routerLinkActive="text-gm-primary"
           >
-            Chat
+            <i aria-hidden="true" class="fa-solid fa-comments text-xs"></i>
+            <span>Chat</span>
           </a>
           <div
             #notificationsContainer
@@ -87,20 +94,7 @@
               class="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-gm-muted transition hover:bg-gm-surface hover:text-gm-text"
               type="button"
             >
-              <svg
-                class="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0 1 18 14.158V11a6 6 0 1 0-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 1 1-6 0v-1m6 0H9"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
+              <i aria-hidden="true" class="fa-regular fa-bell text-base"></i>
               <span
                 *ngIf="(unreadCount$ | async) as notifCount"
                 [class.hidden]="notifCount === 0"
@@ -264,30 +258,33 @@
       <a
         (click)="closeMobileMenu()"
         [routerLinkActiveOptions]="{ exact: true }"
-        class="text-sm text-gm-muted hover:text-gm-text transition"
+        class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
         routerLink="/"
         routerLinkActive="text-gm-primary"
       >
-        Accueil
+        <i aria-hidden="true" class="fa-solid fa-house text-xs"></i>
+        <span>Accueil</span>
       </a>
 
       <!-- Mobile: non authentifié -->
       <ng-container *ngIf="!(isAuthenticated$ | async); else mobileAuthLinks">
         <a
           (click)="closeMobileMenu()"
-          class="text-sm text-gm-muted hover:text-gm-text transition"
+          class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
           routerLink="/auth/login"
           routerLinkActive="text-gm-primary"
         >
-          Connexion
+          <i aria-hidden="true" class="fa-solid fa-right-to-bracket text-xs"></i>
+          <span>Connexion</span>
         </a>
         <a
           (click)="closeMobileMenu()"
-          class="text-sm text-gm-muted hover:text-gm-text transition"
+          class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
           routerLink="/auth/register"
           routerLinkActive="text-gm-primary"
         >
-          Créer un compte
+          <i aria-hidden="true" class="fa-solid fa-user-plus text-xs"></i>
+          <span>Créer un compte</span>
         </a>
       </ng-container>
 
@@ -318,43 +315,48 @@
             </div>
             <a
               (click)="closeMobileMenu()"
-              class="text-sm text-gm-muted hover:text-gm-text transition"
+              class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
               routerLink="/profil"
               routerLinkActive="text-gm-primary"
             >
-              Mon profil
+              <i aria-hidden="true" class="fa-solid fa-user text-xs"></i>
+              <span>Mon profil</span>
             </a>
             <a
               (click)="closeMobileMenu()"
-              class="text-sm text-gm-muted hover:text-gm-text transition"
+              class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
               routerLink="/teams"
               routerLinkActive="text-gm-primary"
             >
-              Mes équipes
+              <i aria-hidden="true" class="fa-solid fa-people-group text-xs"></i>
+              <span>Mes équipes</span>
             </a>
             <a
               (click)="closeMobileMenu()"
-              class="text-sm text-gm-muted hover:text-gm-text transition"
+              class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
               routerLink="/matches"
               routerLinkActive="text-gm-primary"
             >
-              Matchs
+              <i aria-hidden="true" class="fa-regular fa-futbol text-xs"></i>
+              <span>Matchs</span>
             </a>
             <a
               (click)="closeMobileMenu()"
-              class="text-sm text-gm-muted hover:text-gm-text transition"
+              class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
               routerLink="/places"
               routerLinkActive="text-gm-primary"
             >
-              Lieux
+              <i aria-hidden="true" class="fa-solid fa-location-dot text-xs"></i>
+              <span>Lieux</span>
             </a>
             <a
               (click)="closeMobileMenu()"
-              class="text-sm text-gm-muted hover:text-gm-text transition"
+              class="inline-flex items-center gap-2 text-sm text-gm-muted hover:text-gm-text transition"
               routerLink="/chat"
               routerLinkActive="text-gm-primary"
             >
-              Chat
+              <i aria-hidden="true" class="fa-solid fa-comments text-xs"></i>
+              <span>Chat</span>
             </a>
             <a
               (click)="closeMobileMenu()"
@@ -362,7 +364,10 @@
               routerLink="/notifications"
               routerLinkActive="text-gm-primary"
             >
-              <span>Notifications</span>
+              <span class="inline-flex items-center gap-2">
+                <i aria-hidden="true" class="fa-regular fa-bell text-xs"></i>
+                <span>Notifications</span>
+              </span>
               <span
                 *ngIf="(unreadCount$ | async) as notifCount"
                 [class.hidden]="notifCount === 0"

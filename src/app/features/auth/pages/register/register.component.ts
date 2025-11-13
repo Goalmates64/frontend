@@ -9,7 +9,7 @@ import {RegisterPayload} from '../../../../core/models/auth.model';
   standalone: false,
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
 })
 export class RegisterComponent {
   form: FormGroup;

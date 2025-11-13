@@ -6,10 +6,11 @@
       <p class="text-gm-muted text-sm">Centralise les lieux utilisables lors de la création d’un match.</p>
     </div>
     <a
-      class="inline-flex items-center justify-center rounded-lg bg-gm-primary text-gm-bg px-4 py-2 text-sm font-semibold hover:bg-emerald-500 transition"
+      class="inline-flex items-center justify-center gap-2 rounded-lg bg-gm-primary text-gm-bg px-4 py-2 text-sm font-semibold hover:bg-emerald-500 transition"
       routerLink="/places/new"
     >
-      Créer un lieu
+      <i aria-hidden="true" class="fa-solid fa-plus"></i>
+      <span>Créer un lieu</span>
     </a>
   </header>
 
@@ -20,12 +21,17 @@
       placeholder="Rechercher un lieu par nom ou ville"
       type="text"
     />
-    <button class="rounded-lg border border-gm-border px-4 py-2 text-sm hover:bg-gm-surface2 transition" type="submit">
-      Rechercher
+    <button class="inline-flex items-center justify-center gap-2 rounded-lg border border-gm-border px-4 py-2 text-sm hover:bg-gm-surface2 transition" type="submit">
+      <i aria-hidden="true" class="fa-solid fa-magnifying-glass text-xs"></i>
+      <span>Rechercher</span>
     </button>
   </form>
 
-  <div *ngIf="loading && !places.length" class="text-sm text-gm-muted">Chargement des lieux...</div>
+  <app-spinner
+    *ngIf="loading && !places.length"
+    label="Chargement des lieux..."
+    layout="block"
+  ></app-spinner>
 
   <div *ngIf="!loading && !places.length"
        class="border border-dashed border-gm-border rounded-2xl p-8 text-sm text-gm-muted text-center">
@@ -51,22 +57,25 @@
         <div class="flex gap-2">
           <a
             [routerLink]="['/places', place.id]"
-            class="rounded-lg border border-gm-border px-3 py-1 text-xs text-gm-muted hover:bg-gm-surface2"
+            class="inline-flex items-center gap-2 rounded-lg border border-gm-border px-3 py-1 text-xs text-gm-muted hover:bg-gm-surface2"
           >
-            Détails
+            <i aria-hidden="true" class="fa-regular fa-eye"></i>
+            <span>Détails</span>
           </a>
           <a
             [routerLink]="['/places', place.id, 'edit']"
-            class="rounded-lg border border-gm-border px-3 py-1 text-xs text-gm-muted hover:bg-gm-surface2"
+            class="inline-flex items-center gap-2 rounded-lg border border-gm-border px-3 py-1 text-xs text-gm-muted hover:bg-gm-surface2"
           >
-            Modifier
+            <i aria-hidden="true" class="fa-solid fa-pen"></i>
+            <span>Modifier</span>
           </a>
           <button
             (click)="delete(place)"
-            class="rounded-lg border border-red-500/40 px-3 py-1 text-xs text-red-300 hover:bg-red-500/10"
+            class="inline-flex items-center gap-2 rounded-lg border border-red-500/40 px-3 py-1 text-xs text-red-300 hover:bg-red-500/10"
             type="button"
           >
-            Supprimer
+            <i aria-hidden="true" class="fa-solid fa-trash"></i>
+            <span>Supprimer</span>
           </button>
         </div>
       </div>
@@ -80,7 +89,12 @@
       class="rounded-lg border border-gm-border px-4 py-2 text-sm text-gm-muted hover:bg-gm-surface2 transition disabled:opacity-60"
       type="button"
     >
-      {{ loading ? 'Chargement...' : 'Charger plus' }}
+      <ng-container *ngIf="loading; else loadMoreLabel">
+        <app-spinner label="Chargement..." size="sm"></app-spinner>
+      </ng-container>
+      <ng-template #loadMoreLabel>
+        Charger plus
+      </ng-template>
     </button>
   </div>
 </section>

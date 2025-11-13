@@ -1,0 +1,38 @@
+:host {
+  display: inline-flex;
+}
+
+.spinner-circle {
+  border-radius: 9999px;
+  border-style: solid;
+  border-color: currentColor transparent currentColor transparent;
+  animation: spinner-rotate 0.9s linear infinite;
+  display: inline-block;
+}
+
+.spinner-circle--sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 2px;
+}
+
+.spinner-circle--md {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-width: 3px;
+}
+
+.spinner-circle--lg {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-width: 4px;
+}
+
+@keyframes spinner-rotate {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

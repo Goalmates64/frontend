@@ -9,7 +9,11 @@
     {{ apiError }}
   </div>
 
-  <div *ngIf="loading" class="text-sm text-gm-muted">Chargement du lieu...</div>
+  <app-spinner
+    *ngIf="loading"
+    label="Chargement du lieu..."
+    layout="block"
+  ></app-spinner>
   <app-place-form
     (cancel)="cancel()"
     (formSubmit)="submit($event)"

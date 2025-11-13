@@ -13,7 +13,7 @@ import {User} from '../../../core/models/user.model';
   standalone: false,
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
 })
 export class NavbarComponent {
   isAuthenticated$: Observable<boolean>;

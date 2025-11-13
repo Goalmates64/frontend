@@ -9,7 +9,7 @@ import {ToastService} from '../../../../core/toast.service';
   selector: 'app-matches-history',
   templateUrl: './matches-history.component.html',
   styleUrls: ['./matches-history.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
   standalone: false,
 })
 export class MatchesHistoryComponent implements OnInit {

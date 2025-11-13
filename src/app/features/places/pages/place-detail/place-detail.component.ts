@@ -10,7 +10,7 @@ import {ToastService} from '../../../../core/toast.service';
   templateUrl: './place-detail.component.html',
   styleUrls: ['./place-detail.component.scss'],
   standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
 })
 export class PlaceDetailComponent implements OnInit {
   place?: Place;

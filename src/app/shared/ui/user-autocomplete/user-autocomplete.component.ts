@@ -10,7 +10,7 @@ import {UserSummary} from '../../../core/models/user.model';
   selector: 'app-user-autocomplete',
   templateUrl: './user-autocomplete.component.html',
   styleUrls: ['./user-autocomplete.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
   standalone: false,
 })
 export class UserAutocompleteComponent implements OnInit, OnDestroy {

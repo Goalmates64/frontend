@@ -1,20 +1,26 @@
-<div class="fixed top-4 right-4 z-50 flex w-full max-w-sm flex-col gap-3 sm:right-6 sm:top-6">
+<div
+  class="pointer-events-none fixed inset-x-4 bottom-4 z-50 flex flex-col gap-3 sm:inset-x-auto sm:bottom-auto sm:right-6 sm:top-6 sm:w-full sm:max-w-sm"
+>
   <div
     *ngFor="let toast of toasts$ | async; trackBy: trackById"
     class="fade-in-up"
     [ngClass]="toastClasses(toast)"
   >
+    <div class="text-lg" aria-hidden="true">
+      <i [ngClass]="toastIcon(toast)"></i>
+    </div>
     <div class="flex-1">
       <p class="font-semibold capitalize">{{ toast.variant }}</p>
       <p class="leading-relaxed">{{ toast.message }}</p>
     </div>
     <button
       aria-label="Fermer la notification"
-      class="rounded-full px-2 text-sm font-semibold uppercase tracking-wide text-white/80 hover:text-white"
+      class="inline-flex h-8 w-8 items-center justify-center rounded-full text-base opacity-80 transition hover:opacity-100"
+      style="color: inherit"
       (click)="onDismiss(toast.id)"
       type="button"
     >
-      x
+      <i class="fa-solid fa-xmark" aria-hidden="true"></i>
     </button>
   </div>
 </div>

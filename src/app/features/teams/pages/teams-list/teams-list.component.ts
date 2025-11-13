@@ -11,7 +11,7 @@ import {ToastService} from '../../../../core/toast.service';
   selector: 'app-teams-list',
   templateUrl: './teams-list.component.html',
   styleUrls: ['./teams-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
   standalone: false,
 })
 export class TeamsListComponent implements OnInit {

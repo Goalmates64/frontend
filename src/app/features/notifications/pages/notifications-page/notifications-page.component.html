@@ -9,18 +9,14 @@
       class="inline-flex items-center gap-2 rounded-lg border border-gm-border px-4 py-2 text-sm text-gm-muted hover:bg-gm-surface2"
       type="button"
     >
-      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
-           xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 4v5h.582m15.8 2A8.001 8.001 0 0 0 5.582 9H4m0 0a8 8 0 1 0 13.657 5.657" stroke-linecap="round"
-              stroke-linejoin="round"/>
-      </svg>
-      Actualiser
+      <i aria-hidden="true" class="fa-solid fa-arrows-rotate"></i>
+      <span>Actualiser</span>
     </button>
   </div>
 
   <div *ngIf="isLoading"
-       class="rounded-lg border border-dashed border-gm-border bg-gm-surface2 p-6 text-center text-sm text-gm-muted">
-    Chargement des notifications...
+       class="rounded-lg border border-dashed border-gm-border bg-gm-surface2 p-6 text-center">
+    <app-spinner label="Chargement des notifications..." layout="block"></app-spinner>
   </div>
 
   <div *ngIf="!isLoading && notifications.length === 0"
@@ -48,10 +44,11 @@
         <button
           (click)="markAsRead(notification)"
           *ngIf="!notification.isRead"
-          class="whitespace-nowrap rounded-full bg-gm-primary/10 px-3 py-1 text-xs font-semibold text-gm-primary hover:bg-gm-primary/20"
+          class="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-gm-primary/10 px-3 py-1 text-xs font-semibold text-gm-primary hover:bg-gm-primary/20"
           type="button"
         >
-          Marquer comme lue
+          <i aria-hidden="true" class="fa-solid fa-check"></i>
+          <span>Marquer comme lue</span>
         </button>
         <span *ngIf="notification.isRead"
               class="whitespace-nowrap rounded-full bg-gm-surface px-3 py-1 text-xs font-semibold text-gm-muted">

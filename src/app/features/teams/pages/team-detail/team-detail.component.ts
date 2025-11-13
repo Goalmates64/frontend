@@ -13,7 +13,7 @@ import {AuthService} from '../../../../core/auth.service';
   selector: 'app-team-detail',
   templateUrl: './team-detail.component.html',
   styleUrls: ['./team-detail.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
   standalone: false,
 })
 export class TeamDetailComponent implements OnInit {

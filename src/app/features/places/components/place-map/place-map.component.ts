@@ -36,7 +36,7 @@ function ensureLeafletIconDefaults(): void {
   templateUrl: './place-map.component.html',
   styleUrls: ['./place-map.component.scss'],
   standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
 })
 export class PlaceMapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() lat: number | null = null;

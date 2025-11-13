@@ -10,6 +10,7 @@ import {PlaceDetailComponent} from './pages/place-detail/place-detail.component'
 import {PlaceEditComponent} from './pages/place-edit/place-edit.component';
 import {PlaceFormComponent} from './components/place-form/place-form.component';
 import {PlaceMapComponent} from './components/place-map/place-map.component';
+import {SharedModule} from '../../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,7 @@ import {PlaceMapComponent} from './components/place-map/place-map.component';
     PlaceFormComponent,
     PlaceMapComponent,
   ],
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, PlacesRoutingModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, SharedModule, PlacesRoutingModule],
 })
 export class PlacesModule {
 }

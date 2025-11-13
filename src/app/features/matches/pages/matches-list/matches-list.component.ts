@@ -10,7 +10,7 @@ import {ToastService} from '../../../../core/toast.service';
   selector: 'app-matches-list',
   templateUrl: './matches-list.component.html',
   styleUrls: ['./matches-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
   standalone: false,
 })
 export class MatchesListComponent implements OnInit {

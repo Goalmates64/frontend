@@ -15,7 +15,7 @@ import {Place} from '../../../../core/models/place.model';
   selector: 'app-match-create',
   templateUrl: './match-create.component.html',
   styleUrls: ['./match-create.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
   standalone: false,
 })
 export class MatchCreateComponent implements OnInit, OnDestroy {

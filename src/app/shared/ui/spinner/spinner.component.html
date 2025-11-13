@@ -1,0 +1,13 @@
+<div
+  [attr.aria-label]="accessibleLabel"
+  [ngClass]="containerClasses"
+  aria-live="polite"
+  role="status"
+>
+  <span
+    aria-hidden="true"
+    class="spinner-circle"
+    [ngClass]="circleSizeClass"
+  ></span>
+  <span *ngIf="label" class="text-sm font-medium">{{ label }}</span>
+</div>

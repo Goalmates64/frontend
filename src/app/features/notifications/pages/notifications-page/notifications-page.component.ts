@@ -9,7 +9,7 @@ import {AppNotification} from '../../../../core/models/notification.model';
   selector: 'app-notifications-page',
   templateUrl: './notifications-page.component.html',
   styleUrl: './notifications-page.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
   standalone: false,
 })
 export class NotificationsPageComponent implements OnDestroy {

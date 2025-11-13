@@ -22,7 +22,7 @@ import {AuthService} from '../../../../core/auth.service';
   standalone: false,
   templateUrl: './chat-page.component.html',
   styleUrls: ['./chat-page.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
 })
 export class ChatPageComponent {
   rooms: ChatRoom[] = [];

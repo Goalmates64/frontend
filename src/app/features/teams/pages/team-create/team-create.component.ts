@@ -9,7 +9,7 @@ import {ToastService} from '../../../../core/toast.service';
   selector: 'app-team-create',
   templateUrl: './team-create.component.html',
   styleUrls: ['./team-create.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
   standalone: false,
 })
 export class TeamCreateComponent {

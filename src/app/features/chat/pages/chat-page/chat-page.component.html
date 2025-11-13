@@ -38,16 +38,12 @@
           class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gm-border text-gm-muted hover:text-gm-text hover:border-gm-text transition"
           type="button"
         >
-          <svg *ngIf="!roomsLoading" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2"
-               viewBox="0 0 24 24">
-            <path d="M4 4v6h6M20 20v-6h-6" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M4 10a8 8 0 0 1 13.856-4.856M20 14a8 8 0 0 1-13.856 4.856" stroke-linecap="round"
-                  stroke-linejoin="round"/>
-          </svg>
-          <svg *ngIf="roomsLoading" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" fill="currentColor"></path>
-          </svg>
+          <ng-container *ngIf="!roomsLoading; else roomsLoadingTpl">
+            <i aria-hidden="true" class="fa-solid fa-arrows-rotate"></i>
+          </ng-container>
+          <ng-template #roomsLoadingTpl>
+            <app-spinner colorClass="text-current" label="" size="sm"></app-spinner>
+          </ng-template>
         </button>
       </div>
       <div class="flex-1 overflow-y-auto">
@@ -98,7 +94,8 @@
         </header>
 
         <div #messagesContainer class="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-          <div *ngIf="messageLoading" class="flex justify-center"><span class="text-xs text-gm-muted">Chargement des messages...</span>
+          <div *ngIf="messageLoading" class="flex justify-center">
+            <app-spinner label="Chargement des messages..." size="sm"></app-spinner>
           </div>
           <button
             (click)="loadOlderMessages()"
@@ -107,11 +104,15 @@
             class="mx-auto mb-2 inline-flex items-center gap-2 rounded-full border border-gm-border px-4 py-1 text-xs text-gm-muted hover:text-gm-text"
             type="button"
           >
-            <svg *ngIf="historyLoading" class="h-3 w-3 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" fill="currentColor"></path>
-            </svg>
-            <span>{{ historyLoading ? 'Chargement...' : 'Voir les messages précédents' }}</span>
+            <ng-container *ngIf="historyLoading; else historyLabel">
+              <app-spinner label="Chargement..." size="sm"></app-spinner>
+            </ng-container>
+            <ng-template #historyLabel>
+              <span class="inline-flex items-center gap-2">
+                <i aria-hidden="true" class="fa-solid fa-clock-rotate-left"></i>
+                <span>Voir les messages précédents</span>
+              </span>
+            </ng-template>
           </button>
 
           <ng-container *ngIf="selectedMessages.length; else noMessages">

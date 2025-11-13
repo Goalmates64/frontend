@@ -22,7 +22,7 @@ interface CountryOption extends CountryDto {
   standalone: false,
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
 })
 export class ProfileComponent {
   readonly today = new Date().toISOString().split('T')[0];

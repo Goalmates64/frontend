@@ -7,10 +7,11 @@
     </div>
     <button
       (click)="goToCreate()"
-      class="px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold hover:bg-emerald-500 transition"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold hover:bg-emerald-500 transition"
       type="button"
     >
-      Créer une équipe
+      <i aria-hidden="true" class="fa-solid fa-people-group"></i>
+      <span>Créer une équipe</span>
     </button>
   </header>
 
@@ -24,7 +25,7 @@
           Aucune équipe pour l'instant. Lance-toi ou colle un code !
         </div>
 
-        <div *ngIf="loading$ | async" class="text-sm text-gm-muted">Chargement...</div>
+        <app-spinner *ngIf="loading$ | async" label="Chargement des équipes..."></app-spinner>
 
         <article
           *ngFor="let team of teams"
@@ -42,9 +43,10 @@
               <span class="text-xs text-gm-muted">{{ team.members.length }} joueurs</span>
               <a
                 [routerLink]="['/teams', team.id]"
-                class="mt-2 text-xs text-gm-primary underline"
+                class="mt-2 inline-flex items-center gap-2 text-xs text-gm-primary underline"
               >
-                Voir les détails
+                <span>Voir les détails</span>
+                <i aria-hidden="true" class="fa-solid fa-arrow-right"></i>
               </a>
             </div>
           </div>
@@ -86,12 +88,13 @@
         </div>
 
         <button
-          class="w-full px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold hover:bg-emerald-500 transition"
+          class="inline-flex w-full items-center justify-center gap-2 px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold hover:bg-emerald-500 transition"
           type="submit"
         >
-          Rejoindre
+          <i aria-hidden="true" class="fa-solid fa-right-to-bracket"></i>
+          <span>Rejoindre</span>
         </button>
-      </form>
+     </form>
     </aside>
   </div>
 </section>

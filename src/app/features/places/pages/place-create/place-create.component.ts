@@ -10,7 +10,7 @@ import {PlaceWithDistance} from '../../../../core/models/place.model';
   templateUrl: './place-create.component.html',
   styleUrls: ['./place-create.component.scss'],
   standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+
 })
 export class PlaceCreateComponent {
   loading = false;
@@ -41,7 +41,7 @@ export class PlaceCreateComponent {
         this.loading = false;
         if (error.status === 409 && error.error?.conflicts) {
           this.conflicts = error.error.conflicts;
-          this.apiError = error.error?.message ?? 'Lieu trop proche d’un autre.';
+          this.apiError = error.error?.message ?? "Lieu trop proche d'un autre.";
           return;
         }
         this.apiError = error.error?.message ?? 'Impossible de créer le lieu.';

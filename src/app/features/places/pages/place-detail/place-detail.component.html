@@ -7,16 +7,19 @@
     </div>
     <div class="flex flex-wrap gap-2">
       <button (click)="goToMatches()"
-              class="rounded-lg border border-gm-border px-4 py-2 text-sm text-gm-muted hover:bg-gm-surface2" type="button">
-        Utiliser pour un match
+              class="inline-flex items-center gap-2 rounded-lg border border-gm-border px-4 py-2 text-sm text-gm-muted hover:bg-gm-surface2" type="button">
+        <i aria-hidden="true" class="fa-regular fa-futbol"></i>
+        <span>Utiliser pour un match</span>
       </button>
       <a [routerLink]="['/places', current.id, 'edit']"
-         class="rounded-lg border border-gm-border px-4 py-2 text-sm text-gm-muted hover:bg-gm-surface2">
-        Modifier
+         class="inline-flex items-center gap-2 rounded-lg border border-gm-border px-4 py-2 text-sm text-gm-muted hover:bg-gm-surface2">
+        <i aria-hidden="true" class="fa-solid fa-pen"></i>
+        <span>Modifier</span>
       </a>
       <button (click)="delete()"
-              class="rounded-lg border border-red-500/40 px-4 py-2 text-sm text-red-300 hover:bg-red-500/10" type="button">
-        Supprimer
+              class="inline-flex items-center gap-2 rounded-lg border border-red-500/40 px-4 py-2 text-sm text-red-300 hover:bg-red-500/10" type="button">
+        <i aria-hidden="true" class="fa-solid fa-trash"></i>
+        <span>Supprimer</span>
       </button>
     </div>
   </header>
@@ -62,5 +65,5 @@
 </section>
 
 <ng-template #loadingTpl>
-  <div class="text-sm text-gm-muted">Chargement du lieu...</div>
+  <app-spinner label="Chargement du lieu..." layout="block"></app-spinner>
 </ng-template>
