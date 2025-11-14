@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { PageTitleService } from './core/page-title.service';
 
 @Component({
   selector: 'app-root',
@@ -7,5 +8,7 @@ import { Component } from '@angular/core';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  title = 'frontend';
+  constructor(private readonly pageTitle: PageTitleService) {
+    this.pageTitle.init();
+  }
 }
