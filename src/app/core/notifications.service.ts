@@ -17,7 +17,6 @@ export class NotificationsService {
     AppNotification[]
   >([]);
   readonly notifications$ = this.notificationsSubject.asObservable();
-
   readonly unreadNotifications$ = this.notifications$.pipe(
     map((notifications) =>
       notifications.filter((notification) => !notification.isRead),

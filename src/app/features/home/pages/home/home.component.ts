@@ -1,12 +1,6 @@
 import { Component } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import {
-  catchError,
-  map,
-  shareReplay,
-  startWith,
-  switchMap,
-} from 'rxjs/operators';
+import { catchError, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
 
 import { User } from '../../../../core/models/user.model';
 import { AuthService } from '../../../../core/auth.service';

@@ -1,10 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import {
-  CreatePlacePayload,
-  PlacesService,
-} from '../../../../core/places.service';
+import { CreatePlacePayload, PlacesService } from '../../../../core/places.service';
 import { ToastService } from '../../../../core/toast.service';
 import { PlaceWithDistance } from '../../../../core/models/place.model';
 import {
@@ -54,18 +51,13 @@ export class PlaceCreateComponent {
             this.conflicts = conflicts.filter(isPlaceWithDistance);
           }
           this.apiError =
-            typeof payloadMessage === 'string'
-              ? payloadMessage
-              : "Lieu trop proche d'un autre.";
+            typeof payloadMessage === 'string' ? payloadMessage : "Lieu trop proche d'un autre.";
           if (this.conflicts.length > 0) {
             return;
           }
         }
 
-        this.apiError = extractHttpErrorMessage(
-          error,
-          'Impossible de créer le lieu.',
-        );
+        this.apiError = extractHttpErrorMessage(error, 'Impossible de créer le lieu.');
       },
     });
   }

@@ -5,11 +5,7 @@ import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { TeamsService } from '../../services/teams.service';
-import {
-  Team,
-  TeamMember,
-  UserSummary,
-} from '../../../../core/models/user.model';
+import { Team, TeamMember, UserSummary } from '../../../../core/models/user.model';
 import { ToastService } from '../../../../core/toast.service';
 import { AuthService } from '../../../../core/auth.service';
 import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils';
@@ -31,26 +27,18 @@ export class TeamDetailComponent implements OnInit {
   visibilityError: string | null = null;
   private readonly fb = inject(FormBuilder);
   readonly renameForm = this.fb.nonNullable.group({
-    name: [
-      '',
-      [Validators.required, Validators.minLength(3), Validators.maxLength(120)],
-    ],
+    name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(120)]],
   });
   private readonly route = inject(ActivatedRoute);
   private readonly teamsService = inject(TeamsService);
   private readonly toast = inject(ToastService);
   private readonly authService = inject(AuthService);
-  readonly isCaptain$ = combineLatest([
-    this.team$,
-    this.authService.currentUser$,
-  ]).pipe(
+  readonly isCaptain$ = combineLatest([this.team$, this.authService.currentUser$]).pipe(
     map(([team, user]) => {
       if (!team || !user) {
         return false;
       }
-      const membership = team.members?.find(
-        (member) => member.userId === user.id,
-      );
+      const membership = team.members?.find((member) => member.userId === user.id);
       return !!membership?.isCaptain;
     }),
   );
@@ -89,9 +77,7 @@ export class TeamDetailComponent implements OnInit {
         this.toast.success('Nom mis à jour');
       },
       error: (error) => {
-        this.toast.error(
-          extractHttpErrorMessage(error, "Impossible de renommer l'équipe."),
-        );
+        this.toast.error(extractHttpErrorMessage(error, "Impossible de renommer l'équipe."));
       },
     });
   }
@@ -109,9 +95,7 @@ export class TeamDetailComponent implements OnInit {
         this.visibilityUpdating = false;
         this.setTeam(updated);
         this.toast.success(
-          checked
-            ? 'Ton équipe est maintenant publique.'
-            : 'Ton équipe redevient privée.',
+          checked ? 'Ton équipe est maintenant publique.' : 'Ton équipe redevient privée.',
         );
       },
       error: (error) => {
@@ -156,10 +140,7 @@ export class TeamDetailComponent implements OnInit {
       },
       error: (error) => {
         this.logoUploading = false;
-        this.logoError = extractHttpErrorMessage(
-          error,
-          'Impossible de mettre à jour le logo.',
-        );
+        this.logoError = extractHttpErrorMessage(error, 'Impossible de mettre à jour le logo.');
       },
     });
   }
@@ -173,22 +154,16 @@ export class TeamDetailComponent implements OnInit {
       return;
     }
 
-    this.teamsService
-      .addMember(this.teamId, this.selectedUser.username)
-      .subscribe({
-        next: (team) => {
-          this.setTeam(team);
-          this.toast.success(
-            `${this.selectedUser?.username} rejoint l'équipe !`,
-          );
-          this.selectedUser = null;
-        },
-        error: (error) => {
-          this.toast.error(
-            extractHttpErrorMessage(error, "Impossible d'ajouter ce joueur."),
-          );
-        },
-      });
+    this.teamsService.addMember(this.teamId, this.selectedUser.username).subscribe({
+      next: (team) => {
+        this.setTeam(team);
+        this.toast.success(`${this.selectedUser?.username} rejoint l'équipe !`);
+        this.selectedUser = null;
+      },
+      error: (error) => {
+        this.toast.error(extractHttpErrorMessage(error, "Impossible d'ajouter ce joueur."));
+      },
+    });
   }
 
   copyInviteCode(code: string): void {

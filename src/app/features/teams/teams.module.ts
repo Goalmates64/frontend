@@ -10,11 +10,6 @@ import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
   declarations: [TeamsListComponent, TeamCreateComponent, TeamDetailComponent],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    SharedModule,
-    TeamsRoutingModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, SharedModule, TeamsRoutingModule],
 })
 export class TeamsModule {}

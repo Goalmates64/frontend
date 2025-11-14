@@ -9,12 +9,6 @@ import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
   declarations: [ChatPageComponent],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterLink,
-    SharedModule,
-    ChatRoutingModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, SharedModule, ChatRoutingModule],
 })
 export class ChatModule {}

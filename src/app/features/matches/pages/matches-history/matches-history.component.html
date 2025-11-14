@@ -7,27 +7,18 @@
     <p class="text-gm-muted text-sm">Scores finalisés et matchs annulés.</p>
   </header>
 
-  <app-spinner
-    *ngIf="loading$ | async"
-    label="Chargement..."
-    layout="block"
-  ></app-spinner>
+  <app-spinner *ngIf="loading$ | async" label="Chargement..." layout="block"></app-spinner>
 
   <div *ngIf="(matches$ | async) as matches">
     <ng-container *ngIf="matches.length; else emptyHistory">
-      <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-        <app-match-history-card
-          *ngFor="let match of matches"
-          [match]="match"
-        ></app-match-history-card>
+      <div class="grid gap-5 md:grid-cols-2">
+        <app-match-history-card *ngFor="let match of matches" [match]="match"></app-match-history-card>
       </div>
     </ng-container>
   </div>
 
   <ng-template #emptyHistory>
-    <div
-      class="text-sm text-gm-muted text-center border border-dashed border-gm-border rounded-2xl p-6"
-    >
+    <div class="text-sm text-gm-muted text-center border border-dashed border-gm-border rounded-2xl p-6">
       Aucun match enregistré pour l'instant.
     </div>
   </ng-template>

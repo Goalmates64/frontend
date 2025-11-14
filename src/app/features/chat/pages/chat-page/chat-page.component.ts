@@ -48,37 +48,32 @@ export class ChatPageComponent {
   private readonly cursorMap = new Map<number, number | null>();
 
   constructor() {
-    this.authService.currentUser$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((user) => {
-        const wasEnabled = this.currentUser?.isChatEnabled;
-        this.currentUser = user;
-        if (user?.isChatEnabled && !this.rooms.length && !this.roomsLoading) {
-          this.reloadRooms();
-        }
-        if (wasEnabled && !user?.isChatEnabled) {
-          this.selectedRoomId = null;
-        }
-        this.cdr.markForCheck();
-      });
+    this.authService.currentUser$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((user) => {
+      const wasEnabled = this.currentUser?.isChatEnabled;
+      this.currentUser = user;
+      if (user?.isChatEnabled && !this.rooms.length && !this.roomsLoading) {
+        this.reloadRooms();
+      }
+      if (wasEnabled && !user?.isChatEnabled) {
+        this.selectedRoomId = null;
+      }
+      this.cdr.markForCheck();
+    });
 
-    this.chatService.rooms$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((rooms) => {
-        this.rooms = rooms;
-        this.roomsError = null;
-        if (
-          rooms.length > 0 &&
-          this.currentUser?.isChatEnabled &&
-          (!this.selectedRoomId ||
-            !rooms.some((room) => room.id === this.selectedRoomId))
-        ) {
-          this.selectRoom(rooms[0].id);
-        } else if (!rooms.length) {
-          this.selectedRoomId = null;
-        }
-        this.cdr.markForCheck();
-      });
+    this.chatService.rooms$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((rooms) => {
+      this.rooms = rooms;
+      this.roomsError = null;
+      if (
+        rooms.length > 0 &&
+        this.currentUser?.isChatEnabled &&
+        (!this.selectedRoomId || !rooms.some((room) => room.id === this.selectedRoomId))
+      ) {
+        this.selectRoom(rooms[0].id);
+      } else if (!rooms.length) {
+        this.selectedRoomId = null;
+      }
+      this.cdr.markForCheck();
+    });
 
     this.chatService.incomingMessages$
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -156,11 +151,7 @@ export class ChatPageComponent {
   }
 
   onSendMessage(): void {
-    if (
-      !this.selectedRoomId ||
-      !this.currentUser?.isChatEnabled ||
-      this.sending
-    ) {
+    if (!this.selectedRoomId || !this.currentUser?.isChatEnabled || this.sending) {
       return;
     }
 
@@ -209,11 +200,7 @@ export class ChatPageComponent {
     return (this.cursorMap.get(roomId) ?? null) !== null;
   }
 
-  private loadMessages(
-    roomId: number,
-    beforeId?: number,
-    replace = false,
-  ): void {
+  private loadMessages(roomId: number, beforeId?: number, replace = false): void {
     const isHistoryLoad = beforeId !== undefined;
     if (isHistoryLoad) {
       this.historyLoading = true;
@@ -248,19 +235,12 @@ export class ChatPageComponent {
       });
   }
 
-  private mergeMessages(
-    roomId: number,
-    messages: ChatMessage[],
-    replace: boolean,
-  ): void {
+  private mergeMessages(roomId: number, messages: ChatMessage[], replace: boolean): void {
     const existing = replace ? [] : (this.messagesMap.get(roomId) ?? []);
     const combined = replace ? messages : [...messages, ...existing];
     const deduped = Array.from(
       new Map(combined.map((message) => [message.id, message])).values(),
-    ).sort(
-      (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-    );
+    ).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     this.messagesMap.set(roomId, deduped);
   }
 
@@ -270,8 +250,7 @@ export class ChatPageComponent {
       return;
     }
     const updated = [...existing, message].sort(
-      (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     );
     this.messagesMap.set(message.roomId, updated);
     if (message.roomId === this.selectedRoomId) {
@@ -306,8 +285,7 @@ export class ChatPageComponent {
       }
       if (Array.isArray(message)) {
         const first = message.find(
-          (entry): entry is string =>
-            typeof entry === 'string' && entry.trim().length > 0,
+          (entry): entry is string => typeof entry === 'string' && entry.trim().length > 0,
         );
         if (first) {
           return first.trim();

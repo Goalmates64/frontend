@@ -18,10 +18,7 @@ export class TeamCreateComponent {
   apiError: string | null = null;
   private readonly fb = inject(FormBuilder);
   readonly form = this.fb.nonNullable.group({
-    name: [
-      '',
-      [Validators.required, Validators.minLength(3), Validators.maxLength(120)],
-    ],
+    name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(120)]],
     isPublic: [false],
   });
 
@@ -48,10 +45,7 @@ export class TeamCreateComponent {
       },
       error: (error) => {
         this.loading = false;
-        this.apiError = extractHttpErrorMessage(
-          error,
-          'Impossible de créer cette équipe.',
-        );
+        this.apiError = extractHttpErrorMessage(error, 'Impossible de créer cette équipe.');
       },
     });
   }

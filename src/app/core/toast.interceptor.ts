@@ -1,9 +1,5 @@
 import { inject } from '@angular/core';
-import {
-  HttpErrorResponse,
-  HttpInterceptorFn,
-  HttpResponse,
-} from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn, HttpResponse } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
@@ -26,12 +22,7 @@ export const toastInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       const message = extractErrorMessage(error);
       if (message) {
-        const variant =
-          error.status >= 500
-            ? 'error'
-            : error.status >= 400
-              ? 'warning'
-              : 'info';
+        const variant = error.status >= 500 ? 'error' : error.status >= 400 ? 'warning' : 'info';
         toastService.show(message, variant);
       }
 

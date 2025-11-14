@@ -70,10 +70,7 @@ export class NavbarComponent {
     this.drawerOpen = false;
   }
 
-  markNotificationAsRead(
-    notification: AppNotification,
-    event?: MouseEvent,
-  ): void {
+  markNotificationAsRead(notification: AppNotification, event?: MouseEvent): void {
     event?.stopPropagation();
     if (notification.isRead) {
       return;
@@ -82,8 +79,7 @@ export class NavbarComponent {
       .markAsRead(notification.id, true)
       .pipe(take(1))
       .subscribe({
-        error: () =>
-          this.toast.error("Impossible d'actualiser la notification."),
+        error: () => this.toast.error("Impossible d'actualiser la notification."),
       });
   }
 

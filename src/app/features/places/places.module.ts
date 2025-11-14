@@ -21,12 +21,6 @@ import { SharedModule } from '../../shared/shared.module';
     PlaceFormComponent,
     PlaceMapComponent,
   ],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterModule,
-    SharedModule,
-    PlacesRoutingModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, SharedModule, PlacesRoutingModule],
 })
 export class PlacesModule {}

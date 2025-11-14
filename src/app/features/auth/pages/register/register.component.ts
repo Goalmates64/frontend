@@ -26,10 +26,7 @@ export class RegisterComponent {
   }
 
   get passwordsMismatch(): boolean {
-    return (
-      this.form.hasError('passwordsMismatch') &&
-      this.f['confirmPassword'].touched
-    );
+    return this.form.hasError('passwordsMismatch') && this.f['confirmPassword'].touched;
   }
 
   onSubmit(): void {
@@ -66,10 +63,8 @@ export class RegisterComponent {
   private readonly passwordsMatchValidator: ValidatorFn = (group) => {
     const passwordControl = group.get('password');
     const confirmControl = group.get('confirmPassword');
-    const password =
-      typeof passwordControl?.value === 'string' ? passwordControl.value : null;
-    const confirm =
-      typeof confirmControl?.value === 'string' ? confirmControl.value : null;
+    const password = typeof passwordControl?.value === 'string' ? passwordControl.value : null;
+    const confirm = typeof confirmControl?.value === 'string' ? confirmControl.value : null;
     if (!password || !confirm) {
       return null;
     }

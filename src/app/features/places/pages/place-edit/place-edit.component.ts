@@ -1,10 +1,7 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import {
-  PlacesService,
-  UpdatePlacePayload,
-} from '../../../../core/places.service';
+import { PlacesService, UpdatePlacePayload } from '../../../../core/places.service';
 import { Place } from '../../../../core/models/place.model';
 import { ToastService } from '../../../../core/toast.service';
 import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils';
@@ -46,10 +43,7 @@ export class PlaceEditComponent implements OnInit {
       },
       error: (error) => {
         this.saving = false;
-        this.apiError = extractHttpErrorMessage(
-          error,
-          'Impossible de mettre à jour le lieu.',
-        );
+        this.apiError = extractHttpErrorMessage(error, 'Impossible de mettre à jour le lieu.');
       },
     });
   }

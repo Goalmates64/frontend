@@ -67,9 +67,7 @@ export class PlacesListComponent implements OnInit {
       next: (response) => {
         this.total = response.meta.total;
         this.hasMore = response.meta.page < (response.meta.pageCount || 0);
-        this.places = reset
-          ? response.items
-          : [...this.places, ...response.items];
+        this.places = reset ? response.items : [...this.places, ...response.items];
         this.loading = false;
       },
       error: () => {

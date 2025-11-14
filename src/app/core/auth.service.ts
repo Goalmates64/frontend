@@ -5,11 +5,7 @@ import { distinctUntilChanged, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { UpdateProfilePayload, User } from './models/user.model';
-import {
-  LoginPayload,
-  LoginResponse,
-  RegisterPayload,
-} from './models/auth.model';
+import { LoginPayload, LoginResponse, RegisterPayload } from './models/auth.model';
 import { ToastService } from './toast.service';
 
 @Injectable({
@@ -154,8 +150,7 @@ export class AuthService {
       city: this.optionalString(user.city),
       country: this.optionalString(user.country),
       avatarUrl: this.optionalString(user.avatarUrl),
-      isChatEnabled:
-        typeof user.isChatEnabled === 'boolean' ? user.isChatEnabled : true,
+      isChatEnabled: typeof user.isChatEnabled === 'boolean' ? user.isChatEnabled : true,
     };
   }
 

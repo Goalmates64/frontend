@@ -192,10 +192,7 @@ export class ProfileComponent {
       return fallback;
     }
 
-    return String.fromCodePoint(
-      0x1f1e6 + (first - 65),
-      0x1f1e6 + (second - 65),
-    );
+    return String.fromCodePoint(0x1f1e6 + (first - 65), 0x1f1e6 + (second - 65));
   }
 
   private normalizeText(value: string | null | undefined): string | null {
@@ -231,8 +228,7 @@ export class ProfileComponent {
       }
       if (Array.isArray(message)) {
         const first = message.find(
-          (entry): entry is string =>
-            typeof entry === 'string' && entry.trim().length > 0,
+          (entry): entry is string => typeof entry === 'string' && entry.trim().length > 0,
         );
         if (first) {
           return first.trim();

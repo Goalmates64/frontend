@@ -57,9 +57,7 @@ export class ToastService {
       this.timers.delete(id);
     }
 
-    this.toastsSubject.next(
-      this.toastsSubject.value.filter((toast) => toast.id !== id),
-    );
+    this.toastsSubject.next(this.toastsSubject.value.filter((toast) => toast.id !== id));
   }
 
   clear(): void {

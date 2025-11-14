@@ -44,13 +44,7 @@ export class MatchesService {
     return this.http.post<Match>(`${this.baseUrl}/${matchId}/score`, payload);
   }
 
-  respondAttendance(
-    matchId: number,
-    payload: UpdateAttendancePayload,
-  ): Observable<Match> {
-    return this.http.post<Match>(
-      `${this.baseUrl}/${matchId}/attendance`,
-      payload,
-    );
+  respondAttendance(matchId: number, payload: UpdateAttendancePayload): Observable<Match> {
+    return this.http.post<Match>(`${this.baseUrl}/${matchId}/attendance`, payload);
   }
 }

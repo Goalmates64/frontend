@@ -17,14 +17,8 @@ const MARKER_ICON_RETINA = new URL(
   'leaflet/dist/images/marker-icon-2x.png',
   import.meta.url,
 ).toString();
-const MARKER_ICON = new URL(
-  'leaflet/dist/images/marker-icon.png',
-  import.meta.url,
-).toString();
-const MARKER_SHADOW = new URL(
-  'leaflet/dist/images/marker-shadow.png',
-  import.meta.url,
-).toString();
+const MARKER_ICON = new URL('leaflet/dist/images/marker-icon.png', import.meta.url).toString();
+const MARKER_SHADOW = new URL('leaflet/dist/images/marker-shadow.png', import.meta.url).toString();
 let iconInitialized = false;
 
 function ensureLeafletIconDefaults(): void {

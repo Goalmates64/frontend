@@ -1,22 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-import {
-  MatchesService,
-  UpdateAttendancePayload,
-} from '../../services/matches.service';
-import {
-  Match,
-  MatchAttendance,
-  MatchAttendanceStatus,
-} from '../../../../core/models/user.model';
+import { MatchesService, UpdateAttendancePayload } from '../../services/matches.service';
+import { Match, MatchAttendance, MatchAttendanceStatus } from '../../../../core/models/user.model';
 import { ToastService } from '../../../../core/toast.service';
 import { AuthService } from '../../../../core/auth.service';
 
@@ -89,14 +77,8 @@ export class MatchesListComponent implements OnInit {
       this.scoreForms.set(
         match.id,
         this.fb.nonNullable.group({
-          homeScore: [
-            match.homeScore ?? 0,
-            [Validators.required, Validators.min(0)],
-          ],
-          awayScore: [
-            match.awayScore ?? 0,
-            [Validators.required, Validators.min(0)],
-          ],
+          homeScore: [match.homeScore ?? 0, [Validators.required, Validators.min(0)]],
+          awayScore: [match.awayScore ?? 0, [Validators.required, Validators.min(0)]],
         }),
       );
     }
@@ -171,11 +153,8 @@ export class MatchesListComponent implements OnInit {
   getAttendanceSummary(match: Match): { present: number; absent: number } {
     const attendances = match.attendances ?? [];
     return {
-      present: attendances.filter(
-        (attendance) => attendance.status === 'present',
-      ).length,
-      absent: attendances.filter((attendance) => attendance.status === 'absent')
-        .length,
+      present: attendances.filter((attendance) => attendance.status === 'present').length,
+      absent: attendances.filter((attendance) => attendance.status === 'absent').length,
     };
   }
 
@@ -184,8 +163,6 @@ export class MatchesListComponent implements OnInit {
       return undefined;
     }
     const attendances = match.attendances ?? [];
-    return attendances.find(
-      (attendance) => attendance.userId === this.currentUserId,
-    );
+    return attendances.find((attendance) => attendance.userId === this.currentUserId);
   }
 }

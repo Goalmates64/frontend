@@ -2,13 +2,7 @@
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of, Subject } from 'rxjs';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  switchMap,
-  take,
-  takeUntil,
-} from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap, take, takeUntil } from 'rxjs/operators';
 
 import { MatchesService } from '../../services/matches.service';
 import { TeamsService } from '../../../teams/services/teams.service';
@@ -156,15 +150,8 @@ export class MatchCreateComponent implements OnInit, OnDestroy {
 
   submit(): void {
     this.apiError = null;
-    const { homeTeamId, awayTeamId, scheduledAt, placeId } =
-      this.form.getRawValue();
-    if (
-      this.form.invalid ||
-      !homeTeamId ||
-      !awayTeamId ||
-      !scheduledAt ||
-      !placeId
-    ) {
+    const { homeTeamId, awayTeamId, scheduledAt, placeId } = this.form.getRawValue();
+    if (this.form.invalid || !homeTeamId || !awayTeamId || !scheduledAt || !placeId) {
       this.form.markAllAsTouched();
       if (!placeId) {
         this.apiError = 'Sélectionne un lieu pour le match.';
@@ -195,10 +182,7 @@ export class MatchCreateComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.loading = false;
-        this.apiError = extractHttpErrorMessage(
-          error,
-          'Impossible de programmer ce match.',
-        );
+        this.apiError = extractHttpErrorMessage(error, 'Impossible de programmer ce match.');
       },
     });
   }

@@ -21,10 +21,7 @@ export class TeamsListComponent implements OnInit {
   joinError: string | null = null;
   private readonly fb = inject(FormBuilder);
   readonly joinForm = this.fb.nonNullable.group({
-    code: [
-      '',
-      [Validators.required, Validators.minLength(8), Validators.maxLength(16)],
-    ],
+    code: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(16)]],
   });
 
   constructor(

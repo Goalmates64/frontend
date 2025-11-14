@@ -16,11 +16,6 @@ import { SharedModule } from '../../shared/shared.module';
     MatchesHistoryComponent,
     MatchHistoryCardComponent,
   ],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    SharedModule,
-    MatchesRoutingModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, SharedModule, MatchesRoutingModule],
 })
 export class MatchesModule {}

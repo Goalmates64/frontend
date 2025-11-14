@@ -8,14 +8,10 @@ type ErrorPayload = {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   !!value && typeof value === 'object';
 
-export const isHttpErrorResponse = (
-  error: unknown,
-): error is HttpErrorResponse => error instanceof HttpErrorResponse;
+export const isHttpErrorResponse = (error: unknown): error is HttpErrorResponse =>
+  error instanceof HttpErrorResponse;
 
-export const extractHttpErrorMessage = (
-  error: unknown,
-  fallback: string,
-): string => {
+export const extractHttpErrorMessage = (error: unknown, fallback: string): string => {
   if (typeof error === 'string' && error.trim().length > 0) {
     return error.trim();
   }
@@ -33,8 +29,7 @@ export const extractHttpErrorMessage = (
       }
       if (Array.isArray(message)) {
         const first = message.find(
-          (entry): entry is string =>
-            typeof entry === 'string' && entry.trim().length > 0,
+          (entry): entry is string => typeof entry === 'string' && entry.trim().length > 0,
         );
         if (first) {
           return first.trim();
@@ -57,9 +52,7 @@ export const extractHttpErrorMessage = (
   return fallback;
 };
 
-export const getHttpErrorPayload = (
-  error: unknown,
-): Record<string, unknown> | null => {
+export const getHttpErrorPayload = (error: unknown): Record<string, unknown> | null => {
   if (isHttpErrorResponse(error) && isRecord(error.error)) {
     return error.error;
   }

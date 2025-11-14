@@ -3,11 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import {
-  Place,
-  PlacesListResponse,
-  PlaceWithDistance,
-} from './models/place.model';
+import { Place, PlacesListResponse, PlaceWithDistance } from './models/place.model';
 
 export interface CreatePlacePayload {
   name: string;
@@ -58,14 +54,8 @@ export class PlacesService {
     });
   }
 
-  nearby(
-    lat: number,
-    lng: number,
-    radius?: number,
-  ): Observable<PlaceWithDistance[]> {
-    let params = new HttpParams()
-      .set('lat', String(lat))
-      .set('lng', String(lng));
+  nearby(lat: number, lng: number, radius?: number): Observable<PlaceWithDistance[]> {
+    let params = new HttpParams().set('lat', String(lat)).set('lng', String(lng));
     if (radius) {
       params = params.set('radius', String(radius));
     }

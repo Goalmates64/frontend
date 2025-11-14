@@ -1,19 +1,7 @@
-﻿import {
-  Component,
-  EventEmitter,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+﻿import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { of, Subject } from 'rxjs';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  finalize,
-  switchMap,
-  takeUntil,
-} from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, finalize, switchMap, takeUntil } from 'rxjs/operators';
 
 import { UserSearchService } from '../../../core/user-search.service';
 import { UserSummary } from '../../../core/models/user.model';
@@ -48,9 +36,7 @@ export class UserAutocompleteComponent implements OnInit, OnDestroy {
             return of<UserSummary[]>([]);
           }
           this.loading = true;
-          return this.userSearch
-            .search(query)
-            .pipe(finalize(() => (this.loading = false)));
+          return this.userSearch.search(query).pipe(finalize(() => (this.loading = false)));
         }),
         takeUntil(this.destroy$),
       )
