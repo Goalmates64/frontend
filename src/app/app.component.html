@@ -1,9 +1,24 @@
 <app-toast-container></app-toast-container>
-<div class="min-h-screen bg-gm-bg text-gm-text flex flex-col">
-  <app-navbar></app-navbar>
-  <main class="flex-1">
-    <div class="mx-auto max-w-6xl px-4 py-8">
-      <router-outlet></router-outlet>
+<div class="app-horizon">
+  <div class="app-horizon__aurora">
+    <span class="beam beam--one"></span>
+    <span class="beam beam--two"></span>
+    <span class="beam beam--three"></span>
+  </div>
+  <div class="app-horizon__noise"></div>
+
+  <div class="app-horizon__content text-gm-text">
+    <div class="app-horizon__nav">
+      <app-navbar></app-navbar>
     </div>
-  </main>
+
+    <main class="app-horizon__main">
+      <section class="surface">
+        <div class="surface__glare"></div>
+        <div class="surface__body">
+          <router-outlet></router-outlet>
+        </div>
+      </section>
+    </main>
+  </div>
 </div>
