@@ -156,14 +156,14 @@ export class MatchesListComponent implements OnInit {
 
     this.matchesService.respondAttendance(match.id, payload).subscribe({
       next: () => {
-        this.toast.success('Pr�sence mise � jour');
+        this.toast.success('Présence mise à jour');
         this.attendanceLoading$.next(null);
         this.attendanceForms.delete(match.id);
         this.loadMatches();
       },
       error: () => {
         this.attendanceLoading$.next(null);
-        this.toast.error('Impossible de mettre � jour ta pr�sence.');
+        this.toast.error('Impossible de mettre à jour ta présence.');
       },
     });
   }

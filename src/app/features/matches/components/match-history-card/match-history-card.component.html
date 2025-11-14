@@ -1,0 +1,113 @@
+<article
+  class="relative overflow-hidden rounded-3xl border border-gm-border/60 bg-gm-surface p-6 shadow-lg shadow-black/10"
+>
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent"
+  ></div>
+
+  <div class="relative flex flex-col gap-6">
+    <div
+      class="flex flex-col gap-2 text-xs text-gm-muted sm:flex-row sm:items-center sm:justify-between"
+    >
+      <div class="flex flex-wrap gap-x-4 gap-y-1">
+        <span class="inline-flex items-center gap-2">
+          <i aria-hidden="true" class="fa-regular fa-calendar text-gm-primary"></i>
+          {{ match.scheduledAt | date: 'EEEE d MMMM y' : undefined : 'fr' }}
+        </span>
+        <span class="inline-flex items-center gap-2">
+          <i aria-hidden="true" class="fa-regular fa-clock text-gm-primary"></i>
+          {{ match.scheduledAt | date: 'HH:mm' }}
+        </span>
+        <span class="inline-flex items-center gap-2">
+          <i aria-hidden="true" class="fa-solid fa-location-dot text-gm-primary"></i>
+          {{ match.place?.name || 'Lieu à définir' }} ·
+          {{ match.place?.city || '---' }}
+        </span>
+      </div>
+      <span
+        [ngClass]="statusPill.classes"
+        class="text-[0.6rem] font-semibold uppercase tracking-[0.4em] px-3 py-1 rounded-full border"
+      >
+        {{ statusPill.label }}
+      </span>
+    </div>
+
+    <div class="grid items-center gap-6 md:grid-cols-[1fr_auto_1fr]">
+      <div
+        [ngClass]="teamTileClasses('home')"
+        class="flex flex-col items-center gap-2 rounded-2xl border px-4 py-4 text-center transition"
+      >
+        <div
+          class="h-16 w-16 rounded-full border border-gm-border/40 bg-gm-surface flex items-center justify-center overflow-hidden"
+        >
+          <ng-container *ngIf="match.homeTeam?.logoUrl as homeLogo; else homeInitial">
+            <img
+              [alt]="'Logo ' + getTeamName('home')"
+              [src]="homeLogo"
+              class="h-full w-full object-cover"
+              loading="lazy"
+            />
+          </ng-container>
+        </div>
+        <ng-template #homeInitial>
+          <span class="text-lg font-bold uppercase">{{ getTeamInitial('home') }}</span>
+        </ng-template>
+        <p class="text-sm font-semibold">
+          {{ getTeamName('home') }}
+        </p>
+        <p *ngIf="hasScore()" class="text-2xl font-black">
+          {{ match.homeScore }}
+        </p>
+      </div>
+
+      <div class="text-center space-y-1">
+        <p class="text-xs uppercase tracking-[0.4em] text-gm-muted">
+          Score
+        </p>
+        <p [ngClass]="getScoreAccent()" class="text-4xl font-black">
+          <ng-container *ngIf="hasScore(); else pendingScore">
+            {{ match.homeScore }}
+            <span class="text-gm-muted text-2xl"> - </span>
+            {{ match.awayScore }}
+          </ng-container>
+        </p>
+        <ng-template #pendingScore>
+          <span class="text-sm text-gm-muted font-semibold">
+            {{ match.status === 'canceled' ? 'Match annulé' : 'Score non communiqué' }}
+          </span>
+        </ng-template>
+        <p *ngIf="getResultSummary() as summary" class="text-xs text-gm-muted">
+          {{ summary }}
+        </p>
+      </div>
+
+      <div
+        [ngClass]="teamTileClasses('away')"
+        class="flex flex-col items-center gap-2 rounded-2xl border px-4 py-4 text-center transition"
+      >
+        <div
+          class="h-16 w-16 rounded-full border border-gm-border/40 bg-gm-surface flex items-center justify-center overflow-hidden"
+        >
+          <ng-container *ngIf="match.awayTeam?.logoUrl as awayLogo; else awayInitial">
+            <img
+              [alt]="'Logo ' + getTeamName('away')"
+              [src]="awayLogo"
+              class="h-full w-full object-cover"
+              loading="lazy"
+            />
+          </ng-container>
+        </div>
+        <ng-template #awayInitial>
+          <span class="text-lg font-bold uppercase">{{ getTeamInitial('away') }}</span>
+        </ng-template>
+        <p class="text-sm font-semibold">
+          {{ getTeamName('away') }}
+        </p>
+        <p *ngIf="hasScore()" class="text-2xl font-black">
+          {{ match.awayScore }}
+        </p>
+      </div>
+    </div>
+  </div>
+</article>

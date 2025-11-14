@@ -10,11 +10,6 @@ import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationsService {
-  readonly unreadNotifications$ = this.notifications$.pipe(
-    map((notifications) =>
-      notifications.filter((notification) => !notification.isRead),
-    ),
-  );
   private readonly baseUrl = `${environment.apiUrl}/notifications`;
   private readonly unreadCountSubject = new BehaviorSubject<number>(0);
   readonly unreadCount$ = this.unreadCountSubject.asObservable();
@@ -22,6 +17,13 @@ export class NotificationsService {
     AppNotification[]
   >([]);
   readonly notifications$ = this.notificationsSubject.asObservable();
+
+  readonly unreadNotifications$ = this.notifications$.pipe(
+    map((notifications) =>
+      notifications.filter((notification) => !notification.isRead),
+    ),
+  );
+
   private cachedNotifications: AppNotification[] = [];
   private socket: Socket | null = null;
   private readonly wsNamespaceUrl = this.buildWsNamespaceUrl();

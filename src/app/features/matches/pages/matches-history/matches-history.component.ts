@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 import { MatchesService } from '../../services/matches.service';
@@ -9,7 +9,6 @@ import { ToastService } from '../../../../core/toast.service';
   selector: 'app-matches-history',
   templateUrl: './matches-history.component.html',
   styleUrls: ['./matches-history.component.scss'],
-
   standalone: false,
 })
 export class MatchesHistoryComponent implements OnInit {
@@ -29,7 +28,7 @@ export class MatchesHistoryComponent implements OnInit {
       },
       error: () => {
         this.loading$.next(false);
-        this.toast.error('Impossible de charger l’historique des matchs.');
+        this.toast.error("Impossible de charger l'historique des matchs.");
       },
     });
   }
