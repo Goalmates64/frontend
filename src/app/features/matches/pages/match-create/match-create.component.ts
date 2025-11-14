@@ -1,4 +1,4 @@
-﻿import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+﻿import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of, Subject } from 'rxjs';
@@ -56,6 +56,11 @@ export class MatchCreateComponent implements OnInit, OnDestroy {
     private readonly route: ActivatedRoute,
   ) {}
 
+  get selectedHomeTeam(): Team | undefined {
+    const homeId = this.form.controls.homeTeamId.value;
+    return this.teams.find((team) => team.id === homeId);
+  }
+
   ngOnInit(): void {
     this.teamsService.getMine().subscribe({
       next: (teams) => (this.teams = teams),
@@ -108,11 +113,6 @@ export class MatchCreateComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  get selectedHomeTeam(): Team | undefined {
-    const homeId = this.form.controls.homeTeamId.value;
-    return this.teams.find((team) => team.id === homeId);
   }
 
   selectPlace(place: Place): void {

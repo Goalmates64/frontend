@@ -12,32 +12,9 @@ import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils
   styleUrl: './register.component.scss',
 })
 export class RegisterComponent {
-  private readonly fb = inject(FormBuilder);
-  private readonly passwordsMatchValidator: ValidatorFn = (group) => {
-    const passwordControl = group.get('password');
-    const confirmControl = group.get('confirmPassword');
-    const password =
-      typeof passwordControl?.value === 'string' ? passwordControl.value : null;
-    const confirm =
-      typeof confirmControl?.value === 'string' ? confirmControl.value : null;
-    if (!password || !confirm) {
-      return null;
-    }
-    return password === confirm ? null : { passwordsMismatch: true };
-  };
-  readonly form = this.fb.nonNullable.group(
-    {
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]],
-    },
-    {
-      validators: [this.passwordsMatchValidator],
-    },
-  );
   loading = false;
   apiError: string | null = null;
+  private readonly fb = inject(FormBuilder);
 
   constructor(
     private readonly authService: AuthService,
@@ -85,4 +62,29 @@ export class RegisterComponent {
       },
     });
   }
+
+  private readonly passwordsMatchValidator: ValidatorFn = (group) => {
+    const passwordControl = group.get('password');
+    const confirmControl = group.get('confirmPassword');
+    const password =
+      typeof passwordControl?.value === 'string' ? passwordControl.value : null;
+    const confirm =
+      typeof confirmControl?.value === 'string' ? confirmControl.value : null;
+    if (!password || !confirm) {
+      return null;
+    }
+    return password === confirm ? null : { passwordsMismatch: true };
+  };
+
+  readonly form = this.fb.nonNullable.group(
+    {
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]],
+    },
+    {
+      validators: [this.passwordsMatchValidator],
+    },
+  );
 }

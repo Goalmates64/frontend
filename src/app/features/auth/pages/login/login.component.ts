@@ -12,13 +12,13 @@ import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils
   styleUrl: './login.component.scss',
 })
 export class LoginComponent {
+  loading = false;
+  apiError: string | null = null;
   private readonly fb = inject(FormBuilder);
   readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
-  loading = false;
-  apiError: string | null = null;
 
   constructor(
     private readonly authService: AuthService,

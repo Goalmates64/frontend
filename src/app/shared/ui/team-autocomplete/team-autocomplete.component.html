@@ -5,21 +5,21 @@
   <div class="relative">
     <input
       [formControl]="control"
+      [placeholder]="placeholder"
+      autocomplete="off"
       class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
       id="team-autocomplete-input"
-      [placeholder]="placeholder"
       type="text"
-      autocomplete="off"
     />
     <div *ngIf="suggestions.length"
          class="suggestions">
       <button
-        *ngFor="let team of suggestions"
         (click)="selectTeam(team)"
+        *ngFor="let team of suggestions"
         class="suggestion"
         type="button"
       >
-        <div class="logo" aria-hidden="true">
+        <div aria-hidden="true" class="logo">
           <img *ngIf="team.logoUrl; else fallback"
                [src]="team.logoUrl"
                alt="Logo {{ team.name }}"
@@ -34,7 +34,7 @@
             {{ team.memberCount }} joueur{{ team.memberCount > 1 ? 's' : '' }}
           </p>
         </div>
-        <span class="badge" *ngIf="team.isPublic">Publique</span>
+        <span *ngIf="team.isPublic" class="badge">Publique</span>
       </button>
     </div>
     <div *ngIf="loading" class="state">Recherche d'équipes...</div>

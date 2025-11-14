@@ -1,4 +1,4 @@
-﻿import { Place } from './place.model';
+import { Place } from './place.model';
 
 export interface User {
   id: number;
@@ -56,6 +56,17 @@ export interface PublicTeamSummary {
   memberCount: number;
 }
 
+export type MatchAttendanceStatus = 'present' | 'absent';
+
+export interface MatchAttendance {
+  id: number;
+  matchId: number;
+  userId: number;
+  status: MatchAttendanceStatus;
+  reason: string | null;
+  respondedAt: string | null;
+}
+
 export interface Match {
   id: number;
   homeTeamId: number;
@@ -69,4 +80,5 @@ export interface Match {
   createdAt: string;
   homeTeam?: Team;
   awayTeam?: Team;
+  attendances?: MatchAttendance[];
 }

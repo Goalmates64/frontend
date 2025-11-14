@@ -1,7 +1,8 @@
 ﻿<section *ngIf="team$ | async as team; else loadingTpl" class="space-y-8">
   <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div class="flex items-center gap-4">
-      <div class="h-16 w-16 rounded-2xl bg-gm-surface2 border border-gm-border flex items-center justify-center text-lg font-semibold uppercase text-gm-primary overflow-hidden">
+      <div
+        class="h-16 w-16 rounded-2xl bg-gm-surface2 border border-gm-border flex items-center justify-center text-lg font-semibold uppercase text-gm-primary overflow-hidden">
         <img *ngIf="team.logoUrl; else logoFallback"
              [src]="team.logoUrl"
              alt="Logo {{ team.name }}"
@@ -18,8 +19,8 @@
           Créée le {{ team.createdAt | date: 'longDate' }} · {{ team.memberCount || team.members.length }} joueurs
         </p>
         <div class="flex gap-2 mt-2">
-          <span class="badge" *ngIf="team.isPublic">Publique</span>
-          <span class="badge badge-muted" *ngIf="!team.isPublic">Privée</span>
+          <span *ngIf="team.isPublic" class="badge">Publique</span>
+          <span *ngIf="!team.isPublic" class="badge badge-muted">Privée</span>
         </div>
       </div>
     </div>
@@ -70,14 +71,15 @@
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
                   <input
-                    [checked]="team.isPublic"
                     (change)="onVisibilityChange($event, team)"
+                    [checked]="team.isPublic"
                     [disabled]="visibilityUpdating"
                     class="sr-only peer"
                     type="checkbox"
                   />
                   <span class="w-11 h-6 bg-gm-border rounded-full peer transition peer-checked:bg-emerald-500"></span>
-                  <span class="absolute left-1 top-1 w-4 h-4 bg-gm-bg rounded-full transition peer-checked:translate-x-5"></span>
+                  <span
+                    class="absolute left-1 top-1 w-4 h-4 bg-gm-bg rounded-full transition peer-checked:translate-x-5"></span>
                 </label>
               </div>
               <p *ngIf="visibilityError" class="text-xs text-red-400">{{ visibilityError }}</p>

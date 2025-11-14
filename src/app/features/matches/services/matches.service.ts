@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -15,6 +15,11 @@ export interface CreateMatchPayload {
 export interface ReportScorePayload {
   homeScore: number;
   awayScore: number;
+}
+
+export interface UpdateAttendancePayload {
+  status: 'present' | 'absent';
+  reason?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -37,5 +42,15 @@ export class MatchesService {
 
   reportScore(matchId: number, payload: ReportScorePayload): Observable<Match> {
     return this.http.post<Match>(`${this.baseUrl}/${matchId}/score`, payload);
+  }
+
+  respondAttendance(
+    matchId: number,
+    payload: UpdateAttendancePayload,
+  ): Observable<Match> {
+    return this.http.post<Match>(
+      `${this.baseUrl}/${matchId}/attendance`,
+      payload,
+    );
   }
 }

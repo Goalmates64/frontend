@@ -31,7 +31,7 @@
           [excludeTeamIds]="form.controls.homeTeamId.value ? [form.controls.homeTeamId.value] : []"
           label="Adversaire (équipes publiques)"
         ></app-team-autocomplete>
-        <div class="flex items-center justify-between mt-2" *ngIf="selectedAwayTeam">
+        <div *ngIf="selectedAwayTeam" class="flex items-center justify-between mt-2">
           <p class="text-xs text-gm-muted">
             {{ selectedAwayTeam.name }} sélectionnée
           </p>
@@ -62,10 +62,11 @@
         <div>
           <p class="font-semibold">{{ selectedHomeTeam.name }}</p>
           <p class="text-xs text-gm-muted">
-            {{ selectedHomeTeam.memberCount || selectedHomeTeam.members.length }} joueur{{ (selectedHomeTeam.memberCount || selectedHomeTeam.members.length) > 1 ? 's' : '' }}
+            {{ selectedHomeTeam.memberCount || selectedHomeTeam.members.length }}
+            joueur{{ (selectedHomeTeam.memberCount || selectedHomeTeam.members.length) > 1 ? 's' : '' }}
           </p>
-          <span class="badge" *ngIf="selectedHomeTeam.isPublic">Publique</span>
-          <span class="badge badge-muted" *ngIf="!selectedHomeTeam.isPublic">Privée</span>
+          <span *ngIf="selectedHomeTeam.isPublic" class="badge">Publique</span>
+          <span *ngIf="!selectedHomeTeam.isPublic" class="badge badge-muted">Privée</span>
         </div>
       </div>
       <div *ngIf="selectedAwayTeam" class="team-card">

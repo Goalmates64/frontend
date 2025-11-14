@@ -1,9 +1,17 @@
-﻿<section class="space-y-8">
-  <header class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+<section class="space-y-8">
+  <header
+    class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+  >
     <div>
-      <p class="text-xs uppercase tracking-[0.3em] text-gm-primary font-semibold">Matchs</p>
+      <p
+        class="text-xs uppercase tracking-[0.3em] text-gm-primary font-semibold"
+      >
+        Matchs
+      </p>
       <h1 class="text-3xl font-bold">Matchs à venir</h1>
-      <p class="text-gm-muted text-sm">Programmes, lieux et reporting des scores.</p>
+      <p class="text-gm-muted text-sm">
+        Programmes, lieux et reporting des scores.
+      </p>
     </div>
     <div class="flex gap-2">
       <a
@@ -23,11 +31,17 @@
     </div>
   </header>
 
-  <app-spinner *ngIf="loading$ | async" label="Chargement des matchs..." layout="block"></app-spinner>
+  <app-spinner
+    *ngIf="loading$ | async"
+    label="Chargement des matchs..."
+    layout="block"
+  ></app-spinner>
 
-  <div *ngIf="(matches$ | async) as matches" class="space-y-4">
-    <div *ngIf="!matches.length && (loading$ | async) === false"
-         class="border border-dashed border-gm-border rounded-2xl p-6 text-center text-sm text-gm-muted">
+  <div *ngIf="matches$ | async as matches" class="space-y-4">
+    <div
+      *ngIf="!matches.length && (loading$ | async) === false"
+      class="border border-dashed border-gm-border rounded-2xl p-6 text-center text-sm text-gm-muted"
+    >
       Aucun match planifié pour l'instant.
     </div>
 
@@ -35,7 +49,9 @@
       *ngFor="let match of matches"
       class="border border-gm-border rounded-2xl p-4 bg-gm-surface space-y-3"
     >
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+      >
         <div>
           <p class="text-lg font-semibold">
             {{ match.homeTeam?.name || 'Équipe #' + match.homeTeamId }}
@@ -43,8 +59,10 @@
             {{ match.awayTeam?.name || 'Équipe #' + match.awayTeamId }}
           </p>
           <p class="text-xs text-gm-muted">
-            {{ match.place?.name || 'Lieu à définir' }} · {{ match.place?.city || '---' }}
-            à {{ match.scheduledAt | date: 'fullDate' }} à {{ match.scheduledAt | date: 'HH:mm' }}
+            {{ match.place?.name || 'Lieu à définir' }} ·
+            {{ match.place?.city || '---' }} à
+            {{ match.scheduledAt | date: 'fullDate' }} à
+            {{ match.scheduledAt | date: 'HH:mm' }}
           </p>
         </div>
         <button
@@ -60,6 +78,115 @@
         </div>
       </div>
 
+      <div
+        class="rounded-2xl border border-gm-border bg-gm-surface2 p-4 space-y-4"
+      >
+        <div
+          class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between"
+        >
+          <div>
+            <p
+              class="text-xs uppercase tracking-[0.3em] text-gm-muted font-semibold"
+            >
+              Présence confirmée
+            </p>
+            <p class="text-sm text-gm-muted">
+              Indique à ton équipe si tu participes.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <span
+              class="inline-flex items-center gap-1 rounded-full border border-gm-border px-3 py-1 text-emerald-300"
+            >
+              <i class="fa-solid fa-user-check"></i>
+              {{ getAttendanceSummary(match).present }} présents
+            </span>
+            <span
+              class="inline-flex items-center gap-1 rounded-full border border-gm-border px-3 py-1 text-rose-300"
+            >
+              <i class="fa-solid fa-user-xmark"></i>
+              {{ getAttendanceSummary(match).absent }} absents
+            </span>
+          </div>
+        </div>
+
+        <form
+          (ngSubmit)="submitAttendance(match)"
+          [formGroup]="getAttendanceForm(match)"
+          class="space-y-3"
+        >
+          <div class="grid grid-cols-2 gap-2">
+            <button
+              (click)="selectAttendance(match, 'present')"
+              [ngClass]="{
+                'bg-gm-primary text-gm-bg border-gm-primary':
+                  getAttendanceForm(match).value.status === 'present',
+                'bg-gm-surface border border-gm-border text-gm-muted':
+                  getAttendanceForm(match).value.status !== 'present',
+              }"
+              class="rounded-xl px-4 py-2 text-sm font-semibold transition"
+              type="button"
+            >
+              <i class="fa-solid fa-thumbs-up mr-1"></i>
+              Je viens
+            </button>
+            <button
+              (click)="selectAttendance(match, 'absent')"
+              [ngClass]="{
+                'bg-gm-primary text-gm-bg border-gm-primary':
+                  getAttendanceForm(match).value.status === 'absent',
+                'bg-gm-surface border border-gm-border text-gm-muted':
+                  getAttendanceForm(match).value.status !== 'absent',
+              }"
+              class="rounded-xl px-4 py-2 text-sm font-semibold transition"
+              type="button"
+            >
+              <i class="fa-solid fa-thumbs-down mr-1"></i>
+              Pas dispo
+            </button>
+          </div>
+
+          <div>
+            <label class="text-xs text-gm-muted" for="reason-{{ match.id }}"
+            >Message optionnel</label
+            >
+            <textarea
+              class="mt-1 w-full rounded-xl bg-gm-surface border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+              formControlName="reason"
+              id="reason-{{ match.id }}"
+              placeholder="Précise une raison ou un commentaire..."
+              rows="2"
+            ></textarea>
+          </div>
+
+          <div
+            class="flex items-center justify-between gap-2 text-xs text-gm-muted"
+          >
+            <p *ngIf="getUserAttendance(match) as response">
+              Dernière réponse :
+              <span class="font-semibold text-gm-text">{{
+                  response.respondedAt | date: 'short' : undefined : 'fr'
+                }}</span>
+            </p>
+            <span *ngIf="!getUserAttendance(match)"
+            >Aucune réponse pour l'instant.</span
+            >
+            <button
+              [disabled]="(attendanceLoading$ | async) === match.id"
+              class="ml-auto inline-flex items-center gap-2 rounded-xl bg-gm-primary px-4 py-2 text-sm font-semibold text-gm-bg hover:bg-emerald-500 transition"
+              type="submit"
+            >
+              <app-spinner
+                *ngIf="(attendanceLoading$ | async) === match.id"
+                label=""
+                size="sm"
+              ></app-spinner>
+              <span>Envoyer</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
       <form
         (ngSubmit)="submitScore(match)"
         *ngIf="(editingScore | async) === match.id"
@@ -67,7 +194,9 @@
         class="grid gap-3 sm:grid-cols-3"
       >
         <div>
-          <label class="text-xs text-gm-muted" for="home-{{ match.id }}">Score domicile</label>
+          <label class="text-xs text-gm-muted" for="home-{{ match.id }}"
+          >Score domicile</label
+          >
           <input
             class="mt-1 w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
             formControlName="homeScore"
@@ -77,7 +206,9 @@
           />
         </div>
         <div>
-          <label class="text-xs text-gm-muted" for="away-{{ match.id }}">Score extérieur</label>
+          <label class="text-xs text-gm-muted" for="away-{{ match.id }}"
+          >Score extérieur</label
+          >
           <input
             class="mt-1 w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
             formControlName="awayScore"
@@ -89,10 +220,17 @@
         <div class="flex items-end gap-2">
           <button
             class="flex-1 px-4 py-2 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold hover:bg-emerald-500 transition"
-            type="submit">
+            type="submit"
+          >
             Enregistrer
           </button>
-          <button (click)="cancelScore()" class="px-3 py-2 text-sm text-gm-muted" type="button">Annuler</button>
+          <button
+            (click)="cancelScore()"
+            class="px-3 py-2 text-sm text-gm-muted"
+            type="button"
+          >
+            Annuler
+          </button>
         </div>
       </form>
     </article>

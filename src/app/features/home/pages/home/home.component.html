@@ -1,64 +1,525 @@
-<section class="min-h-[80vh] flex flex-col items-center justify-center text-center px-6">
-  <div class="max-w-2xl">
-    <h1 class="text-4xl sm:text-5xl font-bold text-gm-text mb-4">
-      Bienvenue sur <span class="text-gm-primary">GoalMates</span>
-    </h1>
+<section *ngIf="vm$ | async as vm" class="space-y-10">
+  <ng-container [ngSwitch]="vm.status">
+    <!-- Guest marketing view -->
 
-    <!-- Texte différent selon l'auth -->
-    <ng-container *ngIf="isAuthenticated$ | async; else guestContent">
-      <p class="text-gm-muted text-sm sm:text-base mb-6">
-        Ravi de te revoir,
-        <span class="text-gm-text font-semibold">
-          {{ (currentUser$ | async)?.username }}
-        </span>.
-        Organise ton prochain futsal 5&nbsp;contre&nbsp;5 avec ton équipe.
-      </p>
+    <ng-container *ngSwitchCase="'guest'">
+      <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
+        <div class="space-y-6">
+          <p
+            class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-gm-muted"
+          >
+            <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
 
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a
-          class="px-6 py-3 rounded-lg bg-gm-primary text-gm-bg font-semibold text-sm sm:text-base hover:bg-emerald-500 transition"
-          routerLink="/teams"
-        >
-          Voir mes équipes
-        </a>
-        <a
-          class="px-6 py-3 rounded-lg border border-gm-border text-gm-text font-semibold text-sm sm:text-base hover:bg-gm-surface2 transition"
-          routerLink="/matches"
-        >
-          Prochains matchs
-        </a>
+            GoalMates 5v5
+          </p>
+
+          <h1 class="text-4xl font-semibold text-gm-text lg:text-5xl">
+            Organise des matchs futsal sans friction
+          </h1>
+
+          <p class="text-base text-gm-muted">
+            Crée un espace unique pour tes équipes, réserve un terrain en
+            quelques secondes et garde tout le monde aligné sur les compos et
+            les scores.
+          </p>
+
+          <div class="flex flex-col gap-4 sm:flex-row">
+            <a
+              class="inline-flex items-center justify-center gap-2 rounded-2xl bg-gm-primary px-6 py-3 text-base font-semibold text-gm-bg shadow-lg shadow-gm-primary/40 transition hover:-translate-y-0.5 hover:bg-emerald-500"
+              routerLink="/auth/register"
+            >
+              <i class="fa-solid fa-bolt"></i>
+
+              Commencer gratuitement
+            </a>
+
+            <a
+              class="inline-flex items-center justify-center gap-2 rounded-2xl border border-gm-border bg-gm-surface px-6 py-3 text-base font-semibold text-gm-text transition hover:bg-gm-surface2"
+              routerLink="/auth/login"
+            >
+              <i class="fa-solid fa-right-to-bracket"></i>
+
+              Se connecter
+            </a>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="rounded-2xl border border-white/5 bg-gm-surface p-4">
+              <p class="text-sm text-gm-muted">Invitations envoyées</p>
+
+              <p class="text-2xl font-semibold text-gm-text">1200+</p>
+            </div>
+
+            <div class="rounded-2xl border border-white/5 bg-gm-surface p-4">
+              <p class="text-sm text-gm-muted">Matchs organisés</p>
+
+              <p class="text-2xl font-semibold text-gm-text">
+                480 cette semaine
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div
+            class="absolute inset-0 -z-10 scale-110 rounded-[3rem] bg-gradient-to-br from-gm-primary/20 via-gm-secondary/10 to-transparent blur-3xl"
+          ></div>
+
+          <img
+            alt="Terrain de futsal en salle"
+            class="w-full rounded-[2.5rem] border border-gm-border/60 object-cover shadow-2xl"
+            src="/images/futsal-hero.png"
+          />
+        </div>
       </div>
     </ng-container>
 
-    <!-- Contenu pour invité -->
-    <ng-template #guestContent>
-      <p class="text-gm-muted text-sm sm:text-base mb-8">
-        Organise facilement tes matchs de futsal 5&nbsp;contre&nbsp;5 entre amis.
-        Crée des équipes, planifie des matchs et garde les scores.
-      </p>
+    <!-- Loading skeleton -->
 
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a
-          class="px-6 py-3 rounded-lg bg-gm-primary text-gm-bg font-semibold text-sm sm:text-base hover:bg-emerald-500 transition"
-          routerLink="/auth/register"
-        >
-          Commencer maintenant
-        </a>
-        <a
-          class="px-6 py-3 rounded-lg border border-gm-border text-gm-text font-semibold text-sm sm:text-base hover:bg-gm-surface2 transition"
-          routerLink="/auth/login"
-        >
-          Se connecter
-        </a>
+    <ng-container *ngSwitchCase="'loading'">
+      <div class="grid gap-6 md:grid-cols-2">
+        <div
+          class="h-48 rounded-3xl border border-gm-border bg-gm-surface animate-pulse"
+        ></div>
+
+        <div
+          class="h-48 rounded-3xl border border-gm-border bg-gm-surface animate-pulse"
+        ></div>
+
+        <div
+          class="h-64 rounded-3xl border border-gm-border bg-gm-surface animate-pulse md:col-span-2"
+        ></div>
       </div>
-    </ng-template>
-  </div>
+    </ng-container>
 
-  <div class="mt-16 w-full max-w-4xl">
-    <img
-      alt="Terrain de futsal en salle"
-      class="w-full rounded-2xl border border-gm-border object-cover shadow-lg"
-      src="/images/futsal-hero.png"
-    />
-  </div>
+    <!-- Error state -->
+    <ng-container *ngSwitchCase="'error'">
+      <div
+        class="rounded-3xl border border-gm-border bg-gm-surface/80 p-8 text-center"
+      >
+        <p class="text-lg font-semibold text-gm-text">
+          Impossible de charger les données.
+        </p>
+        <p class="mt-2 text-sm text-gm-muted">
+          {{ vm.error || 'Vérifie ta connexion puis réessaie.' }}
+        </p>
+        <button
+          (click)="reloadDashboard()"
+          class="mt-6 inline-flex items-center justify-center gap-2 rounded-2xl bg-gm-primary px-6 py-3 text-sm font-semibold text-gm-bg transition hover:bg-emerald-500"
+          type="button"
+        >
+          <i class="fa-solid fa-rotate-right"></i>
+          Réessayer
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- Dashboard -->
+
+    <ng-container *ngSwitchCase="'ready'">
+      <ng-container *ngIf="vm.overview as overview">
+        <div class="grid gap-6 lg:grid-cols-3">
+          <div
+            class="rounded-[2rem] border border-gm-border/70 bg-gradient-to-br from-gm-surface to-gm-surface2 p-6 lg:col-span-2"
+          >
+            <div class="flex flex-col gap-6 lg:flex-row lg:items-center">
+              <div class="flex-1 space-y-3">
+                <p class="text-sm text-gm-muted">
+                  Salut
+                  {{ vm.user?.firstName || vm.user?.username || 'capitaine' }}
+                  👋
+                </p>
+
+                <h2 class="text-3xl font-semibold">
+                  Ton effectif est prêt pour la semaine
+                </h2>
+
+                <p class="text-gm-muted">
+                  Tu as {{ overview?.stats?.[1]?.value || '0' }} matchs
+                  planifiés et un taux de présence moyen de
+                  {{ overview?.stats?.[2]?.value || '0%' }}. Reste sur ta lancée
+                  : confirme les terrains et verrouille les compos.
+                </p>
+              </div>
+
+              <div
+                class="min-w-[14rem] rounded-2xl border border-gm-border bg-gm-surface/80 p-4"
+              >
+                <p class="text-sm text-gm-muted">Prochaine disponibilité</p>
+
+                <p class="text-2xl font-semibold text-gm-text">
+                  {{
+                    overview.nextMatch?.startsAt
+                      | date: 'EEEE d MMMM • HH:mm' : undefined : 'fr'
+                  }}
+                </p>
+
+                <p class="text-xs text-gm-muted">
+                  {{ overview.nextMatch?.placeName || 'Lieu à définir' }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="rounded-[2rem] border border-gm-border/70 bg-gm-surface/60 p-5"
+          >
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-semibold">Actions rapides</p>
+
+              <i class="fa-solid fa-arrow-turn-down text-gm-muted"></i>
+            </div>
+
+            <div class="mt-5 space-y-3">
+              <a
+                *ngFor="let action of overview.quickActions; trackBy: trackById"
+                [routerLink]="action.route"
+                class="group flex items-start gap-3 rounded-2xl border border-transparent px-3 py-2 transition hover:border-gm-border hover:bg-gm-surface2"
+              >
+                <div
+                  [ngClass]="action.accent"
+                  class="flex h-10 w-10 items-center justify-center rounded-xl text-lg"
+                >
+                  <i class="{{ action.icon }}"></i>
+                </div>
+
+                <div class="flex-1">
+                  <p class="text-sm font-semibold text-gm-text">
+                    {{ action.title }}
+                  </p>
+
+                  <p class="text-xs text-gm-muted">{{ action.description }}</p>
+                </div>
+
+                <i
+                  class="fa-solid fa-chevron-right text-xs text-gm-muted transition group-hover:translate-x-1"
+                ></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div
+            *ngFor="let stat of overview.stats; trackBy: trackById"
+            class="rounded-3xl border border-gm-border bg-gm-surface/70 p-5"
+          >
+            <p class="text-sm text-gm-muted">{{ stat.label }}</p>
+
+            <p class="mt-2 text-3xl font-semibold text-gm-text">
+              {{ stat.value }}
+            </p>
+
+            <p class="mt-1 text-xs text-gm-muted">
+              <span
+                [class.text-rose-400]="stat.trend === 'down'"
+                class="inline-flex items-center gap-1 text-emerald-400"
+              >
+                <i
+                  [ngClass]="{
+                    'fa-arrow-trend-up': stat.trend === 'up',
+
+                    'fa-arrow-trend-down': stat.trend === 'down',
+
+                    'fa-minus': stat.trend === 'steady',
+                  }"
+                  class="fa-solid"
+                ></i>
+
+                {{ stat.trendLabel }}
+              </span>
+            </p>
+          </div>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+          <div
+            class="rounded-3xl border border-gm-border bg-gm-surface/70 p-6 lg:col-span-2"
+          >
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-gm-muted">Prochain match</p>
+
+                <h3 class="text-2xl font-semibold">
+                  {{ overview.nextMatch?.homeTeamName || 'Équipe à confirmer' }}
+                  vs {{ overview.nextMatch?.awayTeamName || 'Adversaire' }}
+                </h3>
+              </div>
+
+              <span
+                class="rounded-full bg-gm-surface2 px-4 py-1 text-xs font-semibold text-gm-muted"
+              >
+                {{
+                  overview.nextMatch?.status === 'confirmed'
+                    ? 'Confirmé'
+                    : 'À confirmer'
+                }}
+              </span>
+            </div>
+
+            <div class="mt-6 grid gap-6 md:grid-cols-2">
+              <div class="space-y-4">
+                <div class="flex items-center gap-3 text-sm text-gm-muted">
+                  <i class="fa-regular fa-calendar text-gm-primary"></i>
+
+                  {{
+                    overview.nextMatch?.startsAt
+                      | date: 'EEEE d MMMM • HH:mm' : undefined : 'fr'
+                  }}
+                </div>
+
+                <div class="flex items-center gap-3 text-sm text-gm-muted">
+                  <i class="fa-solid fa-location-dot text-gm-primary"></i>
+
+                  {{ overview.nextMatch?.placeName || 'Lieu à définir' }} •
+                  {{ overview.nextMatch?.placeCity || 'Ville inconnue' }}
+                </div>
+              </div>
+
+              <div>
+                <p class="text-sm text-gm-muted">Préparation de l'effectif</p>
+
+                <div class="mt-2 flex items-center gap-3">
+                  <div class="h-2 flex-1 rounded-full bg-gm-surface2">
+                    <div
+                      [style.width.%]="overview.nextMatch?.readiness || 0"
+                      class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-500"
+                    ></div>
+                  </div>
+
+                  <span class="text-sm font-semibold text-gm-text"
+                  >{{ overview.nextMatch?.readiness || 0 }}%</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-gm-border bg-gm-surface/70 p-6">
+            <p class="text-sm text-gm-muted">Focus de la semaine</p>
+
+            <div class="mt-4 space-y-4">
+              <div
+                *ngFor="let focus of overview.trainingFocus; trackBy: trackById"
+                class="space-y-2 rounded-2xl border border-gm-border/60 bg-gm-surface2 p-4"
+              >
+                <div class="flex items-center justify-between">
+                  <p class="text-sm font-semibold">{{ focus.title }}</p>
+
+                  <span class="text-xs text-gm-muted">{{ focus.badge }}</span>
+                </div>
+
+                <div class="h-1.5 rounded-full bg-gm-surface">
+                  <div
+                    [style.width.%]="focus.progress"
+                    class="h-full rounded-full bg-gradient-to-r from-indigo-400 via-emerald-400 to-emerald-500"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-6 xl:grid-cols-3">
+          <div
+            class="rounded-3xl border border-gm-border bg-gm-surface/70 p-6 xl:col-span-2"
+          >
+            <div class="flex items-center justify-between">
+              <h3 class="text-xl font-semibold">Activité récente</h3>
+
+              <span class="text-xs text-gm-muted"
+              >Synchronisée en temps réel</span
+              >
+            </div>
+
+            <div class="mt-6 space-y-4">
+              <div
+                *ngFor="
+                  let activity of overview.recentActivity;
+                  trackBy: trackById
+                "
+                class="timeline-item rounded-2xl border border-gm-border/60 bg-gm-surface2 p-4"
+              >
+                <div class="flex items-center justify-between">
+                  <p class="text-sm font-semibold text-gm-text">
+                    {{ activity.title }}
+                  </p>
+
+                  <span class="text-xs text-gm-muted">{{
+                      activity.timestamp | date: 'EEE • HH:mm' : undefined : 'fr'
+                    }}</span>
+                </div>
+
+                <p class="text-sm text-gm-muted">{{ activity.description }}</p>
+
+                <p *ngIf="activity.statusLabel" class="text-xs text-gm-primary">
+                  {{ activity.statusLabel }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-gm-border bg-gm-surface/70 p-6">
+            <h3 class="text-xl font-semibold">Charge de la semaine</h3>
+
+            <div class="mt-5 space-y-3">
+              <div
+                *ngFor="let load of overview.weeklyLoad"
+                class="flex items-center gap-3"
+              >
+                <span
+                  class="w-16 text-xs uppercase tracking-widest text-gm-muted"
+                >{{ load.dayLabel }}</span
+                >
+
+                <div class="h-2 flex-1 rounded-full bg-gm-surface2">
+                  <div
+                    [style.width.%]="Math.min((load.matches || 0) * 35, 100)"
+                    class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-500"
+                  ></div>
+                </div>
+
+                <span class="text-sm text-gm-muted"
+                >{{ load.matches }}
+
+                  <span class="text-xs text-gm-muted"
+                  >match{{ load.matches > 1 ? 's' : '' }}</span
+                  >
+                </span>
+              </div>
+            </div>
+
+            <div
+              class="mt-6 rounded-2xl border border-dashed border-gm-border p-4"
+            >
+              <p class="text-sm font-semibold">Matchs à surveiller</p>
+
+              <div class="mt-3 space-y-3">
+                <div
+                  *ngFor="
+                    let match of overview.upcomingMatchesPreview;
+                    trackBy: trackById
+                  "
+                  class="flex items-center justify-between rounded-xl bg-gm-surface px-3 py-2"
+                >
+                  <div>
+                    <p class="text-sm font-semibold">{{ match.label }}</p>
+
+                    <p class="text-xs text-gm-muted">
+                      {{
+                        match.startsAt
+                          | date: 'EEE d MMM • HH:mm' : undefined : 'fr'
+                      }}
+                    </p>
+                  </div>
+
+                  <span class="text-xs text-gm-muted uppercase">{{
+                      match.status
+                    }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+          <div
+            class="rounded-3xl border border-gm-border bg-gm-surface/70 p-6 lg:col-span-2"
+          >
+            <div class="flex items-center justify-between">
+              <h3 class="text-xl font-semibold">Disponibilité des équipes</h3>
+
+              <a
+                class="text-xs font-semibold text-gm-primary hover:underline"
+                routerLink="/teams"
+              >Gérer</a
+              >
+            </div>
+
+            <div
+              *ngIf="overview.teamAvailability.length; else noTeams"
+              class="mt-6 space-y-4"
+            >
+              <div
+                *ngFor="
+                  let team of overview.teamAvailability;
+                  trackBy: trackById
+                "
+                class="rounded-2xl border border-gm-border/60 bg-gm-surface2 p-4"
+              >
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-semibold">{{ team.teamName }}</p>
+
+                    <p class="text-xs text-gm-muted">
+                      {{
+                        team.nextMatchAt
+                          ? (team.nextMatchAt
+                            | date: 'd MMM • HH:mm' : undefined : 'fr')
+                          : 'Aucun match planifié'
+                      }}
+                    </p>
+                  </div>
+
+                  <span
+                    class="text-xs uppercase tracking-widest text-gm-muted"
+                  >{{ team.confidence }}</span
+                  >
+                </div>
+
+                <div class="mt-3 h-1.5 rounded-full bg-gm-surface">
+                  <div
+                    [style.width.%]="team.availabilityRate"
+                    class="h-full rounded-full bg-gradient-to-r from-sky-400 via-emerald-400 to-emerald-500"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <ng-template #noTeams>
+              <p
+                class="mt-4 rounded-2xl border border-dashed border-gm-border/60 p-4 text-sm text-gm-muted"
+              >
+                Ajoute ta première équipe pour suivre les confirmations en
+                direct.
+              </p>
+            </ng-template>
+          </div>
+
+          <div class="rounded-3xl border border-gm-border bg-gm-surface/70 p-6">
+            <h3 class="text-xl font-semibold">Lieux conseillés</h3>
+
+            <div
+              *ngIf="overview.recommendedPlaces.length; else noPlaces"
+              class="mt-4 space-y-3"
+            >
+              <div
+                *ngFor="
+                  let place of overview.recommendedPlaces;
+                  trackBy: trackById
+                "
+                class="rounded-2xl border border-gm-border/60 bg-gm-surface2 p-4"
+              >
+                <p class="text-sm font-semibold text-gm-text">
+                  {{ place.name }}
+                </p>
+
+                <p class="text-xs text-gm-muted">
+                  {{ place.city }} • {{ place.countryCode }}
+                </p>
+              </div>
+            </div>
+
+            <ng-template #noPlaces>
+              <p
+                class="mt-4 rounded-2xl border border-dashed border-gm-border/60 p-4 text-sm text-gm-muted"
+              >
+                Ajoute tes terrains favoris pour les retrouver plus vite.
+              </p>
+            </ng-template>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+  </ng-container>
 </section>

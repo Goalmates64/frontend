@@ -60,10 +60,7 @@ export default tseslint.config(
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-      '@typescript-eslint/unbound-method': [
-        'error',
-        { ignoreStatic: true },
-      ],
+      '@typescript-eslint/unbound-method': ['error', { ignoreStatic: true }],
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
   },
