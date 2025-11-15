@@ -6,6 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "lint": "ng lint",
+    "lint:ci": "eslint . -f junit -o lint-report.xml",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "format": "prettier --write \"src/**/*.ts\""

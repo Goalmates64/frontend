@@ -24,9 +24,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint (ESLint with JUnit)
+      - name: Lint (ESLint JUnit)
         run: |
-          npx eslint . -f junit -o lint-report.xml || true
+          npm run lint:ci || true
 
       - name: Publish lint report
         uses: dorny/test-reporter@v1
