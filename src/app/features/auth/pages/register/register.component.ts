@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder, ValidatorFn, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { passwordStrengthValidator } from '../../../../core/validators/password-strength.validator';
 import { AuthService } from '../../../../core/auth.service';
 import { RegisterPayload } from '../../../../core/models/auth.model';
 import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils';
@@ -18,19 +19,45 @@ export class RegisterComponent {
   successMessage: string | null = null;
   lastRegisteredEmail: string | null = null;
   resendLoading = false;
+  readonly form: FormGroup;
   private readonly fb = inject(FormBuilder);
 
   constructor(
     private readonly authService: AuthService,
     private readonly toast: ToastService,
-  ) {}
-
+  ) {
+    this.form = this.fb.nonNullable.group(
+      {
+        username: ['', [Validators.required, Validators.minLength(3)]],
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required, passwordStrengthValidator()]],
+        confirmPassword: ['', [Validators.required]],
+      },
+      {
+        validators: [this.passwordsMatchValidator],
+      },
+    );
+  }
   get f() {
     return this.form.controls;
   }
 
   get passwordsMismatch(): boolean {
     return this.form.hasError('passwordsMismatch') && this.f['confirmPassword'].touched;
+  }
+
+  get passwordRequirements() {
+    const value = this.form.get('password')?.value;
+    const password = typeof value === 'string' ? value : '';
+
+    return {
+      minLength: password.length >= 8,
+      hasUpper: /[A-Z]/.test(password),
+      hasLower: /[a-z]/.test(password),
+      hasNumber: /\d/.test(password),
+      hasSpecial: /[^A-Za-z0-9\s]/.test(password),
+      noSpaces: !/\s/.test(password),
+    };
   }
 
   onSubmit(): void {
@@ -84,7 +111,7 @@ export class RegisterComponent {
     this.authService.resendVerification(email).subscribe({
       next: (response) => {
         this.resendLoading = false;
-        this.toast.success(response?.message ?? 'Un nouvel email a �t� envoy�.');
+        this.toast.success(response?.message ?? 'Un nouvel email a été envoyé.');
       },
       error: (error) => {
         this.resendLoading = false;
@@ -98,23 +125,14 @@ export class RegisterComponent {
   private readonly passwordsMatchValidator: ValidatorFn = (group) => {
     const passwordControl = group.get('password');
     const confirmControl = group.get('confirmPassword');
+
     const password = typeof passwordControl?.value === 'string' ? passwordControl.value : null;
     const confirm = typeof confirmControl?.value === 'string' ? confirmControl.value : null;
+
     if (!password || !confirm) {
       return null;
     }
+
     return password === confirm ? null : { passwordsMismatch: true };
   };
-
-  readonly form = this.fb.nonNullable.group(
-    {
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]],
-    },
-    {
-      validators: [this.passwordsMatchValidator],
-    },
-  );
 }

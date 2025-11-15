@@ -1,5 +1,6 @@
 import { Component, DestroyRef, inject } from '@angular/core';
 import { FormBuilder, ValidatorFn, Validators } from '@angular/forms';
+import { passwordStrengthValidator } from '../../../../core/validators/password-strength.validator';
 import { ToastService } from '../../../../core/toast.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -26,7 +27,7 @@ export class ResetPasswordComponent {
 
   readonly form = this.fb.nonNullable.group(
     {
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, passwordStrengthValidator()]],
       confirm: ['', [Validators.required]],
     },
     { validators: this.passwordsMatchValidator() },
@@ -85,4 +86,3 @@ export class ResetPasswordComponent {
     };
   }
 }
-

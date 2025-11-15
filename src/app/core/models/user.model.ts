@@ -13,6 +13,7 @@ export interface User {
   isChatEnabled: boolean;
   isEmailVerified: boolean;
   isTwoFactorEnabled: boolean;
+  mustChangePassword: boolean;
 }
 
 export type UpdateProfilePayload = {

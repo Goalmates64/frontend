@@ -57,12 +57,16 @@ export class LoginComponent {
 
     this.loading = true;
     this.authService.login(payload).subscribe({
-      next: () => {
+      next: (response) => {
         this.loading = false;
         this.showVerificationHelp = false;
         this.pendingVerificationEmail = null;
         this.twoFactorRequired = false;
         this.form.patchValue({ twoFactorCode: '' });
+        if (response?.user?.mustChangePassword) {
+          void this.router.navigate(['/auth/change-password']);
+          return;
+        }
         void this.router.navigate(['/']);
       },
       error: (error) => {
@@ -121,5 +125,4 @@ export class LoginComponent {
     const sanitized = value.replace(/\s+/g, '').trim();
     return /^\d{6}$/.test(sanitized) ? sanitized : null;
   }
-
 }

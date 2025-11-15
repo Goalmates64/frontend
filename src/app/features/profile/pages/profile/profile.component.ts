@@ -333,4 +333,3 @@ export class ProfileComponent {
     return 'Une erreur est survenue. Merci de réessayer.';
   }
 }
-

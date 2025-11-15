@@ -39,12 +39,15 @@ export class ForgotPasswordComponent {
     this.authService.requestPasswordReset(email).subscribe({
       next: (response) => {
         this.loading = false;
-        this.successMessage = response?.message ??
-          'Si un compte correspond a cet email, un lien vient d\'etre envoye.';
+        this.successMessage =
+          response?.message ?? "Si un compte correspond a cet email, un lien vient d'etre envoye.";
       },
       error: (error) => {
         this.loading = false;
-        this.apiError = extractHttpErrorMessage(error, 'Impossible d\'envoyer l\'email pour le moment.');
+        this.apiError = extractHttpErrorMessage(
+          error,
+          "Impossible d'envoyer l'email pour le moment.",
+        );
       },
     });
   }

@@ -6,6 +6,7 @@ import { distinctUntilChanged, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { UpdateProfilePayload, User } from './models/user.model';
 import {
+  ChangePasswordPayload,
   LoginPayload,
   LoginResponse,
   RegisterPayload,
@@ -35,6 +36,11 @@ export class AuthService {
     this.readUserFromStorage(),
   );
   readonly currentUser$ = this.currentUserSubject.asObservable();
+
+  private readonly passwordChangeRequiredSubject = new BehaviorSubject<boolean>(
+    this.currentUserSubject.value?.mustChangePassword ?? false,
+  );
+  readonly passwordChangeRequired$ = this.passwordChangeRequiredSubject.asObservable();
 
   constructor(
     private readonly http: HttpClient,
@@ -93,6 +99,7 @@ export class AuthService {
     localStorage.removeItem(this.userKey);
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
+    this.passwordChangeRequiredSubject.next(false);
   }
 
   fetchProfile() {
@@ -115,7 +122,6 @@ export class AuthService {
       .pipe(tap((user) => this.persistUser(user)));
   }
 
-
   requestPasswordReset(email: string) {
     return this.http.post<{ message: string }>(`${environment.apiUrl}/auth/forgot-password`, {
       email,
@@ -126,6 +132,12 @@ export class AuthService {
     return this.http
       .post<LoginResponse>(`${environment.apiUrl}/auth/reset-password`, payload)
       .pipe(tap((res) => this.handleAuthSuccess(res)));
+  }
+
+  changePassword(payload: ChangePasswordPayload) {
+    return this.http
+      .post<User>(`${environment.apiUrl}/auth/change-password`, payload)
+      .pipe(tap((user) => this.persistUser(user)));
   }
 
   startTwoFactorSetup() {
@@ -144,7 +156,6 @@ export class AuthService {
       .pipe(tap((user) => this.persistUser(user)));
   }
 
-
   private handleAuthSuccess(res: LoginResponse): void {
     this.storeToken(res.access_token);
     this.persistUser(res.user);
@@ -158,6 +169,7 @@ export class AuthService {
 
     this.currentUserSubject.next(normalized);
     localStorage.setItem(this.userKey, JSON.stringify(normalized));
+    this.passwordChangeRequiredSubject.next(normalized.mustChangePassword ?? false);
     this.isAuthenticatedSubject.next(true);
   }
 
@@ -199,7 +211,10 @@ export class AuthService {
       avatarUrl: this.optionalString(user.avatarUrl),
       isChatEnabled: typeof user.isChatEnabled === 'boolean' ? user.isChatEnabled : true,
       isEmailVerified: typeof user.isEmailVerified === 'boolean' ? user.isEmailVerified : false,
-      isTwoFactorEnabled: typeof user.isTwoFactorEnabled === 'boolean' ? user.isTwoFactorEnabled : false,
+      isTwoFactorEnabled:
+        typeof user.isTwoFactorEnabled === 'boolean' ? user.isTwoFactorEnabled : false,
+      mustChangePassword:
+        typeof user.mustChangePassword === 'boolean' ? user.mustChangePassword : false,
     };
   }
 
@@ -328,6 +343,7 @@ export class AuthService {
     isChatEnabled?: unknown;
     isEmailVerified?: unknown;
     isTwoFactorEnabled?: unknown;
+    mustChangePassword?: unknown;
   } {
     if (!value || typeof value !== 'object') {
       return false;

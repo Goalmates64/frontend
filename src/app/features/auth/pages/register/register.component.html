@@ -2,7 +2,7 @@
   <div class="w-full max-w-md bg-gm-surface border border-gm-border rounded-2xl p-8 shadow-lg">
     <ng-container *ngIf="verificationEmailSent; else registerForm">
       <div class="text-center space-y-4">
-        <div class="text-4xl">📨</div>
+        <div class="text-4xl">Mail</div>
         <h1 class="text-2xl font-semibold">Vérifie ta boîte mail</h1>
         <p class="text-sm text-gm-muted">
           {{ successMessage || 'Un email de vérification vient de partir.' }}
@@ -43,12 +43,8 @@
             type="text"
           />
           <div *ngIf="f['username'].touched && f['username'].invalid" class="mt-1 text-xs text-red-400">
-            <span *ngIf="f['username'].errors?.['required']">
-              Le pseudo est requis.
-            </span>
-            <span *ngIf="f['username'].errors?.['minlength']">
-              Le pseudo doit contenir au moins 3 caractères.
-            </span>
+            <span *ngIf="f['username'].errors?.['required']">Le pseudo est requis.</span>
+            <span *ngIf="f['username'].errors?.['minlength']">Minimum 3 caractères.</span>
           </div>
         </div>
 
@@ -63,12 +59,8 @@
             type="email"
           />
           <div *ngIf="f['email'].touched && f['email'].invalid" class="mt-1 text-xs text-red-400">
-            <span *ngIf="f['email'].errors?.['required']">
-              L'email est requis.
-            </span>
-            <span *ngIf="f['email'].errors?.['email']">
-              Email invalide.
-            </span>
+            <span *ngIf="f['email'].errors?.['required']">L'email est requis.</span>
+            <span *ngIf="f['email'].errors?.['email']">Email invalide.</span>
           </div>
         </div>
 
@@ -79,29 +71,90 @@
             class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
             formControlName="password"
             id="password"
-            placeholder="Au moins 6 caractères"
             type="password"
           />
-          <div *ngIf="f['password'].touched && f['password'].invalid" class="mt-1 text-xs text-red-400">
-            <span *ngIf="f['password'].errors?.['required']">
-              Le mot de passe est requis.
-            </span>
-            <span *ngIf="f['password'].errors?.['minlength']">
-              Le mot de passe doit contenir au moins 6 caractères.
-            </span>
+
+          <!-- Bloc exigences mot de passe -->
+          <div
+            class="mt-2 text-xs rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 shadow-sm"
+          >
+            <p class="font-medium text-gm-muted mb-1">
+              Ton mot de passe doit contenir :
+            </p>
+            <ul class="space-y-1">
+              <li
+                class="flex items-center gap-2"
+                [ngClass]="passwordRequirements.minLength ? 'text-emerald-400' : 'text-red-400'"
+              >
+                <span class="text-sm leading-none">
+                  {{ passwordRequirements.minLength ? '✓' : '✗' }}
+                </span>
+                <span>Au moins 8 caractères</span>
+              </li>
+              <li
+                class="flex items-center gap-2"
+                [ngClass]="passwordRequirements.hasUpper ? 'text-emerald-400' : 'text-red-400'"
+              >
+                <span class="text-sm leading-none">
+                  {{ passwordRequirements.hasUpper ? '✓' : '✗' }}
+                </span>
+                <span>Au moins une majuscule</span>
+              </li>
+              <li
+                class="flex items-center gap-2"
+                [ngClass]="passwordRequirements.hasLower ? 'text-emerald-400' : 'text-red-400'"
+              >
+                <span class="text-sm leading-none">
+                  {{ passwordRequirements.hasLower ? '✓' : '✗' }}
+                </span>
+                <span>Au moins une minuscule</span>
+              </li>
+              <li
+                class="flex items-center gap-2"
+                [ngClass]="passwordRequirements.hasNumber ? 'text-emerald-400' : 'text-red-400'"
+              >
+                <span class="text-sm leading-none">
+                  {{ passwordRequirements.hasNumber ? '✓' : '✗' }}
+                </span>
+                <span>Au moins un chiffre</span>
+              </li>
+              <li
+                class="flex items-center gap-2"
+                [ngClass]="passwordRequirements.hasSpecial ? 'text-emerald-400' : 'text-red-400'"
+              >
+                <span class="text-sm leading-none">
+                  {{ passwordRequirements.hasSpecial ? '✓' : '✗' }}
+                </span>
+                <span>Au moins un caractère spécial</span>
+              </li>
+              <li
+                class="flex items-center gap-2"
+                [ngClass]="passwordRequirements.noSpaces ? 'text-emerald-400' : 'text-red-400'"
+              >
+                <span class="text-sm leading-none">
+                  {{ passwordRequirements.noSpaces ? '✓' : '✗' }}
+                </span>
+                <span>Pas d’espaces</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Erreur "required" -->
+          <div
+            *ngIf="f['password'].touched && f['password'].errors?.['required']"
+            class="mt-1 text-xs text-red-400"
+          >
+            Le mot de passe est requis.
           </div>
         </div>
 
         <!-- Confirm Password -->
         <div>
-          <label class="block text-sm mb-1" for="confirmPassword">
-            Confirmer le mot de passe
-          </label>
+          <label class="block text-sm mb-1" for="confirmPassword">Confirmer le mot de passe</label>
           <input
             class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
             formControlName="confirmPassword"
             id="confirmPassword"
-            placeholder="Répète ton mot de passe"
             type="password"
           />
           <div *ngIf="passwordsMismatch" class="mt-1 text-xs text-red-400">
@@ -130,9 +183,7 @@
 
       <p class="mt-4 text-xs text-gm-muted text-center">
         Tu as déjà un compte ?
-        <a class="text-gm-primary hover:underline" routerLink="/auth">
-          Connecte-toi
-        </a>
+        <a class="text-gm-primary hover:underline" routerLink="/auth">Connecte-toi</a>
       </p>
     </ng-template>
   </div>
