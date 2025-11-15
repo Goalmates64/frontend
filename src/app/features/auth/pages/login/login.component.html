@@ -12,7 +12,7 @@
           class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
           formControlName="email" id="email"
           placeholder="toi@example.com"
-          type="email"/>
+          type="email" />
         <div *ngIf="f['email'].touched && f['email'].invalid" class="mt-1 text-xs text-red-400">
           <span *ngIf="f['email'].errors?.['required']">
             L'email est requis.
@@ -26,8 +26,8 @@
         <input
           class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
           formControlName="password" id="password"
-          placeholder="••••••••"
-          type="password"/>
+          placeholder="••••••"
+          type="password" />
         <div *ngIf="f['password'].touched && f['password'].invalid" class="mt-1 text-xs text-red-400">
           <span *ngIf="f['password'].errors?.['required']">
             Le mot de passe est requis.
@@ -40,6 +40,19 @@
 
       <div *ngIf="apiError" class="text-xs text-red-400 bg-red-950/40 border border-red-900 rounded-lg px-3 py-2">
         {{ apiError }}
+      </div>
+
+      <div *ngIf="showVerificationHelp"
+           class="text-xs text-amber-300 bg-amber-950/40 border border-amber-900 rounded-lg px-3 py-3">
+        <p class="mb-2">
+          Ton email n'est pas encore vérifié. Consulte ta boîte mail ou renvoie le lien.
+        </p>
+        <button (click)="resendVerification()"
+                [disabled]="resendLoading"
+                class="w-full rounded-lg bg-gm-primary text-gm-bg px-3 py-2 font-semibold text-xs disabled:opacity-60 disabled:cursor-not-allowed">
+          <span *ngIf="!resendLoading">Renvoyer l'email</span>
+          <span *ngIf="resendLoading">Renvoi en cours...</span>
+        </button>
       </div>
 
       <button [disabled]="loading"

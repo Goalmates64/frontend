@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ValidatorFn, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/auth.service';
 import { RegisterPayload } from '../../../../core/models/auth.model';
 import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils';
+import { ToastService } from '../../../../core/toast.service';
 
 @Component({
   selector: 'app-register',
@@ -14,11 +14,15 @@ import { extractHttpErrorMessage } from '../../../../core/utils/http-error.utils
 export class RegisterComponent {
   loading = false;
   apiError: string | null = null;
+  verificationEmailSent = false;
+  successMessage: string | null = null;
+  lastRegisteredEmail: string | null = null;
+  resendLoading = false;
   private readonly fb = inject(FormBuilder);
 
   constructor(
     private readonly authService: AuthService,
-    private readonly router: Router,
+    private readonly toast: ToastService,
   ) {}
 
   get f() {
@@ -30,6 +34,10 @@ export class RegisterComponent {
   }
 
   onSubmit(): void {
+    if (this.verificationEmailSent) {
+      return;
+    }
+
     this.apiError = null;
 
     if (this.form.invalid) {
@@ -46,15 +54,42 @@ export class RegisterComponent {
 
     this.loading = true;
     this.authService.register(payload).subscribe({
-      next: () => {
+      next: (response) => {
         this.loading = false;
-        void this.router.navigate(['/']);
+        this.verificationEmailSent = true;
+        this.successMessage =
+          response?.message ??
+          'Un email de vérification vient de partir. Clique dessus pour activer ton compte.';
+        this.lastRegisteredEmail = email;
+        this.form.disable({ emitEvent: false });
       },
       error: (error) => {
         this.loading = false;
         this.apiError = extractHttpErrorMessage(
           error,
           'Une erreur est survenue lors de la création du compte.',
+        );
+      },
+    });
+  }
+
+  resendVerificationEmail(): void {
+    const email = this.lastRegisteredEmail ?? this.form.get('email')?.value ?? '';
+    if (!email) {
+      this.toast.info('Renseigne ton email avant de renvoyer le lien.');
+      return;
+    }
+
+    this.resendLoading = true;
+    this.authService.resendVerification(email).subscribe({
+      next: (response) => {
+        this.resendLoading = false;
+        this.toast.success(response?.message ?? 'Un nouvel email a �t� envoy�.');
+      },
+      error: (error) => {
+        this.resendLoading = false;
+        this.toast.error(
+          extractHttpErrorMessage(error, "Impossible de renvoyer l'email pour le moment."),
         );
       },
     });

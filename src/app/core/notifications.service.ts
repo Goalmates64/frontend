@@ -13,19 +13,14 @@ export class NotificationsService {
   private readonly baseUrl = `${environment.apiUrl}/notifications`;
   private readonly unreadCountSubject = new BehaviorSubject<number>(0);
   readonly unreadCount$ = this.unreadCountSubject.asObservable();
-  private readonly notificationsSubject = new BehaviorSubject<
-    AppNotification[]
-  >([]);
+  private readonly notificationsSubject = new BehaviorSubject<AppNotification[]>([]);
   readonly notifications$ = this.notificationsSubject.asObservable();
-  readonly unreadNotifications$ = this.notifications$.pipe(
-    map((notifications) =>
-      notifications.filter((notification) => !notification.isRead),
-    ),
-  );
-
   private cachedNotifications: AppNotification[] = [];
   private socket: Socket | null = null;
   private readonly wsNamespaceUrl = this.buildWsNamespaceUrl();
+  readonly unreadNotifications$ = this.notifications$.pipe(
+    map((notifications) => notifications.filter((notification) => !notification.isRead)),
+  );
 
   constructor(
     private readonly http: HttpClient,
@@ -60,10 +55,7 @@ export class NotificationsService {
     );
   }
 
-  markAsRead(
-    notificationId: number,
-    isRead: boolean,
-  ): Observable<AppNotification> {
+  markAsRead(notificationId: number, isRead: boolean): Observable<AppNotification> {
     return this.http
       .patch<AppNotification>(`${this.baseUrl}/${notificationId}/read`, {
         isRead,
@@ -80,12 +72,10 @@ export class NotificationsService {
   }
 
   fetchUnreadCount(): Observable<number> {
-    return this.http
-      .get<{ count: number }>(`${this.baseUrl}/unread-count`)
-      .pipe(
-        map((res) => res.count),
-        tap((count) => this.unreadCountSubject.next(count)),
-      );
+    return this.http.get<{ count: number }>(`${this.baseUrl}/unread-count`).pipe(
+      map((res) => res.count),
+      tap((count) => this.unreadCountSubject.next(count)),
+    );
   }
 
   resetState(): void {
@@ -100,9 +90,7 @@ export class NotificationsService {
       return;
     }
 
-    const unread = this.cachedNotifications.filter(
-      (notification) => !notification.isRead,
-    ).length;
+    const unread = this.cachedNotifications.filter((notification) => !notification.isRead).length;
     this.unreadCountSubject.next(unread);
   }
 
@@ -123,10 +111,7 @@ export class NotificationsService {
     });
 
     this.socket.on('notification:new', (notification: AppNotification) => {
-      this.cachedNotifications = [
-        notification,
-        ...this.cachedNotifications,
-      ].slice(0, 50);
+      this.cachedNotifications = [notification, ...this.cachedNotifications].slice(0, 50);
       this.notificationsSubject.next([...this.cachedNotifications]);
       this.updateUnreadCountFromCache();
     });
@@ -141,10 +126,7 @@ export class NotificationsService {
         return existing;
       });
       if (!found) {
-        this.cachedNotifications = [
-          notification,
-          ...this.cachedNotifications,
-        ].slice(0, 50);
+        this.cachedNotifications = [notification, ...this.cachedNotifications].slice(0, 50);
       }
       this.notificationsSubject.next([...this.cachedNotifications]);
       this.updateUnreadCountFromCache();

@@ -3,11 +3,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthComponent } from './auth.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { LoginComponent } from './pages/login/login.component';
+import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
 
 const routes: Routes = [
   { path: '', component: AuthComponent, data: { title: 'Espace membre' } },
-  { path: 'register', component: RegisterComponent, data: { title: 'Créer un compte' } },
+  { path: 'register', component: RegisterComponent, data: { title: 'Cr�er un compte' } },
   { path: 'login', component: LoginComponent, data: { title: 'Connexion' } },
+  { path: 'verify-email', component: VerifyEmailComponent, data: { title: 'V�rification email' } },
 ];
 
 @NgModule({

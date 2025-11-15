@@ -45,8 +45,11 @@ export const extractHttpErrorMessage = (error: unknown, fallback: string): strin
     }
   }
 
-  if (isRecord(error) && typeof error['message'] === 'string') {
-    return (error['message'] as string).trim();
+  if (isRecord(error)) {
+    const genericMessage = error['message'];
+    if (typeof genericMessage === 'string' && genericMessage.trim().length > 0) {
+      return genericMessage.trim();
+    }
   }
 
   return fallback;

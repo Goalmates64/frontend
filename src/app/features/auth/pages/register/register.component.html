@@ -1,117 +1,139 @@
 <div class="min-h-[70vh] flex items-center justify-center">
-  <div
-    class="w-full max-w-md bg-gm-surface border border-gm-border rounded-2xl p-8 shadow-lg"
-  >
-    <h1 class="text-2xl font-semibold mb-2 text-center">Créer un compte</h1>
-    <p class="text-sm text-gm-muted mb-6 text-center">
-      Rejoins GoalMates et organise tes matchs de futsal 5v5 avec tes amis.
-    </p>
+  <div class="w-full max-w-md bg-gm-surface border border-gm-border rounded-2xl p-8 shadow-lg">
+    <ng-container *ngIf="verificationEmailSent; else registerForm">
+      <div class="text-center space-y-4">
+        <div class="text-4xl">📨</div>
+        <h1 class="text-2xl font-semibold">Vérifie ta boîte mail</h1>
+        <p class="text-sm text-gm-muted">
+          {{ successMessage || 'Un email de vérification vient de partir.' }}
+        </p>
+        <p class="text-xs text-gm-muted">
+          {{ lastRegisteredEmail || 'Ton adresse email' }}
+        </p>
+        <button
+          (click)="resendVerificationEmail()"
+          [disabled]="resendLoading"
+          class="w-full inline-flex items-center justify-center rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold px-4 py-2 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-emerald-500 transition"
+          type="button"
+        >
+          <span *ngIf="!resendLoading">Renvoyer l'email</span>
+          <span *ngIf="resendLoading">Renvoi en cours...</span>
+        </button>
+        <a class="text-gm-primary text-sm underline" routerLink="/auth/login">
+          Retour à la connexion
+        </a>
+      </div>
+    </ng-container>
 
-    <form (ngSubmit)="onSubmit()" [formGroup]="form" class="space-y-4">
-      <!-- Username -->
-      <div>
-        <label class="block text-sm mb-1" for="username">Pseudo</label>
-        <input
-          class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
-          formControlName="username"
-          id="username"
-          placeholder="Ton pseudo"
-          type="text"
-        />
-        <div *ngIf="f['username'].touched && f['username'].invalid" class="mt-1 text-xs text-red-400">
-          <span *ngIf="f['username'].errors?.['required']">
-            Le pseudo est requis.
-          </span>
-          <span *ngIf="f['username'].errors?.['minlength']">
-            Le pseudo doit contenir au moins 3 caractères.
-          </span>
+    <ng-template #registerForm>
+      <h1 class="text-2xl font-semibold mb-2 text-center">Créer un compte</h1>
+      <p class="text-sm text-gm-muted mb-6 text-center">
+        Rejoins GoalMates et organise tes matchs de futsal 5v5 avec tes amis.
+      </p>
+
+      <form (ngSubmit)="onSubmit()" [formGroup]="form" class="space-y-4">
+        <!-- Username -->
+        <div>
+          <label class="block text-sm mb-1" for="username">Pseudo</label>
+          <input
+            class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+            formControlName="username"
+            id="username"
+            placeholder="Ton pseudo"
+            type="text"
+          />
+          <div *ngIf="f['username'].touched && f['username'].invalid" class="mt-1 text-xs text-red-400">
+            <span *ngIf="f['username'].errors?.['required']">
+              Le pseudo est requis.
+            </span>
+            <span *ngIf="f['username'].errors?.['minlength']">
+              Le pseudo doit contenir au moins 3 caractères.
+            </span>
+          </div>
         </div>
-      </div>
 
-      <!-- Email -->
-      <div>
-        <label class="block text-sm mb-1" for="email">Email</label>
-        <input
-          class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
-          formControlName="email"
-          id="email"
-          placeholder="toi@example.com"
-          type="email"
-        />
-        <div *ngIf="f['email'].touched && f['email'].invalid" class="mt-1 text-xs text-red-400">
-          <span *ngIf="f['email'].errors?.['required']">
-            L'email est requis.
-          </span>
-          <span *ngIf="f['email'].errors?.['email']">
-            Email invalide.
-          </span>
+        <!-- Email -->
+        <div>
+          <label class="block text-sm mb-1" for="email">Email</label>
+          <input
+            class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+            formControlName="email"
+            id="email"
+            placeholder="toi@example.com"
+            type="email"
+          />
+          <div *ngIf="f['email'].touched && f['email'].invalid" class="mt-1 text-xs text-red-400">
+            <span *ngIf="f['email'].errors?.['required']">
+              L'email est requis.
+            </span>
+            <span *ngIf="f['email'].errors?.['email']">
+              Email invalide.
+            </span>
+          </div>
         </div>
-      </div>
 
-      <!-- Password -->
-      <div>
-        <label class="block text-sm mb-1" for="password">Mot de passe</label>
-        <input
-          class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
-          formControlName="password"
-          id="password"
-          placeholder="Au moins 6 caractères"
-          type="password"
-        />
-        <div *ngIf="f['password'].touched && f['password'].invalid" class="mt-1 text-xs text-red-400">
-          <span *ngIf="f['password'].errors?.['required']">
-            Le mot de passe est requis.
-          </span>
-          <span *ngIf="f['password'].errors?.['minlength']">
-            Le mot de passe doit contenir au moins 6 caractères.
-          </span>
+        <!-- Password -->
+        <div>
+          <label class="block text-sm mb-1" for="password">Mot de passe</label>
+          <input
+            class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+            formControlName="password"
+            id="password"
+            placeholder="Au moins 6 caractères"
+            type="password"
+          />
+          <div *ngIf="f['password'].touched && f['password'].invalid" class="mt-1 text-xs text-red-400">
+            <span *ngIf="f['password'].errors?.['required']">
+              Le mot de passe est requis.
+            </span>
+            <span *ngIf="f['password'].errors?.['minlength']">
+              Le mot de passe doit contenir au moins 6 caractères.
+            </span>
+          </div>
         </div>
-      </div>
 
-      <!-- Confirm Password -->
-      <div>
-        <label class="block text-sm mb-1" for="confirmPassword">
-          Confirmer le mot de passe
-        </label>
-        <input
-          class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
-          formControlName="confirmPassword"
-          id="confirmPassword"
-          placeholder="Répète ton mot de passe"
-          type="password"
-        />
-        <div *ngIf="passwordsMismatch" class="mt-1 text-xs text-red-400">
-          Les mots de passe ne correspondent pas.
+        <!-- Confirm Password -->
+        <div>
+          <label class="block text-sm mb-1" for="confirmPassword">
+            Confirmer le mot de passe
+          </label>
+          <input
+            class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+            formControlName="confirmPassword"
+            id="confirmPassword"
+            placeholder="Répète ton mot de passe"
+            type="password"
+          />
+          <div *ngIf="passwordsMismatch" class="mt-1 text-xs text-red-400">
+            Les mots de passe ne correspondent pas.
+          </div>
         </div>
-      </div>
 
-      <!-- API error -->
-      <div
-        *ngIf="apiError"
-        class="text-xs text-red-400 bg-red-950/40 border border-red-900 rounded-lg px-3 py-2"
-      >
-        {{ apiError }}
-      </div>
+        <!-- API error -->
+        <div
+          *ngIf="apiError"
+          class="text-xs text-red-400 bg-red-950/40 border border-red-900 rounded-lg px-3 py-2"
+        >
+          {{ apiError }}
+        </div>
 
-      <!-- Submit -->
-      <button
-        [disabled]="loading"
-        class="w-full inline-flex items-center justify-center rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold px-4 py-2 mt-2 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-emerald-500 transition"
-        type="submit"
-      >
-        <span *ngIf="!loading">Créer mon compte</span>
-        <span *ngIf="loading">Création du compte...</span>
-      </button>
-    </form>
+        <!-- Submit -->
+        <button
+          [disabled]="loading"
+          class="w-full inline-flex items-center justify-center rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold px-4 py-2 mt-2 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-emerald-500 transition"
+          type="submit"
+        >
+          <span *ngIf="!loading">Créer mon compte</span>
+          <span *ngIf="loading">Création du compte...</span>
+        </button>
+      </form>
 
-    <p class="mt-4 text-xs text-gm-muted text-center">
-      Tu as déjà un compte ?
-      <a
-        class="text-gm-primary hover:underline"
-        routerLink="/auth"
-      >
-        Connecte-toi
-      </a>
-    </p>
+      <p class="mt-4 text-xs text-gm-muted text-center">
+        Tu as déjà un compte ?
+        <a class="text-gm-primary hover:underline" routerLink="/auth">
+          Connecte-toi
+        </a>
+      </p>
+    </ng-template>
   </div>
 </div>

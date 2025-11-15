@@ -11,6 +11,7 @@ export interface User {
   country: string | null;
   avatarUrl: string | null;
   isChatEnabled: boolean;
+  isEmailVerified: boolean;
 }
 
 export type UpdateProfilePayload = {

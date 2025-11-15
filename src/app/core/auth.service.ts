@@ -5,7 +5,12 @@ import { distinctUntilChanged, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { UpdateProfilePayload, User } from './models/user.model';
-import { LoginPayload, LoginResponse, RegisterPayload } from './models/auth.model';
+import {
+  LoginPayload,
+  LoginResponse,
+  RegisterPayload,
+  RegisterResponse,
+} from './models/auth.model';
 import { ToastService } from './toast.service';
 
 @Injectable({
@@ -15,7 +20,7 @@ export class AuthService {
   private readonly tokenKey = 'gm_token';
   private readonly userKey = 'gm_user';
   private readonly tokenExpiryKey = 'gm_token_exp';
-  private expiryTimer: ReturnType<typeof setTimeout> | null = null;
+  private expiryTimer: number | null = null;
 
   private readonly isAuthenticatedSubject = new BehaviorSubject<boolean>(
     !!localStorage.getItem(this.tokenKey),
@@ -58,9 +63,19 @@ export class AuthService {
   }
 
   register(payload: RegisterPayload) {
+    return this.http.post<RegisterResponse>(`${environment.apiUrl}/auth/register`, payload);
+  }
+
+  verifyEmail(token: string) {
     return this.http
-      .post<LoginResponse>(`${environment.apiUrl}/auth/register`, payload)
+      .post<LoginResponse>(`${environment.apiUrl}/auth/verify-email`, { token })
       .pipe(tap((res) => this.handleAuthSuccess(res)));
+  }
+
+  resendVerification(email: string) {
+    return this.http.post<{ message: string }>(`${environment.apiUrl}/auth/resend-verification`, {
+      email,
+    });
   }
 
   login(payload: LoginPayload) {
@@ -151,6 +166,7 @@ export class AuthService {
       country: this.optionalString(user.country),
       avatarUrl: this.optionalString(user.avatarUrl),
       isChatEnabled: typeof user.isChatEnabled === 'boolean' ? user.isChatEnabled : true,
+      isEmailVerified: typeof user.isEmailVerified === 'boolean' ? user.isEmailVerified : false,
     };
   }
 
@@ -277,6 +293,7 @@ export class AuthService {
     country?: unknown;
     avatarUrl?: unknown;
     isChatEnabled?: unknown;
+    isEmailVerified?: unknown;
   } {
     if (!value || typeof value !== 'object') {
       return false;

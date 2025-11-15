@@ -32,8 +32,11 @@ export class PageTitleService {
     let resolvedTitle: string | null = null;
 
     while (snapshot) {
-      if (snapshot.data && snapshot.data['title']) {
-        resolvedTitle = snapshot.data['title'];
+      if (typeof snapshot.data?.['title'] === 'string') {
+        const titleValue = snapshot.data['title'].trim();
+        if (titleValue.length > 0) {
+          resolvedTitle = titleValue;
+        }
       }
       snapshot = snapshot.firstChild ?? null;
     }

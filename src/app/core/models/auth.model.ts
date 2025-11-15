@@ -15,3 +15,8 @@ export interface LoginResponse {
   access_token: string;
   user: User;
 }
+
+export interface RegisterResponse {
+  message: string;
+  requiresEmailVerification: boolean;
+}

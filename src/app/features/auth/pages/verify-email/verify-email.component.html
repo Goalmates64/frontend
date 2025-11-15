@@ -1,0 +1,29 @@
+<div class="min-h-[70vh] flex items-center justify-center">
+  <div class="w-full max-w-md bg-gm-surface border border-gm-border rounded-2xl p-8 shadow-lg text-center space-y-4">
+    <div class="text-4xl">
+      <span *ngIf="status === 'loading'">?</span>
+      <span *ngIf="status === 'success'">?</span>
+      <span *ngIf="status === 'error'">??</span>
+    </div>
+    <h1 class="text-2xl font-semibold">Vérification d'email</h1>
+    <p class="text-sm text-gm-muted">{{ message }}</p>
+
+    <div *ngIf="status === 'success'" class="space-y-2">
+      <a class="text-gm-primary underline text-sm block" routerLink="/">
+        Accéder à GoalMates
+      </a>
+    </div>
+
+    <div *ngIf="status === 'error'" class="space-y-3">
+      <button (click)="retry()"
+              class="w-full rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold px-4 py-2"
+              type="button">
+        Réessayer
+      </button>
+      <a (click)="goToLogin()" class="text-gm-primary underline text-sm block">
+        Retour à la connexion
+      </a>
+    </div>
+  </div>
+</div>
+
