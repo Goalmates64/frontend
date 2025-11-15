@@ -1,0 +1,40 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  frontend-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (ESLint with JUnit)
+        run: |
+          npx eslint . -f junit -o lint-report.xml || true
+
+      - name: Publish lint report
+        uses: dorny/test-reporter@v1
+        with:
+          name: Frontend Lint
+          path: lint-report.xml
+          reporter: jest-junit
+          fail-on-error: true
+
+      - name: Build
+        run: npm run build -- --configuration=production
