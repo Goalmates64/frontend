@@ -1,6 +1,5 @@
 import { Component, DestroyRef, inject } from '@angular/core';
 import { FormBuilder, ValidatorFn, Validators } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
 import { ToastService } from '../../../../core/toast.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -66,14 +65,18 @@ export class ResetPasswordComponent {
       },
       error: (error) => {
         this.loading = false;
-        this.apiError = extractHttpErrorMessage(error, 'Impossible de mettre a jour ton mot de passe.');
+        this.apiError = extractHttpErrorMessage(
+          error,
+          'Impossible de mettre a jour ton mot de passe.',
+        );
       },
     });
   }
 
-  private passwordsMatchValidator() {
-    return () => {
-      const { password, confirm } = this.form.getRawValue();
+  private passwordsMatchValidator(): ValidatorFn {
+    return (group) => {
+      const password = group.get('password')?.value as string | null;
+      const confirm = group.get('confirm')?.value as string | null;
       if (!password || !confirm) {
         return null;
       }
@@ -82,3 +85,4 @@ export class ResetPasswordComponent {
     };
   }
 }
+

@@ -9,11 +9,19 @@ import { ResetPasswordComponent } from './pages/reset-password/reset-password.co
 
 const routes: Routes = [
   { path: '', component: AuthComponent, data: { title: 'Espace membre' } },
-  { path: 'register', component: RegisterComponent, data: { title: 'Créer un compte' } },
+  { path: 'register', component: RegisterComponent, data: { title: 'Crï¿½er un compte' } },
   { path: 'login', component: LoginComponent, data: { title: 'Connexion' } },
-  { path: 'verify-email', component: VerifyEmailComponent, data: { title: 'Vérification email' } },
-  { path: 'forgot-password', component: ForgotPasswordComponent, data: { title: 'Mot de passe oublié' } },
-  { path: 'reset-password', component: ResetPasswordComponent, data: { title: 'Réinitialiser le mot de passe' } },
+  { path: 'verify-email', component: VerifyEmailComponent, data: { title: 'Vï¿½rification email' } },
+  {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent,
+    data: { title: 'Mot de passe oubliÃ©' },
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
+    data: { title: 'RÃ©initialiser le mot de passe' },
+  },
 ];
 
 @NgModule({
