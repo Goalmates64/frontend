@@ -2,7 +2,7 @@
   <div class="w-full max-w-md bg-gm-surface border border-gm-border rounded-2xl p-8 shadow-lg">
     <h1 class="text-2xl font-semibold mb-2 text-center">Connexion</h1>
     <p class="text-sm text-gm-muted mb-6 text-center">
-      Connecte-toi pour rejoindre tes équipes GoalMates.
+      Connecte-toi pour rejoindre tes equipes GoalMates.
     </p>
 
     <form (ngSubmit)="onSubmit()" [formGroup]="form" class="space-y-4">
@@ -10,9 +10,11 @@
         <label class="block text-sm mb-1" for="email">Email</label>
         <input
           class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
-          formControlName="email" id="email"
+          formControlName="email"
+          id="email"
           placeholder="toi@example.com"
-          type="email" />
+          type="email"
+        />
         <div *ngIf="f['email'].touched && f['email'].invalid" class="mt-1 text-xs text-red-400">
           <span *ngIf="f['email'].errors?.['required']">
             L'email est requis.
@@ -22,42 +24,88 @@
       </div>
 
       <div>
-        <label class="block text-sm mb-1" for="password">Mot de passe</label>
+        <div class="flex items-center justify-between mb-1">
+          <label class="text-sm" for="password">Mot de passe</label>
+          <a class="text-xs text-gm-primary hover:underline" routerLink="/auth/forgot-password">
+            Mot de passe oublie ?
+          </a>
+        </div>
         <input
           class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
-          formControlName="password" id="password"
-          placeholder="••••••"
-          type="password" />
+          formControlName="password"
+          id="password"
+          placeholder="������"
+          type="password"
+        />
         <div *ngIf="f['password'].touched && f['password'].invalid" class="mt-1 text-xs text-red-400">
           <span *ngIf="f['password'].errors?.['required']">
             Le mot de passe est requis.
           </span>
           <span *ngIf="f['password'].errors?.['minlength']">
-            Minimum 6 caractères.
+            Minimum 6 caracteres.
           </span>
         </div>
+      </div>
+
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <label class="text-sm" for="twoFactorCode">Code 2FA (si active)</label>
+          <span *ngIf="twoFactorRequired" class="text-xs text-amber-300">Obligatoire</span>
+        </div>
+        <input
+          class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+          formControlName="twoFactorCode"
+          id="twoFactorCode"
+          inputmode="numeric"
+          maxlength="6"
+          placeholder="123456"
+          type="text"
+        />
+        <p class="text-xs text-gm-muted mt-1">
+          Utilise ton application d'authentification si tu as active la double securite.
+        </p>
+        <p
+          *ngIf="f['twoFactorCode'].touched && f['twoFactorCode'].invalid"
+          class="text-xs text-red-400 mt-1"
+        >
+          Le code doit contenir 6 chiffres.
+        </p>
       </div>
 
       <div *ngIf="apiError" class="text-xs text-red-400 bg-red-950/40 border border-red-900 rounded-lg px-3 py-2">
         {{ apiError }}
       </div>
 
-      <div *ngIf="showVerificationHelp"
-           class="text-xs text-amber-300 bg-amber-950/40 border border-amber-900 rounded-lg px-3 py-3">
+      <div
+        *ngIf="twoFactorRequired && !apiError"
+        class="text-xs text-amber-300 bg-amber-950/40 border border-amber-900 rounded-lg px-3 py-2"
+      >
+        Un code de double authentification est requis pour cette connexion.
+      </div>
+
+      <div
+        *ngIf="showVerificationHelp"
+        class="text-xs text-amber-300 bg-amber-950/40 border border-amber-900 rounded-lg px-3 py-3"
+      >
         <p class="mb-2">
-          Ton email n'est pas encore vérifié. Consulte ta boîte mail ou renvoie le lien.
+          Ton email n'est pas encore verifie. Consulte ta boite mail ou renvoie le lien.
         </p>
-        <button (click)="resendVerification()"
-                [disabled]="resendLoading"
-                class="w-full rounded-lg bg-gm-primary text-gm-bg px-3 py-2 font-semibold text-xs disabled:opacity-60 disabled:cursor-not-allowed">
+        <button
+          (click)="resendVerification()"
+          [disabled]="resendLoading"
+          class="w-full rounded-lg bg-gm-primary text-gm-bg px-3 py-2 font-semibold text-xs disabled:opacity-60 disabled:cursor-not-allowed"
+          type="button"
+        >
           <span *ngIf="!resendLoading">Renvoyer l'email</span>
           <span *ngIf="resendLoading">Renvoi en cours...</span>
         </button>
       </div>
 
-      <button [disabled]="loading"
-              class="w-full inline-flex items-center justify-center rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold px-4 py-2 mt-2 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-emerald-500 transition"
-              type="submit">
+      <button
+        [disabled]="loading"
+        class="w-full inline-flex items-center justify-center rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold px-4 py-2 mt-2 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-emerald-500 transition"
+        type="submit"
+      >
         <span *ngIf="!loading">Se connecter</span>
         <span *ngIf="loading">Connexion...</span>
       </button>
@@ -66,7 +114,7 @@
     <p class="mt-4 text-xs text-gm-muted text-center">
       Pas encore de compte ?
       <a class="text-gm-primary hover:underline" routerLink="/auth/register">
-        Crée un compte
+        Cree un compte
       </a>
     </p>
   </div>

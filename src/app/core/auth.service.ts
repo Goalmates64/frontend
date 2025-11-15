@@ -10,6 +10,8 @@ import {
   LoginResponse,
   RegisterPayload,
   RegisterResponse,
+  ResetPasswordPayload,
+  TwoFactorSetupResponse,
 } from './models/auth.model';
 import { ToastService } from './toast.service';
 
@@ -113,6 +115,36 @@ export class AuthService {
       .pipe(tap((user) => this.persistUser(user)));
   }
 
+
+  requestPasswordReset(email: string) {
+    return this.http.post<{ message: string }>(`${environment.apiUrl}/auth/forgot-password`, {
+      email,
+    });
+  }
+
+  resetPassword(payload: ResetPasswordPayload) {
+    return this.http
+      .post<LoginResponse>(`${environment.apiUrl}/auth/reset-password`, payload)
+      .pipe(tap((res) => this.handleAuthSuccess(res)));
+  }
+
+  startTwoFactorSetup() {
+    return this.http.post<TwoFactorSetupResponse>(`${environment.apiUrl}/auth/2fa/setup`, {});
+  }
+
+  enableTwoFactor(code: string) {
+    return this.http
+      .post<User>(`${environment.apiUrl}/auth/2fa/enable`, { code })
+      .pipe(tap((user) => this.persistUser(user)));
+  }
+
+  disableTwoFactor(code: string) {
+    return this.http
+      .post<User>(`${environment.apiUrl}/auth/2fa/disable`, { code })
+      .pipe(tap((user) => this.persistUser(user)));
+  }
+
+
   private handleAuthSuccess(res: LoginResponse): void {
     this.storeToken(res.access_token);
     this.persistUser(res.user);
@@ -167,6 +199,7 @@ export class AuthService {
       avatarUrl: this.optionalString(user.avatarUrl),
       isChatEnabled: typeof user.isChatEnabled === 'boolean' ? user.isChatEnabled : true,
       isEmailVerified: typeof user.isEmailVerified === 'boolean' ? user.isEmailVerified : false,
+      isTwoFactorEnabled: typeof user.isTwoFactorEnabled === 'boolean' ? user.isTwoFactorEnabled : false,
     };
   }
 
@@ -294,6 +327,7 @@ export class AuthService {
     avatarUrl?: unknown;
     isChatEnabled?: unknown;
     isEmailVerified?: unknown;
+    isTwoFactorEnabled?: unknown;
   } {
     if (!value || typeof value !== 'object') {
       return false;

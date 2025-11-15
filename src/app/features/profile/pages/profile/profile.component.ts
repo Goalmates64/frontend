@@ -7,6 +7,7 @@ import { filter, take } from 'rxjs';
 import { AuthService } from '../../../../core/auth.service';
 import { ToastService } from '../../../../core/toast.service';
 import { UpdateProfilePayload, User } from '../../../../core/models/user.model';
+import { TwoFactorSetupResponse } from '../../../../core/models/auth.model';
 
 interface CountryDto {
   name: string;
@@ -30,6 +31,12 @@ export class ProfileComponent {
   avatarError: string | null = null;
   avatarUploading = false;
   countries: CountryOption[] = [];
+  twoFactorModalOpen = false;
+  twoFactorMode: 'enable' | 'disable' = 'enable';
+  twoFactorSetup: TwoFactorSetupResponse | null = null;
+  twoFactorSetupLoading = false;
+  twoFactorActionLoading = false;
+  twoFactorError: string | null = null;
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
   readonly form = this.fb.nonNullable.group({
@@ -40,6 +47,10 @@ export class ProfileComponent {
     country: ['', [Validators.maxLength(120)]],
     isChatEnabled: true,
   });
+  readonly twoFactorCodeControl = this.fb.nonNullable.control('', [
+    Validators.required,
+    Validators.pattern(/^\s*\d\s*\d\s*\d\s*\d\s*\d\s*\d\s*$/),
+  ]);
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
   readonly user$ = this.authService.currentUser$;
@@ -131,6 +142,81 @@ export class ProfileComponent {
     return this.countries.some((country) => country.name === value);
   }
 
+  openEnableTwoFactor(): void {
+    this.twoFactorMode = 'enable';
+    this.twoFactorModalOpen = true;
+    this.twoFactorSetupLoading = true;
+    this.twoFactorError = null;
+    this.twoFactorCodeControl.reset('');
+    this.authService
+      .startTwoFactorSetup()
+      .pipe(take(1))
+      .subscribe({
+        next: (setup) => {
+          this.twoFactorSetup = setup;
+          this.twoFactorSetupLoading = false;
+        },
+        error: (error: HttpErrorResponse) => {
+          this.twoFactorSetupLoading = false;
+          this.twoFactorError = this.extractErrorMessage(error);
+        },
+      });
+  }
+
+  openDisableTwoFactor(): void {
+    this.twoFactorMode = 'disable';
+    this.twoFactorModalOpen = true;
+    this.twoFactorSetup = null;
+    this.twoFactorSetupLoading = false;
+    this.twoFactorError = null;
+    this.twoFactorCodeControl.reset('');
+  }
+
+  submitTwoFactorCode(): void {
+    this.twoFactorError = null;
+    if (this.twoFactorCodeControl.invalid) {
+      this.twoFactorCodeControl.markAsTouched();
+      return;
+    }
+
+    const code = this.normalizeTwoFactorCode(this.twoFactorCodeControl.value);
+    if (!code) {
+      this.twoFactorError = 'Code 2FA invalide.';
+      return;
+    }
+
+    this.twoFactorActionLoading = true;
+    const request$ =
+      this.twoFactorMode === 'enable'
+        ? this.authService.enableTwoFactor(code)
+        : this.authService.disableTwoFactor(code);
+
+    request$.pipe(take(1)).subscribe({
+      next: () => {
+        this.twoFactorActionLoading = false;
+        this.toast.success(
+          this.twoFactorMode === 'enable'
+            ? 'Double authentification activee.'
+            : 'Double authentification desactivee.',
+        );
+        this.closeTwoFactorModal();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.twoFactorActionLoading = false;
+        this.twoFactorError = this.extractErrorMessage(error);
+      },
+    });
+  }
+
+  closeTwoFactorModal(): void {
+    this.twoFactorModalOpen = false;
+    this.twoFactorSetup = null;
+    this.twoFactorSetupLoading = false;
+    this.twoFactorActionLoading = false;
+    this.twoFactorError = null;
+    this.twoFactorCodeControl.reset('');
+  }
+
   private loadCountries(): void {
     this.http
       .get<CountryDto[]>('data/countries.json')
@@ -195,6 +281,14 @@ export class ProfileComponent {
     return String.fromCodePoint(0x1f1e6 + (first - 65), 0x1f1e6 + (second - 65));
   }
 
+  private normalizeTwoFactorCode(value: string | null | undefined): string | null {
+    if (!value) {
+      return null;
+    }
+
+    const sanitized = value.replace(/\s+/g, '').trim();
+    return /^\d{6}$/.test(sanitized) ? sanitized : null;
+  }
   private normalizeText(value: string | null | undefined): string | null {
     if (value === null || value === undefined) {
       return null;
@@ -239,3 +333,4 @@ export class ProfileComponent {
     return 'Une erreur est survenue. Merci de réessayer.';
   }
 }
+

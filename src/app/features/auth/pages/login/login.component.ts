@@ -20,11 +20,13 @@ export class LoginComponent {
   apiError: string | null = null;
   showVerificationHelp = false;
   resendLoading = false;
+  twoFactorRequired = false;
   private pendingVerificationEmail: string | null = null;
   private readonly fb = inject(FormBuilder);
   readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
+    twoFactorCode: ['', [Validators.pattern(/^\s*\d\s*\d\s*\d\s*\d\s*\d\s*\d\s*$/)]],
   });
 
   constructor(
@@ -45,10 +47,12 @@ export class LoginComponent {
       return;
     }
 
-    const { email, password } = this.form.getRawValue();
+    const { email, password, twoFactorCode } = this.form.getRawValue();
+    const normalizedCode = this.normalizeTwoFactorCode(twoFactorCode);
     const payload: LoginPayload = {
       email,
       password,
+      twoFactorCode: normalizedCode ?? undefined,
     };
 
     this.loading = true;
@@ -57,6 +61,8 @@ export class LoginComponent {
         this.loading = false;
         this.showVerificationHelp = false;
         this.pendingVerificationEmail = null;
+        this.twoFactorRequired = false;
+        this.form.patchValue({ twoFactorCode: '' });
         void this.router.navigate(['/']);
       },
       error: (error) => {
@@ -77,7 +83,7 @@ export class LoginComponent {
     this.authService.resendVerification(email).subscribe({
       next: (response) => {
         this.resendLoading = false;
-        this.toast.success(response?.message ?? 'Un nouveau lien a été envoyé.');
+        this.toast.success(response?.message ?? 'Un nouveau lien a ete envoye.');
       },
       error: (error) => {
         this.resendLoading = false;
@@ -100,5 +106,20 @@ export class LoginComponent {
       this.showVerificationHelp = false;
       this.pendingVerificationEmail = null;
     }
+
+    if (code === 'TWO_FACTOR_REQUIRED' || code === 'TWO_FACTOR_INVALID') {
+      this.twoFactorRequired = true;
+    } else if (code !== 'EMAIL_NOT_VERIFIED') {
+      this.twoFactorRequired = false;
+    }
   }
+  private normalizeTwoFactorCode(value: string | null | undefined): string | null {
+    if (!value) {
+      return null;
+    }
+
+    const sanitized = value.replace(/\s+/g, '').trim();
+    return /^\d{6}$/.test(sanitized) ? sanitized : null;
+  }
+
 }

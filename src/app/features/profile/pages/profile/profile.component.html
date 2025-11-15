@@ -187,6 +187,53 @@
         </div>
       </div>
 
+
+      <ng-container *ngIf="user$ | async as currentUser">
+        <div class="rounded-2xl border border-gm-border bg-gm-surface p-4 space-y-3">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <p class="text-xs text-gm-muted uppercase tracking-[0.3em]">2FA</p>
+              <p class="text-sm font-semibold">
+                Double authentification {{ currentUser.isTwoFactorEnabled ? 'activee' : 'desactivee' }}
+              </p>
+            </div>
+            <span
+              [ngClass]="currentUser.isTwoFactorEnabled
+                ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/40'
+                : 'bg-gm-surface2 text-gm-muted border border-gm-border'"
+              class="text-xs font-semibold px-3 py-1 rounded-full"
+            >
+              {{ currentUser.isTwoFactorEnabled ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+          <p class="text-sm text-gm-muted">
+            Ajoute une verification par code a 6 chiffres genere par ton application d'authentification.
+          </p>
+          <button
+            *ngIf="!currentUser.isTwoFactorEnabled; else disableTwoFactorBtn"
+            (click)="openEnableTwoFactor()"
+            [disabled]="twoFactorSetupLoading || twoFactorActionLoading"
+            class="w-full inline-flex items-center justify-center rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold px-4 py-2 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-emerald-500 transition"
+            type="button"
+          >
+            <span>Activer la double authentification</span>
+          </button>
+          <ng-template #disableTwoFactorBtn>
+            <button
+              (click)="openDisableTwoFactor()"
+              [disabled]="twoFactorActionLoading"
+              class="w-full inline-flex items-center justify-center rounded-lg bg-red-500/20 text-red-200 text-sm font-semibold px-4 py-2 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-red-500/40 transition"
+              type="button"
+            >
+              <span>Desactiver la double authentification</span>
+            </button>
+          </ng-template>
+          <p *ngIf="currentUser.isTwoFactorEnabled" class="text-xs text-gm-muted">
+            Tu devras saisir ton code 2FA a chaque connexion.
+          </p>
+        </div>
+      </ng-container>
+
       <div class="bg-gm-surface border border-dashed border-gm-border rounded-xl p-4">
         <p class="text-sm font-semibold mb-1">Conseil GoalMates</p>
         <p class="text-sm text-gm-muted">
@@ -195,4 +242,91 @@
       </div>
     </aside>
   </div>
+
+<div
+  *ngIf="twoFactorModalOpen"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+>
+  <div class="bg-gm-surface border border-gm-border rounded-2xl shadow-2xl w-full max-w-lg p-6 space-y-4 relative">
+    <button
+      (click)="closeTwoFactorModal()"
+      class="absolute top-3 right-3 text-gm-muted hover:text-gm-primary text-sm"
+      type="button"
+    >
+      Fermer
+    </button>
+    <h3 class="text-xl font-semibold">
+      {{ twoFactorMode === 'enable' ? 'Activer la double authentification' : 'Desactiver la double authentification' }}
+    </h3>
+    <p class="text-sm text-gm-muted" *ngIf="twoFactorMode === 'enable'">
+      Scanne le QR code avec ton application (Google Authenticator, 1Password, etc.) puis saisis le code a 6 chiffres.
+    </p>
+    <p class="text-sm text-gm-muted" *ngIf="twoFactorMode === 'disable'">
+      Confirme avec ton code actuel pour desactiver la double authentification.
+    </p>
+
+    <div *ngIf="twoFactorSetupLoading" class="text-sm text-gm-muted">
+      Generation du QR code...
+    </div>
+
+    <ng-container *ngIf="!twoFactorSetupLoading">
+      <div *ngIf="twoFactorMode === 'enable' && twoFactorSetup" class="space-y-3 text-center">
+        <img
+          *ngIf="twoFactorSetup.qrCodeDataUrl"
+          [src]="twoFactorSetup.qrCodeDataUrl"
+          alt="QR 2FA"
+          class="mx-auto h-40 w-40 border border-gm-border rounded-xl bg-gm-surface2 p-3"
+        />
+        <p class="text-xs text-gm-muted">Code secret</p>
+        <p class="font-mono text-sm bg-gm-surface2 border border-dashed border-gm-border rounded-lg px-3 py-2 inline-block">
+          {{ twoFactorSetup.secret }}
+        </p>
+      </div>
+
+      <form (ngSubmit)="submitTwoFactorCode()" class="space-y-3">
+        <div>
+          <label class="block text-sm mb-1" for="twoFactorModalCode">Code a 6 chiffres</label>
+          <input
+            [formControl]="twoFactorCodeControl"
+            class="w-full rounded-lg bg-gm-surface2 border border-gm-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gm-primary"
+            id="twoFactorModalCode"
+            inputmode="numeric"
+            maxlength="6"
+            placeholder="123456"
+            type="text"
+          />
+          <p
+            *ngIf="twoFactorCodeControl.touched && twoFactorCodeControl.invalid"
+            class="text-xs text-red-400 mt-1"
+          >
+            Code a 6 chiffres requis.
+          </p>
+        </div>
+
+        <div *ngIf="twoFactorError" class="text-xs text-red-400 bg-red-950/40 border border-red-900 rounded-lg px-3 py-2">
+          {{ twoFactorError }}
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button
+            class="flex-1 rounded-lg border border-gm-border px-4 py-2 text-sm font-semibold hover:bg-gm-surface2 transition"
+            type="button"
+            (click)="closeTwoFactorModal()"
+          >
+            Annuler
+          </button>
+          <button
+            [disabled]="twoFactorActionLoading"
+            class="flex-1 rounded-lg bg-gm-primary text-gm-bg text-sm font-semibold px-4 py-2 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-emerald-500 transition"
+            type="submit"
+          >
+            <span *ngIf="!twoFactorActionLoading">Continuer</span>
+            <span *ngIf="twoFactorActionLoading">Validation...</span>
+          </button>
+        </div>
+      </form>
+    </ng-container>
+  </div>
+</div>
+
 </section>
